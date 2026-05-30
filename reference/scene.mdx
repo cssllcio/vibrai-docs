@@ -1,0 +1,129 @@
+---
+title: "Scenes"
+description: "Create, rename, delete, and list session scenes."
+---
+
+{/* GENERATED — do not edit by hand. Regenerate with `npm run generate:reference`. */}
+
+Create, rename, delete, and list session scenes.
+
+## Command line
+
+### `scene list`
+
+List all scenes
+
+```bash
+vibrai scene list
+```
+
+
+
+### `scene create`
+
+Create a new scene
+
+```bash
+vibrai scene create --at <SCENE>
+```
+
+<ParamField path="--at">
+  Optional scene number to insert at (1-based: 1, 2, … or first, second, …); omit to append.
+</ParamField>
+
+### `scene delete`
+
+Delete a scene by its index
+
+```bash
+vibrai scene delete <scene>
+```
+
+<ParamField path="scene" required>
+  Scene number to delete (1-based: 1, 2, … or first, second, …)
+</ParamField>
+
+### `scene rename`
+
+Rename a scene by its index
+
+```bash
+vibrai scene rename <scene> <name>
+```
+
+<ParamField path="scene" required>
+  Scene number to rename (1-based: 1, 2, … or first, second, …)
+</ParamField>
+<ParamField path="name" required>
+  New scene name
+</ParamField>
+
+## MCP tools
+
+### `list_scenes`
+
+List all scenes in the current Live set. Returned in order (1-based). Each entry has an index and a name (empty string if unnamed).
+
+```json
+{
+  "tool": "list_scenes",
+  "arguments": {}
+}
+```
+
+
+
+### `set_scene_name`
+
+Rename the scene at the given index.
+
+```json
+{
+  "tool": "set_scene_name",
+  "arguments": {
+    "scene_index": "<String>",
+    "name": "<String>"
+  }
+}
+```
+
+<ParamField path="scene_index" type="String" required>
+  Scene number (1-based: 1, 2, … or 'first', 'second', …)
+</ParamField>
+<ParamField path="name" type="String" required>
+  New scene name
+</ParamField>
+
+### `create_scene`
+
+Create a new scene. Omit insert_index to append at the end.
+
+```json
+{
+  "tool": "create_scene",
+  "arguments": {
+    "insert_index": "<String>"
+  }
+}
+```
+
+<ParamField path="insert_index" type="String" required>
+  Optional scene number to insert at (1-based: 1, 2, … or 'first', 'second', …); omit to append at the end.
+</ParamField>
+
+### `delete_scene`
+
+Delete a scene by its index. Idempotent: out-of-range and last-remaining-scene are no-ops.
+
+```json
+{
+  "tool": "delete_scene",
+  "arguments": {
+    "scene_index": "<String>"
+  }
+}
+```
+
+<ParamField path="scene_index" type="String" required>
+  Scene number to delete (1-based: 1, 2, … or 'first', 'second', …)
+</ParamField>

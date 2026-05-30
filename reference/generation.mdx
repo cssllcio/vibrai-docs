@@ -1,0 +1,101 @@
+---
+title: "Generation"
+description: "Generate or plan a composition from a .vibrai project file."
+---
+
+{/* GENERATED — do not edit by hand. Regenerate with `npm run generate:reference`. */}
+
+Generate or plan a composition from a .vibrai project file.
+
+## Command line
+
+### `generate`
+
+Generate clips and arrangement from an .vibrai project file
+
+```bash
+vibrai generate --project <PATH> --force --dry-run --seed <VALUE> --allow-skip
+```
+
+<ParamField path="--project">
+  Path to .vibrai file (default: Untitled.vibrai in CWD)
+</ParamField>
+<ParamField path="--force">
+  Overwrite existing session clips and arrangement content in project tracks
+</ParamField>
+<ParamField path="--dry-run">
+  Plan only — do not call the bridge
+</ParamField>
+<ParamField path="--seed">
+  Override the project's T2mHash seed for this run
+</ParamField>
+<ParamField path="--allow-skip">
+  Continue when arrangement-automation entries cannot be resolved; default fails fast.
+</ParamField>
+
+### `plan`
+
+Plan a composition from an .vibrai project file without writing to Live
+
+```bash
+vibrai plan --project <PATH> --seed <VALUE>
+```
+
+<ParamField path="--project">
+  Path to .vibrai file (default: Untitled.vibrai in CWD)
+</ParamField>
+<ParamField path="--seed">
+  Override the project's T2mHash seed for this run
+</ParamField>
+
+## MCP tools
+
+### `plan`
+
+Plan a composition from an .vibrai file without writing to Live. Returns a slim summary.
+
+```json
+{
+  "tool": "plan",
+  "arguments": {
+    "project_path": "<String>",
+    "seed": "<Nullable`1>"
+  }
+}
+```
+
+<ParamField path="project_path" type="String" required>
+  Path to the .vibrai file (defaults to Untitled.vibrai in CWD when omitted)
+</ParamField>
+<ParamField path="seed" type="Nullable`1" required>
+  Optional seed override
+</ParamField>
+
+### `generate`
+
+Plan + render a composition into Live's session view and arrangement view. Requires force=true to overwrite existing clips. By default, fails fast when any ArrangementAutomationEntry cannot be resolved against the live device tree; pass allow_skip=true to log warnings and continue.
+
+```json
+{
+  "tool": "generate",
+  "arguments": {
+    "project_path": "<String>",
+    "force": "<Boolean>",
+    "allow_skip": "<Boolean>",
+    "seed": "<Nullable`1>"
+  }
+}
+```
+
+<ParamField path="project_path" type="String" required>
+  Path to the .vibrai file (defaults to Untitled.vibrai in CWD when omitted)
+</ParamField>
+<ParamField path="force" type="Boolean" required>
+  Overwrite existing session clips and arrangement content
+</ParamField>
+<ParamField path="allow_skip" type="Boolean" required>
+  Continue when arrangement-automation entries cannot be resolved; default fails fast.
+</ParamField>
+<ParamField path="seed" type="Nullable`1" required>
+  Optional seed override
+</ParamField>

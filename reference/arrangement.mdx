@@ -1,0 +1,186 @@
+---
+title: "Arrangement"
+description: "Place, delete, and clear arrangement-view clips."
+---
+
+{/* GENERATED — do not edit by hand. Regenerate with `npm run generate:reference`. */}
+
+Place, delete, and clear arrangement-view clips.
+
+## Command line
+
+### `arrangement get-clips`
+
+List arrangement clips for a track
+
+```bash
+vibrai arrangement get-clips <track>
+```
+
+<ParamField path="track" required>
+  Track number (1-based: 1, 2, … or first, second, …)
+</ParamField>
+
+### `arrangement place`
+
+Place a session-view clip into the arrangement
+
+```bash
+vibrai arrangement place <track> <scene> <start> --no-carry-envelopes --force
+```
+
+<ParamField path="track" required>
+  Track number (1-based: 1, 2, … or first, second, …)
+</ParamField>
+<ParamField path="scene" required>
+  Session-view scene number (1-based: 1, 2, … or first, second, …)
+</ParamField>
+<ParamField path="start" required>
+  Arrangement start: bar.beat notation (e.g. 2.1 = bar 2, beat 1) or raw beats
+</ParamField>
+<ParamField path="--no-carry-envelopes">
+  Skip session-clip envelope carry (default: envelopes carry as track-lane automation)
+</ParamField>
+<ParamField path="--force">
+  Allow envelope carry even when existing destination-track automation would be clobbered
+</ParamField>
+
+### `arrangement delete`
+
+Delete a single arrangement clip at (track, start-beat)
+
+```bash
+vibrai arrangement delete <track> <start>
+```
+
+<ParamField path="track" required>
+  Track number (1-based: 1, 2, … or first, second, …)
+</ParamField>
+<ParamField path="start" required>
+  Arrangement start: bar.beat notation (e.g. 5.1 = bar 5, beat 1) or raw beats
+</ParamField>
+
+### `arrangement clear-scoped`
+
+Clear arrangement clips for specific tracks
+
+```bash
+vibrai arrangement clear-scoped <tracks>
+```
+
+<ParamField path="tracks" required>
+  One or more track numbers to clear (1-based, space-separated)
+</ParamField>
+
+### `arrangement clear-all`
+
+Clear all arrangement clips
+
+```bash
+vibrai arrangement clear-all
+```
+
+
+
+## MCP tools
+
+### `get_arrangement_clips`
+
+List the arrangement-view clips for a track.
+
+```json
+{
+  "tool": "get_arrangement_clips",
+  "arguments": {
+    "track_id": "<String>"
+  }
+}
+```
+
+<ParamField path="track_id" type="String" required>
+  Track number (1-based: 1, 2, … or 'first', 'second', …)
+</ParamField>
+
+### `place_arrangement_clip`
+
+Copy the session-view clip at (track_id, source_scene_index) into the arrangement on the same track, starting at the given beat. By default, session-clip envelopes are also carried into the arrangement as track-lane automation; pass carry_envelopes: false to disable. Refuses with ARRANGEMENT_OVERLAP if existing destination-track automation would be clobbered; pass force: true to override.
+
+```json
+{
+  "tool": "place_arrangement_clip",
+  "arguments": {
+    "track_id": "<String>",
+    "source_scene_index": "<String>",
+    "start_beat": "<String>",
+    "carry_envelopes": "<Boolean>",
+    "force": "<Boolean>"
+  }
+}
+```
+
+<ParamField path="track_id" type="String" required>
+  Track number (1-based: 1, 2, … or 'first', 'second', …)
+</ParamField>
+<ParamField path="source_scene_index" type="String" required>
+  Session-view scene number (1-based: 1, 2, … or 'first', 'second', …)
+</ParamField>
+<ParamField path="start_beat" type="String" required>
+  Start position in arrangement: bar.beat notation (e.g. '2.3' = bar 2, beat 3) or raw beats (e.g. '8' or '8.0')
+</ParamField>
+<ParamField path="carry_envelopes" type="Boolean">
+  Carry every session-clip envelope into the arrangement via a single transactional bounce. Returns carried_envelopes:N only after all N envelopes are committed; on any failure the placed clip is removed and the arrangement is left unchanged. Verify writes via get_arrangement_envelopes_ledger — the LOM read-back path returns empty for arrangement clips written this way. See recipe `write_arrangement_automation` and recipe `verify_arrangement_writes`.
+</ParamField>
+<ParamField path="force" type="Boolean">
+  Allow envelope carry even when existing track-lane automation would be clobbered (default: false).
+</ParamField>
+
+### `delete_arrangement_clip`
+
+Delete a single arrangement-view clip on a track at the given start beat (surgical — does not affect other clips on the track or track-level automation envelopes).
+
+```json
+{
+  "tool": "delete_arrangement_clip",
+  "arguments": {
+    "track_id": "<String>",
+    "start_beat": "<String>"
+  }
+}
+```
+
+<ParamField path="track_id" type="String" required>
+  Track number (1-based: 1, 2, … or 'first', 'second', …)
+</ParamField>
+<ParamField path="start_beat" type="String" required>
+  Arrangement start: bar.beat notation (e.g. '2.3' = bar 2, beat 3) or raw beats (e.g. '16' or '16.0')
+</ParamField>
+
+### `clear_arrangement_for_tracks`
+
+Clear all arrangement-view clips for the specified tracks.
+
+```json
+{
+  "tool": "clear_arrangement_for_tracks",
+  "arguments": {
+    "track_ids": "<String[]>"
+  }
+}
+```
+
+<ParamField path="track_ids" type="String[]" required>
+  Track numbers (1-based: 1, 2, … or 'first', 'second', …)
+</ParamField>
+
+### `clear_arrangement_all`
+
+Clear all arrangement-view clips across every track.
+
+```json
+{
+  "tool": "clear_arrangement_all",
+  "arguments": {}
+}
+```
+
+

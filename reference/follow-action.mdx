@@ -1,0 +1,94 @@
+---
+title: "Follow Actions"
+description: "Get and set follow actions for clips."
+---
+
+{/* GENERATED — do not edit by hand. Regenerate with `npm run generate:reference`. */}
+
+Get and set follow actions for clips.
+
+## Command line
+
+### `follow-action get`
+
+Get follow actions for a clip
+
+```bash
+vibrai follow-action get <track> <scene>
+```
+
+<ParamField path="track" required>
+  Track number (1-based: 1, 2, … or first, second, …)
+</ParamField>
+<ParamField path="scene" required>
+  Scene number (1-based: 1, 2, … or first, second, …)
+</ParamField>
+
+### `follow-action set`
+
+Set follow actions for a clip
+
+```bash
+vibrai follow-action set <track> <scene> --json-data <JSON> --file <PATH>
+```
+
+<ParamField path="track" required>
+  Track number (1-based: 1, 2, … or first, second, …)
+</ParamField>
+<ParamField path="scene" required>
+  Scene number (1-based: 1, 2, … or first, second, …)
+</ParamField>
+<ParamField path="--json-data">
+  FollowActionConfig as JSON
+</ParamField>
+<ParamField path="--file">
+  Path to JSON file containing FollowActionConfig
+</ParamField>
+
+## MCP tools
+
+### `get_follow_actions`
+
+Get the follow-action configuration for a clip.
+
+```json
+{
+  "tool": "get_follow_actions",
+  "arguments": {
+    "track_id": "<String>",
+    "scene_index": "<String>"
+  }
+}
+```
+
+<ParamField path="track_id" type="String" required>
+  Track number (1-based: 1, 2, … or 'first', 'second', …)
+</ParamField>
+<ParamField path="scene_index" type="String" required>
+  Scene number (1-based: 1, 2, … or 'first', 'second', …)
+</ParamField>
+
+### `set_follow_actions`
+
+Set the follow-action configuration for a clip.
+
+```json
+{
+  "tool": "set_follow_actions",
+  "arguments": {
+    "track_id": "<String>",
+    "scene_index": "<String>",
+    "config": "<FollowActionConfig>"
+  }
+}
+```
+
+<ParamField path="track_id" type="String" required>
+  Track number (1-based: 1, 2, … or 'first', 'second', …)
+</ParamField>
+<ParamField path="scene_index" type="String" required>
+  Scene number (1-based: 1, 2, … or 'first', 'second', …)
+</ParamField>
+<ParamField path="config" type="FollowActionConfig" required>
+  Follow-action configuration.
+</ParamField>

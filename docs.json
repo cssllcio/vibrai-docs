@@ -10,10 +10,51 @@
   "favicon": "/favicon.svg",
   "navigation": {
     "groups": [
-      { "group": "Getting Started", "pages": ["index", "installation", "quickstart"] },
-      { "group": "Guides", "pages": ["cli/overview", "mcp/overview", "concepts"] },
-      { "group": "Reference", "pages": ["reference/track"] },
-      { "group": "Help", "pages": ["troubleshooting"] }
+      {
+        "group": "Getting Started",
+        "pages": [
+          "index",
+          "installation",
+          "quickstart"
+        ]
+      },
+      {
+        "group": "Guides",
+        "pages": [
+          "cli/overview",
+          "mcp/overview",
+          "concepts"
+        ]
+      },
+      {
+        "group": "Reference",
+        "pages": [
+          "reference/transport",
+          "reference/track",
+          "reference/device",
+          "reference/instrument",
+          "reference/clip",
+          "reference/note",
+          "reference/follow-action",
+          "reference/automation",
+          "reference/project",
+          "reference/recipe",
+          "reference/scale",
+          "reference/scene",
+          "reference/arrangement",
+          "reference/genre",
+          "reference/install",
+          "reference/generation",
+          "reference/capture",
+          "reference/version"
+        ]
+      },
+      {
+        "group": "Help",
+        "pages": [
+          "troubleshooting"
+        ]
+      }
     ]
   },
   "logo": {
@@ -21,20 +62,29 @@
     "dark": "/logo/dark.svg"
   },
   "navbar": {
-    "links": [{ "label": "GitHub", "href": "https://github.com/cssllcio/vibrai" }],
-    "primary": { "type": "button", "label": "Get Vibrai", "href": "https://vibrai.com/pricing" }
+    "links": [
+      {
+        "label": "GitHub",
+        "href": "https://github.com/cssllcio/vibrai"
+      }
+    ],
+    "primary": {
+      "type": "button",
+      "label": "Get Vibrai",
+      "href": "https://vibrai.com/pricing"
+    }
   },
   "contextual": {
     "options": [
-     "copy",
-     "view",
-     "chatgpt",
-     "claude",
-     "perplexity",
-     "mcp",
-     "cursor",
-     "vscode"
-   ]
+      "copy",
+      "view",
+      "chatgpt",
+      "claude",
+      "perplexity",
+      "mcp",
+      "cursor",
+      "vscode"
+    ]
   },
   "footer": {
     "socials": {

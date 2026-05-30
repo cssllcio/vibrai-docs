@@ -1,0 +1,110 @@
+---
+title: "Install"
+description: "Install the Vibrai M4L device and Python remote script."
+---
+
+{/* GENERATED — do not edit by hand. Regenerate with `npm run generate:reference`. */}
+
+Install the Vibrai M4L device and Python remote script.
+
+## Command line
+
+### `install device`
+
+Install the Vibrai Max-for-Live device + JS bridge into Live's User Library
+
+```bash
+vibrai install device --force --source <PATH> --dest <PATH>
+```
+
+<ParamField path="--force">
+  Overwrite an existing install whose files differ from the source.
+</ParamField>
+<ParamField path="--source">
+  [advanced] Override the source directory (test/debug use).
+</ParamField>
+<ParamField path="--dest">
+  [advanced] Override the destination directory (test/debug use).
+</ParamField>
+
+### `install remote-script`
+
+Install the Vibrai Python remote script into Live's User Library
+
+```bash
+vibrai install remote-script --force --source <PATH> --dest <PATH>
+```
+
+<ParamField path="--force">
+  Overwrite an existing install whose files differ from the source.
+</ParamField>
+<ParamField path="--source">
+  [advanced] Override the source directory (test/debug use).
+</ParamField>
+<ParamField path="--dest">
+  [advanced] Override the destination directory (test/debug use).
+</ParamField>
+
+### `install all`
+
+Run both `install device` and `install remote-script`
+
+```bash
+vibrai install all --force
+```
+
+<ParamField path="--force">
+  Overwrite existing installs whose files differ from the source.
+</ParamField>
+
+## MCP tools
+
+### `install_device`
+
+Copy the bundled vibrai.amxd Max-for-Live device + JS bridge files into the user's Ableton User Library. By default refuses to overwrite a modified install — pass force=true to clobber. Run once after installing the .mcpb extension; then open Ableton Live and drag vibrai.amxd onto a track. Returns the source/destination paths, status (Installed | AlreadyUpToDate), and the list of files.
+
+```json
+{
+  "tool": "install_device",
+  "arguments": {
+    "force": "<Boolean>",
+    "source_override": "<String>",
+    "dest_override": "<String>"
+  }
+}
+```
+
+<ParamField path="force" type="Boolean">
+  Overwrite an existing install whose files differ from the source (default false)
+</ParamField>
+<ParamField path="source_override" type="String">
+  [advanced] Test-only override for the source directory
+</ParamField>
+<ParamField path="dest_override" type="String">
+  [advanced] Test-only override for the destination directory
+</ParamField>
+
+### `install_vibrai_remote_script`
+
+Copy the bundled Vibrai Python remote script into Live's User Library Remote Scripts directory. By default refuses to overwrite a modified install — pass force=true to clobber. After install, restart Live and enable 'Vibrai' under Preferences → Link/Tempo/MIDI → Control Surface. Returns the source/destination paths, status (Installed | AlreadyUpToDate), and the list of files.
+
+```json
+{
+  "tool": "install_vibrai_remote_script",
+  "arguments": {
+    "force": "<Boolean>",
+    "source_override": "<String>",
+    "dest_override": "<String>"
+  }
+}
+```
+
+<ParamField path="force" type="Boolean">
+  Overwrite an existing install whose files differ from the source (default false)
+</ParamField>
+<ParamField path="source_override" type="String">
+  [advanced] Test-only override for the source directory
+</ParamField>
+<ParamField path="dest_override" type="String">
+  [advanced] Test-only override for the destination directory
+</ParamField>

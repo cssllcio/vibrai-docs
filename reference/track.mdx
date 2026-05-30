@@ -1,0 +1,162 @@
+---
+title: "Tracks"
+description: "Create, rename, list, and delete tracks."
+---
+
+{/* GENERATED — do not edit by hand. Regenerate with `npm run generate:reference`. */}
+
+Create, rename, list, and delete tracks.
+
+## Command line
+
+### `track list`
+
+List all tracks
+
+```bash
+vibrai track list
+```
+
+
+
+### `track get`
+
+Get track by ID
+
+```bash
+vibrai track get <track>
+```
+
+<ParamField path="track" required>
+  Track number (1-based: 1, 2, … or first, second, …)
+</ParamField>
+
+### `track create`
+
+Create a new track
+
+```bash
+vibrai track create <name> --type <PARTTYPE>
+```
+
+<ParamField path="name" required>
+  Track name
+</ParamField>
+<ParamField path="--type" default="Other">
+  Part type (Bass, Lead, Melody, etc.)
+</ParamField>
+
+### `track delete`
+
+Delete a track by its ID
+
+```bash
+vibrai track delete [track] --liveset-id <ID>
+```
+
+<ParamField path="track">
+  Positional track number (1-based: 1, 2, … or first, second, …). Omit if using --liveset-id.
+</ParamField>
+<ParamField path="--liveset-id">
+  Stable liveset_id from `vibrai track list --json`; preferred over the positional track number when available (survives reorders).
+</ParamField>
+
+### `track rename`
+
+Rename a track by its ID
+
+```bash
+vibrai track rename [track] [name] --liveset-id <ID>
+```
+
+<ParamField path="track">
+  Positional track number (1-based: 1, 2, … or first, second, …). Omit if using --liveset-id (in that case pass &lt;name> alone after the flag).
+</ParamField>
+<ParamField path="name">
+  New track name. Required (validated at runtime; declared optional only so Spectre permits the --liveset-id &lt;name> shape).
+</ParamField>
+<ParamField path="--liveset-id">
+  Stable liveset_id from `vibrai track list --json`; preferred over the positional track number when available (survives reorders).
+</ParamField>
+
+## MCP tools
+
+### `list_tracks`
+
+List all tracks in the current Live set. Track `id` is 1-based. `midi_index` is the ordinal among MIDI tracks only (also 1-based), or null for audio tracks.
+
+```json
+{
+  "tool": "list_tracks",
+  "arguments": {}
+}
+```
+
+
+
+### `create_track`
+
+Create a new MIDI track of the given part type.
+
+```json
+{
+  "tool": "create_track",
+  "arguments": {
+    "name": "<String>",
+    "type": "<PartType>"
+  }
+}
+```
+
+<ParamField path="name" type="String" required>
+  Track display name
+</ParamField>
+<ParamField path="type" type="PartType" required>
+  Part type (drums, bass, chords, lead, pad, fx, etc.)
+</ParamField>
+
+### `delete_track`
+
+Delete a track. Pass either track_id (positional, 1-based) or liveset_id (stable across reorders — get it from list_tracks). liveset_id wins if both are supplied. Subsequent tracks shift down so positional IDs stay dense; existing liveset_ids on the remaining tracks are unaffected. Destructive — no undo.
+
+```json
+{
+  "tool": "delete_track",
+  "arguments": {
+    "track_id": "<String>",
+    "liveset_id": "<String>"
+  }
+}
+```
+
+<ParamField path="track_id" type="String" required>
+  Positional track number (1-based: 1, 2, … or 'first', 'second', …)
+</ParamField>
+<ParamField path="liveset_id" type="String" required>
+  Stable liveset_id from list_tracks; preferred over track_id when available.
+</ParamField>
+
+### `set_track_name`
+
+Rename a track. Pass either track_id (positional, 1-based, may shift on reorder) or liveset_id (stable across reorders within one Live session — get it from list_tracks). liveset_id wins if both are supplied. Use liveset_id when you plan to issue multiple ops on the same track over time, especially across track insertions.
+
+```json
+{
+  "tool": "set_track_name",
+  "arguments": {
+    "track_id": "<String>",
+    "liveset_id": "<String>",
+    "name": "<String>"
+  }
+}
+```
+
+<ParamField path="track_id" type="String" required>
+  Positional track number (1-based: 1, 2, … or 'first', 'second', …)
+</ParamField>
+<ParamField path="liveset_id" type="String" required>
+  Stable liveset_id from list_tracks; preferred over track_id when available.
+</ParamField>
+<ParamField path="name" type="String" required>
+  New track name
+</ParamField>

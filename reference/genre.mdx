@@ -1,0 +1,131 @@
+---
+title: "Genre"
+description: "List, apply, and import genre libraries and presets."
+---
+
+{/* GENERATED — do not edit by hand. Regenerate with `npm run generate:reference`. */}
+
+List, apply, and import genre libraries and presets.
+
+## Command line
+
+### `genre list`
+
+List installed genre libraries
+
+```bash
+vibrai genre list
+```
+
+
+
+### `genre presets`
+
+List presets in a genre library
+
+```bash
+vibrai genre presets <genre>
+```
+
+<ParamField path="genre" required>
+  Genre id or display name (run 'vibrai genre list')
+</ParamField>
+
+### `genre import-songsketch`
+
+Convert a Song Sketch lib JSON file to a .vibraigenre
+
+```bash
+vibrai genre import-songsketch <json> --out <DIR>
+```
+
+<ParamField path="json" required>
+  Path to a Song Sketch lib JSON file
+</ParamField>
+<ParamField path="--out">
+  Output directory (defaults to ~/.vibrai/genres)
+</ParamField>
+
+### `genre apply`
+
+Apply a genre+preset to a .vibrai project
+
+```bash
+vibrai genre apply [genre] [preset] [project-path] --genre <NAME> --preset <ID> --yes
+```
+
+<ParamField path="genre">
+  Genre id or display name (run 'vibrai genre list').
+</ParamField>
+<ParamField path="preset">
+  Preset id within the genre (from `vibrai genre presets &lt;genre>`).
+</ParamField>
+<ParamField path="project-path">
+  Path to .vibrai (default: ./project.vibrai)
+</ParamField>
+<ParamField path="--genre">
+  (deprecated) Use positional &lt;genre> instead. Will be removed in the next minor release.
+</ParamField>
+<ParamField path="--preset">
+  (deprecated) Use positional &lt;preset> instead. Will be removed in the next minor release.
+</ParamField>
+<ParamField path="--yes">
+  Confirm destructive overwrite of sections / parts / templates / arrangement / generation
+</ParamField>
+
+## MCP tools
+
+### `list_genres`
+
+List installed genre libraries. Returns each genre's name (slug; other tools accept either the slug or the display name), display name, sub-genres, default BPM, and preset count. Embedded resources ship with Vibrai; users can override or add entries via ~/.vibrai/genres/&lt;name>.vibraigenre.
+
+```json
+{
+  "tool": "list_genres",
+  "arguments": {}
+}
+```
+
+
+
+### `list_genre_presets`
+
+List presets in a genre library. Each entry has id (use with apply_genre / init_project --preset), display name, sub-genre, and section/part counts.
+
+```json
+{
+  "tool": "list_genre_presets",
+  "arguments": {
+    "genre": "<String>"
+  }
+}
+```
+
+<ParamField path="genre" type="String" required>
+  Genre id (slug from list_genres) or display name.
+</ParamField>
+
+### `apply_genre`
+
+Materialize a genre+preset into a .vibrai project at the given path. Destructive: overwrites sections, parts, templates, arrangement.blueprint, and generation. Preserves meta.name and meta.als_path from the existing project if present. Note: the `preset_id` parameter was renamed to `preset` for CLI/MCP naming parity; update any callers.
+
+```json
+{
+  "tool": "apply_genre",
+  "arguments": {
+    "genre": "<String>",
+    "preset": "<String>",
+    "project_path": "<String>"
+  }
+}
+```
+
+<ParamField path="genre" type="String" required>
+  Genre id (slug from list_genres) or display name.
+</ParamField>
+<ParamField path="preset" type="String" required>
+  Preset id within the genre (from list_genre_presets).
+</ParamField>
+<ParamField path="project_path" type="String" required>
+  Absolute path to the .vibrai project file.
+</ParamField>
