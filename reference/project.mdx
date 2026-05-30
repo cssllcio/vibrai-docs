@@ -1,0 +1,148 @@
+---
+title: "Project"
+description: "Initialize, load, save, and inspect Vibrai project files."
+---
+
+{/* GENERATED — do not edit by hand. Regenerate with `npm run generate:reference`. */}
+
+Initialize, load, save, and inspect Vibrai project files.
+
+## Command line
+
+### `project init`
+
+Initialize a new .vibrai project file
+
+```bash
+vibrai project init --name <NAME> --project <PATH> --demo --genre <NAME> --preset <ID>
+```
+
+<ParamField path="--name">
+  Project name (default: basename of --project, or "Untitled")
+</ParamField>
+<ParamField path="--project">
+  Path to .vibrai file (default: Untitled.vibrai in CWD; auto-uniquified to Untitled-2.vibrai, etc. if it already exists)
+</ParamField>
+<ParamField path="--demo">
+  Write opinionated demo content (3 sections, 2 parts, exercises variation + scale overrides + naming) instead of the boilerplate
+</ParamField>
+<ParamField path="--genre">
+  Seed from a genre library by id or display name (run 'vibrai genre list')
+</ParamField>
+<ParamField path="--preset">
+  Preset id within --genre (default: first preset alphabetically)
+</ParamField>
+
+### `project load`
+
+Load and display a project file
+
+```bash
+vibrai project load --project <PATH>
+```
+
+<ParamField path="--project">
+  Path to .vibrai file (default: Untitled.vibrai in CWD)
+</ParamField>
+
+### `project save`
+
+Save the current project state
+
+```bash
+vibrai project save --project <PATH>
+```
+
+<ParamField path="--project">
+  Path to .vibrai file (default: Untitled.vibrai in CWD)
+</ParamField>
+
+### `project info`
+
+Show project file info
+
+```bash
+vibrai project info --project <PATH>
+```
+
+<ParamField path="--project">
+  Path to .vibrai file (default: Untitled.vibrai in CWD)
+</ParamField>
+
+## MCP tools
+
+### `init_project`
+
+Create a new .vibrai YAML file at the given absolute path. Without `demo`, writes a minimal 2-section / 1-part boilerplate. With `demo: true`, writes an opinionated 3-section / 2-part starter that exercises variation, per-section scale overrides, naming, and both generator types. Track IDs are probed from the bridge (first N MIDI tracks); if the bridge is unreachable, falls back to track 1 (and 2 for demo).
+
+```json
+{
+  "tool": "init_project",
+  "arguments": {
+    "path": "<String>",
+    "name": "<String>",
+    "demo": "<Boolean>"
+  }
+}
+```
+
+<ParamField path="path" type="String" required>
+  Absolute filesystem path for the new .vibrai file.
+</ParamField>
+<ParamField path="name" type="String" required>
+  Project display name. Defaults to the basename of `path` (e.g. "my-song" for `…/my-song.vibrai`).
+</ParamField>
+<ParamField path="demo" type="Boolean" required>
+  If true, write the demo content instead of the boilerplate.
+</ParamField>
+
+### `load_project`
+
+Load an .vibrai YAML file from the given absolute path. Returns the VibraiProject. Returns null if the file is missing.
+
+```json
+{
+  "tool": "load_project",
+  "arguments": {
+    "path": "<String>"
+  }
+}
+```
+
+<ParamField path="path" type="String" required>
+  Absolute filesystem path to the .vibrai file.
+</ParamField>
+
+### `save_project`
+
+Save an VibraiProject (same shape as load_project's return value) to the given absolute path, overwriting any existing file. Validates the project first; rejects invalid input (e.g. section modifier &lt;= 0) without writing the file.
+
+```json
+{
+  "tool": "save_project",
+  "arguments": {
+    "path": "<String>"
+  }
+}
+```
+
+<ParamField path="path" type="String" required>
+  Absolute filesystem path to write to.
+</ParamField>
+
+### `project_info`
+
+Return a summary of the project (counts of sections, parts, templates) at the given path.
+
+```json
+{
+  "tool": "project_info",
+  "arguments": {
+    "path": "<String>"
+  }
+}
+```
+
+<ParamField path="path" type="String" required>
+  Absolute filesystem path to the .vibrai file.
+</ParamField>

@@ -1,0 +1,88 @@
+---
+title: "CLI Overview"
+description: "How the Vibrai CLI is structured: branches, global flags, JSON output, exit codes."
+---
+
+`vibrai` is a Spectre.Console CLI that talks to Ableton Live through the Vibrai M4L bridge. Every command maps to an operation on the engine or the bridge — no Max for Live knowledge required.
+
+## Invocation model
+
+Commands are organized into **branches** (subcommand groups) and a few top-level commands. Selected branches:
+
+| Branch / Command | What it covers |
+|------------------|----------------|
+| `vibrai transport` | BPM, playback, position |
+| `vibrai track` | List, create, delete, rename |
+| `vibrai clip` | List, create, delete, fire, rename |
+| `vibrai scene` | List, create, delete, rename |
+| `vibrai note` | List, write, add |
+| `vibrai follow-action` | Get and set follow-action config |
+| `vibrai automation` | Session-view envelopes; arrangement-view bounce and apply |
+| `vibrai arrangement` | Arrangement-view clips: get, place, clear |
+| `vibrai project` | Init, load, save, info |
+| `vibrai scale` | Get and set the song-level scale |
+| `vibrai device` | List, load, browse, default |
+| `vibrai genre` | List, presets, apply |
+| `vibrai instrument` | List, tag, untag, show |
+| `vibrai generate` | Render a `.vibrai` project into Live |
+| `vibrai capture` | Snapshot Live into a `.vibrai` file |
+| `vibrai --version` | CLI and bridge versions |
+
+Run `vibrai --help` to see the full tree. Run `vibrai <branch> --help` for subcommand detail. See the **[Reference](/reference/transport)** section for the complete branch list and every flag, argument, and example.
+
+## Global flags
+
+These flags work on every command. `--url`, `--log-level`, and `--log-file` are pre-parsed and may appear before the subcommand name. `--json` must appear after the subcommand.
+
+| Flag | Env var | Default | Purpose |
+|------|---------|---------|---------|
+| `--url <url>` | `VIBRAI_URL` | `http://localhost:3333` | Bridge URL |
+| `--json` | — | off | Emit JSON instead of formatted tables |
+| `--log-level <level>` | — | `Warning` | `Verbose` / `Debug` / `Information` / `Warning` / `Error` |
+| `--log-file <path>` | — | (none) | Write a rolling log to a file |
+
+```bash
+# Non-default bridge
+vibrai --url http://192.168.1.10:3333 track list
+
+# JSON output, piped through jq
+vibrai track list --json | jq '.[] | select(.type == "midi") | .id'
+
+# Debug logging to a file
+vibrai generate --project song.vibrai --dry-run --log-level Debug --log-file /tmp/vibrai.log
+```
+
+## JSON output
+
+Every command that returns data supports `--json`. The output schema matches the MCP tool response for the same operation, so the two surfaces are interchangeable in scripts and tests.
+
+```bash
+vibrai note list 2 0 --json | jq 'length'
+vibrai genre list --json | jq '.[].name'
+vibrai project info --project my-song.vibrai --json
+```
+
+## Exit codes
+
+| Code | Meaning |
+|------|---------|
+| `0` | Success |
+| `1` | Generic error — file not found, project validation failure, `--force` required |
+| `2` | Bridge unreachable — `vibrai.amxd` not loaded or Live not running |
+| `3` | Live API timeout |
+| `4` | Live operation error — `CLIP_NOT_FOUND`, `INVALID_PITCH`, `MULTIPLE_MATCHES`, etc. |
+| `255` | Argument validation — out-of-range value, missing required argument |
+
+Missing required arguments produce a formatted `Error: …` line with exit 255 — no stack traces.
+
+## Reference pages
+
+The per-command details (every flag, every argument, every example) live in the generated Reference section. Start with the branches you use most:
+
+- [Transport](/reference/transport)
+- [Track](/reference/track)
+- [Clip](/reference/clip)
+- [Note](/reference/note)
+- [Automation](/reference/automation)
+- [Project](/reference/project)
+- [Generation](/reference/generation)

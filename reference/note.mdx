@@ -1,0 +1,140 @@
+---
+title: "Notes"
+description: "Read and write MIDI notes in clips."
+---
+
+{/* GENERATED — do not edit by hand. Regenerate with `npm run generate:reference`. */}
+
+Read and write MIDI notes in clips.
+
+## Command line
+
+### `note list`
+
+List notes in a clip
+
+```bash
+vibrai note list <track> <scene>
+```
+
+<ParamField path="track" required>
+  Track number (1-based: 1, 2, … or first, second, …)
+</ParamField>
+<ParamField path="scene" required>
+  Scene number (1-based: 1, 2, … or first, second, …)
+</ParamField>
+
+### `note set`
+
+Replace all notes in a clip
+
+```bash
+vibrai note set <track> <scene> --json-data <JSON> --file <PATH>
+```
+
+<ParamField path="track" required>
+  Track number (1-based: 1, 2, … or first, second, …)
+</ParamField>
+<ParamField path="scene" required>
+  Scene number (1-based: 1, 2, … or first, second, …)
+</ParamField>
+<ParamField path="--json-data">
+  Notes as JSON array
+</ParamField>
+<ParamField path="--file">
+  Path to JSON file containing notes array
+</ParamField>
+
+### `note add`
+
+Add notes to a clip
+
+```bash
+vibrai note add <track> <scene> --json-data <JSON> --file <PATH>
+```
+
+<ParamField path="track" required>
+  Track number (1-based: 1, 2, … or first, second, …)
+</ParamField>
+<ParamField path="scene" required>
+  Scene number (1-based: 1, 2, … or first, second, …)
+</ParamField>
+<ParamField path="--json-data">
+  Notes as JSON array
+</ParamField>
+<ParamField path="--file">
+  Path to JSON file containing notes array
+</ParamField>
+
+## MCP tools
+
+### `list_notes`
+
+List all notes in a clip.
+
+```json
+{
+  "tool": "list_notes",
+  "arguments": {
+    "track_id": "<String>",
+    "scene_index": "<String>"
+  }
+}
+```
+
+<ParamField path="track_id" type="String" required>
+  Track number (1-based: 1, 2, … or 'first', 'second', …)
+</ParamField>
+<ParamField path="scene_index" type="String" required>
+  Scene number (1-based: 1, 2, … or 'first', 'second', …)
+</ParamField>
+
+### `write_notes`
+
+Replace all notes in a clip with the given list.
+
+```json
+{
+  "tool": "write_notes",
+  "arguments": {
+    "track_id": "<String>",
+    "scene_index": "<String>",
+    "notes": "<NoteEvent[]>"
+  }
+}
+```
+
+<ParamField path="track_id" type="String" required>
+  Track number (1-based: 1, 2, … or 'first', 'second', …)
+</ParamField>
+<ParamField path="scene_index" type="String" required>
+  Scene number (1-based: 1, 2, … or 'first', 'second', …)
+</ParamField>
+<ParamField path="notes" type="NoteEvent[]" required>
+  Notes to write (replaces all existing).
+</ParamField>
+
+### `add_notes`
+
+Append notes to a clip without removing existing notes.
+
+```json
+{
+  "tool": "add_notes",
+  "arguments": {
+    "track_id": "<String>",
+    "scene_index": "<String>",
+    "notes": "<NoteEvent[]>"
+  }
+}
+```
+
+<ParamField path="track_id" type="String" required>
+  Track number (1-based: 1, 2, … or 'first', 'second', …)
+</ParamField>
+<ParamField path="scene_index" type="String" required>
+  Scene number (1-based: 1, 2, … or 'first', 'second', …)
+</ParamField>
+<ParamField path="notes" type="NoteEvent[]" required>
+  Notes to append.
+</ParamField>

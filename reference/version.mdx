@@ -1,0 +1,35 @@
+---
+title: "Version"
+description: "Show CLI, M4L bridge, and Python bridge versions."
+---
+
+{/* GENERATED — do not edit by hand. Regenerate with `npm run generate:reference`. */}
+
+Show CLI, M4L bridge, and Python bridge versions.
+
+## Command line
+
+### `version`
+
+Show Vibrai CLI, M4L bridge, and Python bridge versions.
+
+```bash
+vibrai version
+```
+
+
+
+## MCP tools
+
+### `get_version`
+
+Get the running Vibrai.Mcp server version (assembly) and the M4L bridge version (package.json). Bridge version is best-effort: if the bridge is unreachable or times out, the response still includes the MCP version with a bridge_status indicating the failure.
+
+```json
+{
+  "tool": "get_version",
+  "arguments": {}
+}
+```
+
+

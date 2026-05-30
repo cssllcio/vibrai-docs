@@ -1,0 +1,235 @@
+---
+title: "Clips"
+description: "Create, fire, delete, and manage session-view clips."
+---
+
+{/* GENERATED — do not edit by hand. Regenerate with `npm run generate:reference`. */}
+
+Create, fire, delete, and manage session-view clips.
+
+## Command line
+
+### `clip list`
+
+List clips for a track
+
+```bash
+vibrai clip list <track>
+```
+
+<ParamField path="track" required>
+  Track number (1-based: 1, 2, … or first, second, …)
+</ParamField>
+
+### `clip get`
+
+Get a clip by track and scene index
+
+```bash
+vibrai clip get <track> <scene>
+```
+
+<ParamField path="track" required>
+  Track number (1-based: 1, 2, … or first, second, …)
+</ParamField>
+<ParamField path="scene" required>
+  Scene number (1-based: 1, 2, … or first, second, …)
+</ParamField>
+
+### `clip create`
+
+Create a clip
+
+```bash
+vibrai clip create <track> <scene> --bars <N>
+```
+
+<ParamField path="track" required>
+  Track number (1-based: 1, 2, … or first, second, …)
+</ParamField>
+<ParamField path="scene" required>
+  Scene number (1-based: 1, 2, … or first, second, …)
+</ParamField>
+<ParamField path="--bars" default="4">
+  Clip length in bars (default: 4)
+</ParamField>
+
+### `clip delete`
+
+Delete a clip
+
+```bash
+vibrai clip delete <track> <scene>
+```
+
+<ParamField path="track" required>
+  Track number (1-based: 1, 2, … or first, second, …)
+</ParamField>
+<ParamField path="scene" required>
+  Scene number (1-based: 1, 2, … or first, second, …)
+</ParamField>
+
+### `clip fire`
+
+Fire a clip
+
+```bash
+vibrai clip fire <track> <scene>
+```
+
+<ParamField path="track" required>
+  Track number (1-based: 1, 2, … or first, second, …)
+</ParamField>
+<ParamField path="scene" required>
+  Scene number (1-based: 1, 2, … or first, second, …)
+</ParamField>
+
+### `clip rename`
+
+Rename a clip by track and scene index
+
+```bash
+vibrai clip rename <track> <scene> <name>
+```
+
+<ParamField path="track" required>
+  Track number (1-based: 1, 2, … or first, second, …)
+</ParamField>
+<ParamField path="scene" required>
+  Scene number (1-based: 1, 2, … or first, second, …)
+</ParamField>
+<ParamField path="name" required>
+  New clip name
+</ParamField>
+
+## MCP tools
+
+### `list_clips`
+
+List all clip slots for a track. Empty slots are included as empty entries. Returns clip metadata only — notes are stripped for performance; call `get_clip` for note detail.
+
+```json
+{
+  "tool": "list_clips",
+  "arguments": {
+    "track_id": "<String>"
+  }
+}
+```
+
+<ParamField path="track_id" type="String" required>
+  Track number (1-based: 1, 2, … or 'first', 'second', …)
+</ParamField>
+
+### `get_clip`
+
+Get a single clip by track and scene. Returns null if the slot is empty. Includes the clip's notes; use `list_clips` for a notes-less summary across a track.
+
+```json
+{
+  "tool": "get_clip",
+  "arguments": {
+    "track_id": "<String>",
+    "scene_index": "<String>"
+  }
+}
+```
+
+<ParamField path="track_id" type="String" required>
+  Track number (1-based: 1, 2, … or 'first', 'second', …)
+</ParamField>
+<ParamField path="scene_index" type="String" required>
+  Scene number (1-based: 1, 2, … or 'first', 'second', …)
+</ParamField>
+
+### `create_clip`
+
+Create an empty MIDI clip at the given track and scene.
+
+```json
+{
+  "tool": "create_clip",
+  "arguments": {
+    "track_id": "<String>",
+    "scene_index": "<String>",
+    "bars": "<Double>"
+  }
+}
+```
+
+<ParamField path="track_id" type="String" required>
+  Track number (1-based: 1, 2, … or 'first', 'second', …)
+</ParamField>
+<ParamField path="scene_index" type="String" required>
+  Scene number (1-based: 1, 2, … or 'first', 'second', …)
+</ParamField>
+<ParamField path="bars" type="Double" required>
+  Clip length in bars (e.g. 4.0)
+</ParamField>
+
+### `delete_clip`
+
+Delete the clip at the given track and scene.
+
+```json
+{
+  "tool": "delete_clip",
+  "arguments": {
+    "track_id": "<String>",
+    "scene_index": "<String>"
+  }
+}
+```
+
+<ParamField path="track_id" type="String" required>
+  Track number (1-based: 1, 2, … or 'first', 'second', …)
+</ParamField>
+<ParamField path="scene_index" type="String" required>
+  Scene number (1-based: 1, 2, … or 'first', 'second', …)
+</ParamField>
+
+### `fire_clip`
+
+Trigger the clip at the given track and scene.
+
+```json
+{
+  "tool": "fire_clip",
+  "arguments": {
+    "track_id": "<String>",
+    "scene_index": "<String>"
+  }
+}
+```
+
+<ParamField path="track_id" type="String" required>
+  Track number (1-based: 1, 2, … or 'first', 'second', …)
+</ParamField>
+<ParamField path="scene_index" type="String" required>
+  Scene number (1-based: 1, 2, … or 'first', 'second', …)
+</ParamField>
+
+### `set_clip_name`
+
+Rename the clip at the given track and scene.
+
+```json
+{
+  "tool": "set_clip_name",
+  "arguments": {
+    "track_id": "<String>",
+    "scene_index": "<String>",
+    "name": "<String>"
+  }
+}
+```
+
+<ParamField path="track_id" type="String" required>
+  Track number (1-based: 1, 2, … or 'first', 'second', …)
+</ParamField>
+<ParamField path="scene_index" type="String" required>
+  Scene number (1-based: 1, 2, … or 'first', 'second', …)
+</ParamField>
+<ParamField path="name" type="String" required>
+  New clip name
+</ParamField>

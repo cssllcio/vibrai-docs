@@ -1,0 +1,2857 @@
+{
+  "engineVersion": "1.0.0.0",
+  "generatedAt": "2026-05-30T02:42:12Z",
+  "features": [
+    {
+      "id": "transport",
+      "title": "Transport",
+      "description": "Control playback, tempo, and transport position.",
+      "cli": {
+        "branch": "transport",
+        "commands": [
+          {
+            "name": "transport get",
+            "description": "Show transport state",
+            "arguments": [],
+            "options": []
+          },
+          {
+            "name": "transport set-tempo",
+            "description": "Set tempo in BPM",
+            "arguments": [
+              {
+                "name": "bpm",
+                "required": true,
+                "description": "Tempo in BPM"
+              }
+            ],
+            "options": []
+          },
+          {
+            "name": "transport play",
+            "description": "Start playback",
+            "arguments": [],
+            "options": []
+          },
+          {
+            "name": "transport stop",
+            "description": "Stop playback",
+            "arguments": [],
+            "options": []
+          },
+          {
+            "name": "transport seek",
+            "description": "Seek transport to a beat position",
+            "arguments": [
+              {
+                "name": "position",
+                "required": true,
+                "description": "Transport position: bar.beat notation (e.g. 2.1 = bar 2, beat 1) or raw beats (e.g. 16.0)"
+              }
+            ],
+            "options": []
+          }
+        ]
+      },
+      "mcp": {
+        "tools": [
+          {
+            "name": "get_transport",
+            "description": "Get current transport state (tempo, time signature, position, playback flag).",
+            "parameters": []
+          },
+          {
+            "name": "set_tempo",
+            "description": "Set the project tempo in BPM.",
+            "parameters": [
+              {
+                "name": "bpm",
+                "type": "Double",
+                "required": true,
+                "description": "Tempo in beats per minute (e.g. 120.0)"
+              }
+            ]
+          },
+          {
+            "name": "play",
+            "description": "Start transport playback.",
+            "parameters": []
+          },
+          {
+            "name": "stop",
+            "description": "Stop transport playback.",
+            "parameters": []
+          },
+          {
+            "name": "seek",
+            "description": "Move the transport playhead to the given beat position (0 = song start). Use before \u0060play\u0060 to start from a specific bar, or while playing to jump to a new position; the playhead moves at the next audio buffer.",
+            "parameters": [
+              {
+                "name": "beats",
+                "type": "Double",
+                "required": true,
+                "description": "Beat position from 0. One bar = 4 beats in 4/4."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "track",
+      "title": "Tracks",
+      "description": "Create, rename, list, and delete tracks.",
+      "cli": {
+        "branch": "track",
+        "commands": [
+          {
+            "name": "track list",
+            "description": "List all tracks",
+            "arguments": [],
+            "options": []
+          },
+          {
+            "name": "track get",
+            "description": "Get track by ID",
+            "arguments": [
+              {
+                "name": "track",
+                "required": true,
+                "description": "Track number (1-based: 1, 2, \u2026 or first, second, \u2026)"
+              }
+            ],
+            "options": []
+          },
+          {
+            "name": "track create",
+            "description": "Create a new track",
+            "arguments": [
+              {
+                "name": "name",
+                "required": true,
+                "description": "Track name"
+              }
+            ],
+            "options": [
+              {
+                "name": "--type",
+                "valueName": "PARTTYPE",
+                "default": "Other",
+                "description": "Part type (Bass, Lead, Melody, etc.)"
+              }
+            ]
+          },
+          {
+            "name": "track delete",
+            "description": "Delete a track by its ID",
+            "arguments": [
+              {
+                "name": "track",
+                "required": false,
+                "description": "Positional track number (1-based: 1, 2, \u2026 or first, second, \u2026). Omit if using --liveset-id."
+              }
+            ],
+            "options": [
+              {
+                "name": "--liveset-id",
+                "valueName": "ID",
+                "default": null,
+                "description": "Stable liveset_id from \u0060vibrai track list --json\u0060; preferred over the positional track number when available (survives reorders)."
+              }
+            ]
+          },
+          {
+            "name": "track rename",
+            "description": "Rename a track by its ID",
+            "arguments": [
+              {
+                "name": "track",
+                "required": false,
+                "description": "Positional track number (1-based: 1, 2, \u2026 or first, second, \u2026). Omit if using --liveset-id (in that case pass \u003Cname\u003E alone after the flag)."
+              },
+              {
+                "name": "name",
+                "required": false,
+                "description": "New track name. Required (validated at runtime; declared optional only so Spectre permits the --liveset-id \u003Cname\u003E shape)."
+              }
+            ],
+            "options": [
+              {
+                "name": "--liveset-id",
+                "valueName": "ID",
+                "default": null,
+                "description": "Stable liveset_id from \u0060vibrai track list --json\u0060; preferred over the positional track number when available (survives reorders)."
+              }
+            ]
+          }
+        ]
+      },
+      "mcp": {
+        "tools": [
+          {
+            "name": "list_tracks",
+            "description": "List all tracks in the current Live set. Track \u0060id\u0060 is 1-based. \u0060midi_index\u0060 is the ordinal among MIDI tracks only (also 1-based), or null for audio tracks.",
+            "parameters": []
+          },
+          {
+            "name": "create_track",
+            "description": "Create a new MIDI track of the given part type.",
+            "parameters": [
+              {
+                "name": "name",
+                "type": "String",
+                "required": true,
+                "description": "Track display name"
+              },
+              {
+                "name": "type",
+                "type": "PartType",
+                "required": true,
+                "description": "Part type (drums, bass, chords, lead, pad, fx, etc.)"
+              }
+            ]
+          },
+          {
+            "name": "delete_track",
+            "description": "Delete a track. Pass either track_id (positional, 1-based) or liveset_id (stable across reorders \u2014 get it from list_tracks). liveset_id wins if both are supplied. Subsequent tracks shift down so positional IDs stay dense; existing liveset_ids on the remaining tracks are unaffected. Destructive \u2014 no undo.",
+            "parameters": [
+              {
+                "name": "track_id",
+                "type": "String",
+                "required": true,
+                "description": "Positional track number (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
+              },
+              {
+                "name": "liveset_id",
+                "type": "String",
+                "required": true,
+                "description": "Stable liveset_id from list_tracks; preferred over track_id when available."
+              }
+            ]
+          },
+          {
+            "name": "set_track_name",
+            "description": "Rename a track. Pass either track_id (positional, 1-based, may shift on reorder) or liveset_id (stable across reorders within one Live session \u2014 get it from list_tracks). liveset_id wins if both are supplied. Use liveset_id when you plan to issue multiple ops on the same track over time, especially across track insertions.",
+            "parameters": [
+              {
+                "name": "track_id",
+                "type": "String",
+                "required": true,
+                "description": "Positional track number (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
+              },
+              {
+                "name": "liveset_id",
+                "type": "String",
+                "required": true,
+                "description": "Stable liveset_id from list_tracks; preferred over track_id when available."
+              },
+              {
+                "name": "name",
+                "type": "String",
+                "required": true,
+                "description": "New track name"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "device",
+      "title": "Devices",
+      "description": "Load, browse, and manage devices on tracks.",
+      "cli": {
+        "branch": "device",
+        "commands": [
+          {
+            "name": "device list",
+            "description": "List devices loaded on a track",
+            "arguments": [
+              {
+                "name": "track",
+                "required": true,
+                "description": "Track number (1-based: 1, 2, \u2026 or first, second, \u2026)"
+              }
+            ],
+            "options": []
+          },
+          {
+            "name": "device load",
+            "description": "Load a stock device or User Library preset onto a track",
+            "arguments": [
+              {
+                "name": "track",
+                "required": true,
+                "description": "Track number (1-based: 1, 2, \u2026 or first, second, \u2026)"
+              }
+            ],
+            "options": [
+              {
+                "name": "--path",
+                "valueName": "PATH",
+                "default": null,
+                "description": "Browser path, e.g. \u0027Instruments/Operator\u0027"
+              },
+              {
+                "name": "--part-type",
+                "valueName": "TYPE",
+                "default": null,
+                "description": "PartType shorthand (Bass, Pad, Lead, \u2026); resolves through defaults.instruments"
+              },
+              {
+                "name": "--position",
+                "valueName": "N",
+                "default": null,
+                "description": "Insert position in device chain (1-based: 1 = first slot; omit to append)"
+              }
+            ]
+          },
+          {
+            "name": "device browse",
+            "description": "List immediate children of a Live browser path",
+            "arguments": [
+              {
+                "name": "path",
+                "required": false,
+                "description": "Browser path; empty for the snapshot\u0027s top-level folders. Examples: \u0022Drums\u0022, \u0022Instruments/Operator\u0022, \u0022Packs/F9 GALAXY\u0022, \u0022User Library\u0022."
+              }
+            ],
+            "options": []
+          },
+          {
+            "name": "device default",
+            "description": "Show the resolved default device for a part-type",
+            "arguments": [
+              {
+                "name": "partType",
+                "required": true,
+                "description": "PartType to resolve"
+              }
+            ],
+            "options": []
+          },
+          {
+            "name": "device delete",
+            "description": "Remove a device from a track\u0027s top-level device chain by index",
+            "arguments": [
+              {
+                "name": "track",
+                "required": true,
+                "description": "Track number (1-based: 1, 2, \u2026 or first, second, \u2026)"
+              },
+              {
+                "name": "device-index",
+                "required": true,
+                "description": "Device chain position (1-based: 1 = first device in the chain)"
+              }
+            ],
+            "options": []
+          }
+        ]
+      },
+      "mcp": {
+        "tools": [
+          {
+            "name": "load_device",
+            "description": "Load a stock device or User Library preset onto a track. Specify either path OR part_type, not both. The \u0060path\u0060 argument accepts (a) classic browser paths like \u0022Instruments/Operator\u0022 for stock devices, or (b) \u0060query:\u0060 URIs from find_instruments_by_tag for user-tagged presets. NOTE: part_type=Bd/Snare/HiHat/Perc resolves to the bare \u0022Instruments/Drum Rack\u0022, which loads empty (no samples). For drums to be audible, follow up with browse_devices \u0022Drums\u0022 and load_device on a kit preset (.adg). Tonal part_types (Bass/Pad/Chord/etc.) load synths that sound by default.",
+            "parameters": [
+              {
+                "name": "track_id",
+                "type": "String",
+                "required": true,
+                "description": "Track number (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
+              },
+              {
+                "name": "path",
+                "type": "String",
+                "required": true,
+                "description": "Browser path (e.g. \u0022Instruments/Operator\u0022) OR a query: URI from find_instruments_by_tag."
+              },
+              {
+                "name": "part_type",
+                "type": "Nullable\u00601",
+                "required": true,
+                "description": "PartType shorthand; resolves through defaults.instruments"
+              },
+              {
+                "name": "position",
+                "type": "String",
+                "required": true,
+                "description": "Insert position in device chain (1-based: 1 = first slot; omit to append at the end)"
+              }
+            ]
+          },
+          {
+            "name": "browse_devices",
+            "description": "List immediate children of a Live browser path. Reads the Vibrai instrument-browser snapshot (written by the Vibrai Live remote script via SP9) in-process \u2014 no live Ableton connection required. Empty path returns the snapshot\u0027s top-level folders. Examples: \u0027Drums\u0027 (drum kit presets), \u0027Instruments/Operator\u0027 (Operator presets), \u0027Packs/\u003CPackName\u003E\u0027 (pack contents), \u0027User Library\u0027 (user-saved presets). Returns an empty list when the snapshot is missing \u2014 run install_vibrai_remote_script and refresh in Live.",
+            "parameters": [
+              {
+                "name": "path",
+                "type": "String",
+                "required": true,
+                "description": "Browser path string; empty = top-level snapshot folders."
+              }
+            ]
+          },
+          {
+            "name": "delete_device",
+            "description": "Remove a device from a track\u0027s top-level device chain by index. v1 scope: top-level chain only \u2014 nested racks (Drum Rack pads, Instrument Rack chains) are not addressable through this call. The device is gone immediately; there is no undo. Use list_devices to discover indices.",
+            "parameters": [
+              {
+                "name": "track_id",
+                "type": "String",
+                "required": true,
+                "description": "Track number (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
+              },
+              {
+                "name": "device_index",
+                "type": "String",
+                "required": true,
+                "description": "Device chain position (1-based: 1 = first device in the chain)"
+              }
+            ]
+          },
+          {
+            "name": "list_devices",
+            "description": "List devices currently loaded on a track in chain order. Returns each device\u0027s index, id, name, and class info \u2014 pass deviceId to list_automation_params / get_automation / write_automation.",
+            "parameters": [
+              {
+                "name": "track_id",
+                "type": "String",
+                "required": true,
+                "description": "Track number (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
+              }
+            ]
+          },
+          {
+            "name": "get_default_instrument",
+            "description": "Return the resolved browser path for a part-type (defaults.instruments override or built-in).",
+            "parameters": [
+              {
+                "name": "part_type",
+                "type": "PartType",
+                "required": true,
+                "description": "PartType to resolve"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "instrument",
+      "title": "Instruments",
+      "description": "Browse, tag, and manage instruments in the Vibrai library.",
+      "cli": {
+        "branch": "instrument",
+        "commands": [
+          {
+            "name": "instrument list",
+            "description": "List browser items (with optional tag/search/kind filters)",
+            "arguments": [],
+            "options": [
+              {
+                "name": "--search",
+                "valueName": "TEXT",
+                "default": null,
+                "description": "Filter by name substring (case-insensitive)"
+              },
+              {
+                "name": "--path-contains",
+                "valueName": "TEXT",
+                "default": null,
+                "description": "Filter by browser path substring (case-insensitive)"
+              },
+              {
+                "name": "--path-prefix",
+                "valueName": "PREFIX",
+                "default": null,
+                "description": "Only items whose browser path starts with this prefix"
+              },
+              {
+                "name": "--kind",
+                "valueName": "PRESET|DEVICE|RACK",
+                "default": null,
+                "description": "Filter by item kind"
+              },
+              {
+                "name": "--tagged",
+                "valueName": null,
+                "default": null,
+                "description": "Only items with at least one user tag"
+              },
+              {
+                "name": "--untagged",
+                "valueName": null,
+                "default": null,
+                "description": "Only items without any user tag"
+              },
+              {
+                "name": "--tag",
+                "valueName": "SUFFIX",
+                "default": null,
+                "description": "Only items tagged with vibrai:\u003Csuffix\u003E (e.g. --tag bass). Case-insensitive."
+              },
+              {
+                "name": "--include-extra",
+                "valueName": null,
+                "default": null,
+                "description": "When used with --tag, also match unrecognized extra-tag suffixes"
+              },
+              {
+                "name": "--offset",
+                "valueName": "N",
+                "default": "0",
+                "description": "Skip this many qualifying results (for pagination, default 0)"
+              },
+              {
+                "name": "--limit",
+                "valueName": "N",
+                "default": "50",
+                "description": "Max results (default 50)"
+              }
+            ]
+          },
+          {
+            "name": "instrument tag",
+            "description": "Apply a Vibrai PartType tag to an instrument",
+            "arguments": [
+              {
+                "name": "uri-or-search",
+                "required": true,
+                "description": "Browser URI (exact, contains \u0027:\u0027 \u002B \u0027#\u0027) or name substring (case-insensitive, single match required)"
+              },
+              {
+                "name": "part-type",
+                "required": true,
+                "description": "PartType to apply (case-insensitive). Use an invalid value to see the full list."
+              }
+            ],
+            "options": []
+          },
+          {
+            "name": "instrument untag",
+            "description": "Remove a Vibrai PartType tag from an instrument",
+            "arguments": [
+              {
+                "name": "uri-or-search",
+                "required": true,
+                "description": "Browser URI (exact) or name substring (single match required)"
+              },
+              {
+                "name": "part-type",
+                "required": true,
+                "description": "PartType to remove (case-insensitive)"
+              }
+            ],
+            "options": []
+          },
+          {
+            "name": "instrument show",
+            "description": "Show one instrument record with all tags",
+            "arguments": [
+              {
+                "name": "uri-or-search",
+                "required": true,
+                "description": "Browser URI (exact) or name substring (single match required)"
+              }
+            ],
+            "options": []
+          },
+          {
+            "name": "instrument suggest",
+            "description": "Suggest PartType tags from folder names (read-only, does not mutate)",
+            "arguments": [],
+            "options": [
+              {
+                "name": "--prefix",
+                "valueName": "PATH",
+                "default": null,
+                "description": "Scope suggestions to this browser path prefix (e.g. \u0027Packs/F9 GALAXY\u0027). Omit to scan all items."
+              },
+              {
+                "name": "--pattern-set",
+                "valueName": "NAME",
+                "default": null,
+                "description": "Pattern set to use. Only \u0027default\u0027 is supported."
+              }
+            ]
+          }
+        ]
+      },
+      "mcp": {
+        "tools": [
+          {
+            "name": "find_instruments_by_tag",
+            "description": "Find user presets tagged \u0027vibrai:\u003Csuffix\u003E\u0027. Returns all matches: their browser URI (pass as load_device \u0027path\u0027), display name, browser path, and the recognized/extra tag buckets. Empty array if no matches or no cache file. Tags are populated by the Vibrai Live remote script \u2014 see install_vibrai_remote_script.",
+            "parameters": [
+              {
+                "name": "suffix",
+                "type": "String",
+                "required": true,
+                "description": "Tag suffix to match (e.g. \u0027bass\u0027 for vibrai:bass). Case-insensitive."
+              },
+              {
+                "name": "include_extra",
+                "type": "Boolean",
+                "required": true,
+                "description": "If true, also matches unrecognized \u0027extra\u0027 tag suffixes. Default false."
+              }
+            ]
+          },
+          {
+            "name": "refresh_instrument_tags",
+            "description": "Ask the Vibrai Live remote script to rescan the browser. Touches the trigger file and waits up to 5 seconds for the browser snapshot to be rewritten. Returns the new scanned_at \u002B item_count, or INSTRUMENT_TAG_SCRIPT_NOT_RUNNING if the script doesn\u0027t respond. If you get the not-running error, run install_vibrai_remote_script and make sure Vibrai is enabled in Live\u0027s Preferences \u2192 Link/Tempo/MIDI \u2192 Control Surface.",
+            "parameters": []
+          },
+          {
+            "name": "list_browser_items",
+            "description": "List items from the Vibrai browser snapshot, optionally filtered by name substring, path substring, path prefix, kind, or tagged state. The snapshot is written by the Vibrai Live remote script; the user tags items via tag_instrument. Returns up to \u0060limit\u0060 results starting at \u0060offset\u0060 (for pagination).",
+            "parameters": [
+              {
+                "name": "search",
+                "type": "String",
+                "required": true,
+                "description": "Case-insensitive substring match against item name. Null/empty = all."
+              },
+              {
+                "name": "path_contains",
+                "type": "String",
+                "required": true,
+                "description": "Case-insensitive substring match against the full browser path (e.g. \u0027Basses\u0027 matches any item under a folder containing that word). Null = all."
+              },
+              {
+                "name": "path_prefix",
+                "type": "String",
+                "required": true,
+                "description": "Only return items whose browser path starts with this prefix (case-insensitive), e.g. \u0027Packs/F9 GALAXY\u0027. Null = all."
+              },
+              {
+                "name": "kind",
+                "type": "String",
+                "required": true,
+                "description": "Filter by kind: \u0027preset\u0027, \u0027device\u0027, \u0027rack\u0027. Null = all kinds."
+              },
+              {
+                "name": "tagged",
+                "type": "Nullable\u00601",
+                "required": true,
+                "description": "If true, only items with at least one user tag; if false, only untagged; null = both."
+              },
+              {
+                "name": "offset",
+                "type": "Int32",
+                "required": true,
+                "description": "Number of qualifying results to skip before returning (for pagination). Default 0."
+              },
+              {
+                "name": "limit",
+                "type": "Int32",
+                "required": true,
+                "description": "Max results to return (default 50)."
+              }
+            ]
+          },
+          {
+            "name": "show_instrument",
+            "description": "Show one browser item plus any user tags applied to it. Accepts an exact uri (contains \u0027:\u0027 and \u0027#\u0027) or a name substring; case-insensitive. Errors: INSTRUMENT_NOT_FOUND, MULTIPLE_MATCHES.",
+            "parameters": [
+              {
+                "name": "uri_or_search",
+                "type": "String",
+                "required": true,
+                "description": "Browser URI (exact match) or name substring (case-insensitive, single match required)."
+              }
+            ]
+          },
+          {
+            "name": "tag_instrument",
+            "description": "Apply a Vibrai PartType tag to a browser item. Accepts an exact uri or a name substring (single match). Atomically updates instrument-tags.json. Errors: INSTRUMENT_NOT_FOUND, MULTIPLE_MATCHES, INVALID_PART_TYPE.",
+            "parameters": [
+              {
+                "name": "uri_or_search",
+                "type": "String",
+                "required": true,
+                "description": "Browser URI (exact) or name substring (case-insensitive, single match)."
+              },
+              {
+                "name": "part_type",
+                "type": "String",
+                "required": true,
+                "description": "PartType to apply (case-insensitive). E.g. \u0027bass\u0027, \u0027pad\u0027, \u0027lead\u0027."
+              }
+            ]
+          },
+          {
+            "name": "untag_instrument",
+            "description": "Remove a Vibrai PartType tag from a browser item. If the item ends with no tags at all (recognized \u002B extra both empty), the record is dropped from the tag store. Errors: INSTRUMENT_NOT_FOUND, MULTIPLE_MATCHES, INVALID_PART_TYPE.",
+            "parameters": [
+              {
+                "name": "uri_or_search",
+                "type": "String",
+                "required": true,
+                "description": "Browser URI (exact) or name substring (case-insensitive, single match)."
+              },
+              {
+                "name": "part_type",
+                "type": "String",
+                "required": true,
+                "description": "PartType to remove (case-insensitive)."
+              }
+            ]
+          },
+          {
+            "name": "suggest_tags_from_folders",
+            "description": "Scan the browser snapshot and infer PartType tags from folder names. Returns suggestions only \u2014 call tag_instrument to apply them. Use \u0027prefix\u0027 to scope to a single pack (e.g. \u0027Packs/F9 GALAXY\u0027). The default pattern set maps common folder names (Basses\u2192Bass, Kicks\u2192Bd, Pads\u2192Pad, etc.) to PartTypes. Does not mutate any state.",
+            "parameters": [
+              {
+                "name": "prefix",
+                "type": "String",
+                "required": true,
+                "description": "Browser path prefix to restrict the scan (e.g. \u0027Packs/F9 GALAXY\u0027). Null/empty = entire snapshot."
+              },
+              {
+                "name": "pattern_set",
+                "type": "String",
+                "required": true,
+                "description": "Pattern set name. Only \u0027default\u0027 is supported. Null = default."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "clip",
+      "title": "Clips",
+      "description": "Create, fire, delete, and manage session-view clips.",
+      "cli": {
+        "branch": "clip",
+        "commands": [
+          {
+            "name": "clip list",
+            "description": "List clips for a track",
+            "arguments": [
+              {
+                "name": "track",
+                "required": true,
+                "description": "Track number (1-based: 1, 2, \u2026 or first, second, \u2026)"
+              }
+            ],
+            "options": []
+          },
+          {
+            "name": "clip get",
+            "description": "Get a clip by track and scene index",
+            "arguments": [
+              {
+                "name": "track",
+                "required": true,
+                "description": "Track number (1-based: 1, 2, \u2026 or first, second, \u2026)"
+              },
+              {
+                "name": "scene",
+                "required": true,
+                "description": "Scene number (1-based: 1, 2, \u2026 or first, second, \u2026)"
+              }
+            ],
+            "options": []
+          },
+          {
+            "name": "clip create",
+            "description": "Create a clip",
+            "arguments": [
+              {
+                "name": "track",
+                "required": true,
+                "description": "Track number (1-based: 1, 2, \u2026 or first, second, \u2026)"
+              },
+              {
+                "name": "scene",
+                "required": true,
+                "description": "Scene number (1-based: 1, 2, \u2026 or first, second, \u2026)"
+              }
+            ],
+            "options": [
+              {
+                "name": "--bars",
+                "valueName": "N",
+                "default": "4",
+                "description": "Clip length in bars (default: 4)"
+              }
+            ]
+          },
+          {
+            "name": "clip delete",
+            "description": "Delete a clip",
+            "arguments": [
+              {
+                "name": "track",
+                "required": true,
+                "description": "Track number (1-based: 1, 2, \u2026 or first, second, \u2026)"
+              },
+              {
+                "name": "scene",
+                "required": true,
+                "description": "Scene number (1-based: 1, 2, \u2026 or first, second, \u2026)"
+              }
+            ],
+            "options": []
+          },
+          {
+            "name": "clip fire",
+            "description": "Fire a clip",
+            "arguments": [
+              {
+                "name": "track",
+                "required": true,
+                "description": "Track number (1-based: 1, 2, \u2026 or first, second, \u2026)"
+              },
+              {
+                "name": "scene",
+                "required": true,
+                "description": "Scene number (1-based: 1, 2, \u2026 or first, second, \u2026)"
+              }
+            ],
+            "options": []
+          },
+          {
+            "name": "clip rename",
+            "description": "Rename a clip by track and scene index",
+            "arguments": [
+              {
+                "name": "track",
+                "required": true,
+                "description": "Track number (1-based: 1, 2, \u2026 or first, second, \u2026)"
+              },
+              {
+                "name": "scene",
+                "required": true,
+                "description": "Scene number (1-based: 1, 2, \u2026 or first, second, \u2026)"
+              },
+              {
+                "name": "name",
+                "required": true,
+                "description": "New clip name"
+              }
+            ],
+            "options": []
+          }
+        ]
+      },
+      "mcp": {
+        "tools": [
+          {
+            "name": "list_clips",
+            "description": "List all clip slots for a track. Empty slots are included as empty entries. Returns clip metadata only \u2014 notes are stripped for performance; call \u0060get_clip\u0060 for note detail.",
+            "parameters": [
+              {
+                "name": "track_id",
+                "type": "String",
+                "required": true,
+                "description": "Track number (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
+              }
+            ]
+          },
+          {
+            "name": "get_clip",
+            "description": "Get a single clip by track and scene. Returns null if the slot is empty. Includes the clip\u0027s notes; use \u0060list_clips\u0060 for a notes-less summary across a track.",
+            "parameters": [
+              {
+                "name": "track_id",
+                "type": "String",
+                "required": true,
+                "description": "Track number (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
+              },
+              {
+                "name": "scene_index",
+                "type": "String",
+                "required": true,
+                "description": "Scene number (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
+              }
+            ]
+          },
+          {
+            "name": "create_clip",
+            "description": "Create an empty MIDI clip at the given track and scene.",
+            "parameters": [
+              {
+                "name": "track_id",
+                "type": "String",
+                "required": true,
+                "description": "Track number (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
+              },
+              {
+                "name": "scene_index",
+                "type": "String",
+                "required": true,
+                "description": "Scene number (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
+              },
+              {
+                "name": "bars",
+                "type": "Double",
+                "required": true,
+                "description": "Clip length in bars (e.g. 4.0)"
+              }
+            ]
+          },
+          {
+            "name": "delete_clip",
+            "description": "Delete the clip at the given track and scene.",
+            "parameters": [
+              {
+                "name": "track_id",
+                "type": "String",
+                "required": true,
+                "description": "Track number (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
+              },
+              {
+                "name": "scene_index",
+                "type": "String",
+                "required": true,
+                "description": "Scene number (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
+              }
+            ]
+          },
+          {
+            "name": "fire_clip",
+            "description": "Trigger the clip at the given track and scene.",
+            "parameters": [
+              {
+                "name": "track_id",
+                "type": "String",
+                "required": true,
+                "description": "Track number (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
+              },
+              {
+                "name": "scene_index",
+                "type": "String",
+                "required": true,
+                "description": "Scene number (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
+              }
+            ]
+          },
+          {
+            "name": "set_clip_name",
+            "description": "Rename the clip at the given track and scene.",
+            "parameters": [
+              {
+                "name": "track_id",
+                "type": "String",
+                "required": true,
+                "description": "Track number (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
+              },
+              {
+                "name": "scene_index",
+                "type": "String",
+                "required": true,
+                "description": "Scene number (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
+              },
+              {
+                "name": "name",
+                "type": "String",
+                "required": true,
+                "description": "New clip name"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "note",
+      "title": "Notes",
+      "description": "Read and write MIDI notes in clips.",
+      "cli": {
+        "branch": "note",
+        "commands": [
+          {
+            "name": "note list",
+            "description": "List notes in a clip",
+            "arguments": [
+              {
+                "name": "track",
+                "required": true,
+                "description": "Track number (1-based: 1, 2, \u2026 or first, second, \u2026)"
+              },
+              {
+                "name": "scene",
+                "required": true,
+                "description": "Scene number (1-based: 1, 2, \u2026 or first, second, \u2026)"
+              }
+            ],
+            "options": []
+          },
+          {
+            "name": "note set",
+            "description": "Replace all notes in a clip",
+            "arguments": [
+              {
+                "name": "track",
+                "required": true,
+                "description": "Track number (1-based: 1, 2, \u2026 or first, second, \u2026)"
+              },
+              {
+                "name": "scene",
+                "required": true,
+                "description": "Scene number (1-based: 1, 2, \u2026 or first, second, \u2026)"
+              }
+            ],
+            "options": [
+              {
+                "name": "--json-data",
+                "valueName": "JSON",
+                "default": null,
+                "description": "Notes as JSON array"
+              },
+              {
+                "name": "--file",
+                "valueName": "PATH",
+                "default": null,
+                "description": "Path to JSON file containing notes array"
+              }
+            ]
+          },
+          {
+            "name": "note add",
+            "description": "Add notes to a clip",
+            "arguments": [
+              {
+                "name": "track",
+                "required": true,
+                "description": "Track number (1-based: 1, 2, \u2026 or first, second, \u2026)"
+              },
+              {
+                "name": "scene",
+                "required": true,
+                "description": "Scene number (1-based: 1, 2, \u2026 or first, second, \u2026)"
+              }
+            ],
+            "options": [
+              {
+                "name": "--json-data",
+                "valueName": "JSON",
+                "default": null,
+                "description": "Notes as JSON array"
+              },
+              {
+                "name": "--file",
+                "valueName": "PATH",
+                "default": null,
+                "description": "Path to JSON file containing notes array"
+              }
+            ]
+          }
+        ]
+      },
+      "mcp": {
+        "tools": [
+          {
+            "name": "list_notes",
+            "description": "List all notes in a clip.",
+            "parameters": [
+              {
+                "name": "track_id",
+                "type": "String",
+                "required": true,
+                "description": "Track number (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
+              },
+              {
+                "name": "scene_index",
+                "type": "String",
+                "required": true,
+                "description": "Scene number (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
+              }
+            ]
+          },
+          {
+            "name": "write_notes",
+            "description": "Replace all notes in a clip with the given list.",
+            "parameters": [
+              {
+                "name": "track_id",
+                "type": "String",
+                "required": true,
+                "description": "Track number (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
+              },
+              {
+                "name": "scene_index",
+                "type": "String",
+                "required": true,
+                "description": "Scene number (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
+              },
+              {
+                "name": "notes",
+                "type": "NoteEvent[]",
+                "required": true,
+                "description": "Notes to write (replaces all existing)."
+              }
+            ]
+          },
+          {
+            "name": "add_notes",
+            "description": "Append notes to a clip without removing existing notes.",
+            "parameters": [
+              {
+                "name": "track_id",
+                "type": "String",
+                "required": true,
+                "description": "Track number (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
+              },
+              {
+                "name": "scene_index",
+                "type": "String",
+                "required": true,
+                "description": "Scene number (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
+              },
+              {
+                "name": "notes",
+                "type": "NoteEvent[]",
+                "required": true,
+                "description": "Notes to append."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "follow-action",
+      "title": "Follow Actions",
+      "description": "Get and set follow actions for clips.",
+      "cli": {
+        "branch": "follow-action",
+        "commands": [
+          {
+            "name": "follow-action get",
+            "description": "Get follow actions for a clip",
+            "arguments": [
+              {
+                "name": "track",
+                "required": true,
+                "description": "Track number (1-based: 1, 2, \u2026 or first, second, \u2026)"
+              },
+              {
+                "name": "scene",
+                "required": true,
+                "description": "Scene number (1-based: 1, 2, \u2026 or first, second, \u2026)"
+              }
+            ],
+            "options": []
+          },
+          {
+            "name": "follow-action set",
+            "description": "Set follow actions for a clip",
+            "arguments": [
+              {
+                "name": "track",
+                "required": true,
+                "description": "Track number (1-based: 1, 2, \u2026 or first, second, \u2026)"
+              },
+              {
+                "name": "scene",
+                "required": true,
+                "description": "Scene number (1-based: 1, 2, \u2026 or first, second, \u2026)"
+              }
+            ],
+            "options": [
+              {
+                "name": "--json-data",
+                "valueName": "JSON",
+                "default": null,
+                "description": "FollowActionConfig as JSON"
+              },
+              {
+                "name": "--file",
+                "valueName": "PATH",
+                "default": null,
+                "description": "Path to JSON file containing FollowActionConfig"
+              }
+            ]
+          }
+        ]
+      },
+      "mcp": {
+        "tools": [
+          {
+            "name": "get_follow_actions",
+            "description": "Get the follow-action configuration for a clip.",
+            "parameters": [
+              {
+                "name": "track_id",
+                "type": "String",
+                "required": true,
+                "description": "Track number (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
+              },
+              {
+                "name": "scene_index",
+                "type": "String",
+                "required": true,
+                "description": "Scene number (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
+              }
+            ]
+          },
+          {
+            "name": "set_follow_actions",
+            "description": "Set the follow-action configuration for a clip.",
+            "parameters": [
+              {
+                "name": "track_id",
+                "type": "String",
+                "required": true,
+                "description": "Track number (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
+              },
+              {
+                "name": "scene_index",
+                "type": "String",
+                "required": true,
+                "description": "Scene number (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
+              },
+              {
+                "name": "config",
+                "type": "FollowActionConfig",
+                "required": true,
+                "description": "Follow-action configuration."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "automation",
+      "title": "Automation",
+      "description": "Read, write, and manage automation envelopes.",
+      "cli": {
+        "branch": "automation",
+        "commands": [
+          {
+            "name": "automation params",
+            "description": "List automatable parameters for a device",
+            "arguments": [
+              {
+                "name": "track",
+                "required": true,
+                "description": "Track number (1-based: 1, 2, \u2026 or first, second, \u2026)"
+              },
+              {
+                "name": "device",
+                "required": true,
+                "description": "Device ID, 1-based position number, or name substring"
+              }
+            ],
+            "options": []
+          },
+          {
+            "name": "automation slots",
+            "description": "Enumerate symbolic automation slot vocabulary for a PartType",
+            "arguments": [
+              {
+                "name": "part-type",
+                "required": true,
+                "description": "PartType enum value: Pad | Lead | Bass | Arp | Bd | Sd | Hh | Other"
+              }
+            ],
+            "options": []
+          },
+          {
+            "name": "automation get",
+            "description": "Get automation envelope",
+            "arguments": [
+              {
+                "name": "track",
+                "required": true,
+                "description": "Track number (1-based: 1, 2, \u2026 or first, second, \u2026)"
+              },
+              {
+                "name": "scene",
+                "required": true,
+                "description": "Scene number (1-based: 1, 2, \u2026 or first, second, \u2026)"
+              },
+              {
+                "name": "device",
+                "required": true,
+                "description": "Device ID, 1-based position number, or name substring"
+              },
+              {
+                "name": "param",
+                "required": true,
+                "description": "Parameter index from \u0060vibrai automation params\u0060, or the param name (e.g., \u0022Cutoff\u0022)"
+              }
+            ],
+            "options": []
+          },
+          {
+            "name": "automation write",
+            "description": "Write automation points",
+            "arguments": [
+              {
+                "name": "track",
+                "required": true,
+                "description": "Track number (1-based: 1, 2, \u2026 or first, second, \u2026)"
+              },
+              {
+                "name": "scene",
+                "required": true,
+                "description": "Scene number (1-based: 1, 2, \u2026 or first, second, \u2026)"
+              },
+              {
+                "name": "device",
+                "required": true,
+                "description": "Device ID, 1-based position number, or name substring"
+              },
+              {
+                "name": "param",
+                "required": true,
+                "description": "Parameter index from \u0060vibrai automation params\u0060, or the param name (e.g., \u0022Cutoff\u0022)"
+              }
+            ],
+            "options": [
+              {
+                "name": "--json-data",
+                "valueName": "JSON",
+                "default": null,
+                "description": "Automation points as JSON array (free-form). Mutually exclusive with --curve."
+              },
+              {
+                "name": "--file",
+                "valueName": "PATH",
+                "default": null,
+                "description": "Path to JSON file containing automation points array. Mutually exclusive with --curve."
+              },
+              {
+                "name": "--curve",
+                "valueName": "SHAPE",
+                "default": null,
+                "description": "Curve shape: LinearUp|LinearDown|ExpUp|ExpDown|Sine|Triangle|SawUp|SawDown|Hold|Wander. Mutually exclusive with --json-data/--file."
+              },
+              {
+                "name": "--length",
+                "valueName": "BEATS",
+                "default": null,
+                "description": "Curve length in beats. Required when --curve is given."
+              },
+              {
+                "name": "--from",
+                "valueName": "0-1",
+                "default": null,
+                "description": "Curve start value (for Linear/Exp/Sine/Triangle/Saw/Hold)."
+              },
+              {
+                "name": "--to",
+                "valueName": "0-1",
+                "default": null,
+                "description": "Curve end value (for Linear/Exp/Sine/Triangle/Saw)."
+              },
+              {
+                "name": "--subdivisions",
+                "valueName": "N",
+                "default": null,
+                "description": "Number of teeth (for SawUp/SawDown only). Default 4."
+              },
+              {
+                "name": "--center",
+                "valueName": "0-1",
+                "default": null,
+                "description": "Wander center value."
+              },
+              {
+                "name": "--range",
+                "valueName": "0-1",
+                "default": null,
+                "description": "Wander deviation amplitude."
+              },
+              {
+                "name": "--smoothness",
+                "valueName": "0-1",
+                "default": null,
+                "description": "Wander knot density (0=jittery, 1=lazy drift)."
+              },
+              {
+                "name": "--seed",
+                "valueName": "INT",
+                "default": null,
+                "description": "Wander RNG seed. Auto-generated if omitted."
+              }
+            ]
+          },
+          {
+            "name": "automation clear",
+            "description": "Clear a single automation envelope on a session-view clip",
+            "arguments": [
+              {
+                "name": "track",
+                "required": true,
+                "description": "Track number (1-based: 1, 2, \u2026 or first, second, \u2026)"
+              },
+              {
+                "name": "scene",
+                "required": true,
+                "description": "Scene number (1-based: 1, 2, \u2026 or first, second, \u2026)"
+              },
+              {
+                "name": "device",
+                "required": true,
+                "description": "Device ID, 1-based position number, or name substring"
+              },
+              {
+                "name": "param",
+                "required": true,
+                "description": "Parameter index from \u0060vibrai automation params\u0060, or the param name (e.g., \u0022Cutoff\u0022)"
+              }
+            ],
+            "options": []
+          },
+          {
+            "name": "automation clear-all",
+            "description": "Clear all automation envelopes on a session-view clip",
+            "arguments": [
+              {
+                "name": "track",
+                "required": true,
+                "description": "Track number (1-based: 1, 2, \u2026 or first, second, \u2026)"
+              },
+              {
+                "name": "scene",
+                "required": true,
+                "description": "Scene number (1-based: 1, 2, \u2026 or first, second, \u2026)"
+              }
+            ],
+            "options": []
+          },
+          {
+            "name": "automation apply",
+            "description": "Apply an automation slot to project sections (mutates Template.Automation)",
+            "arguments": [],
+            "options": [
+              {
+                "name": "--part",
+                "valueName": "ID",
+                "default": null,
+                "description": "Part id from project.Parts[].Id"
+              },
+              {
+                "name": "--slot",
+                "valueName": "KEY",
+                "default": null,
+                "description": "Symbolic slot key (e.g. \u0022cutoff\u0022, \u0022resonance\u0022, \u0022macro_3\u0022, \u0022synth_cutoff\u0022). Use \u0060vibrai automation slots \u003Cpart-type\u003E\u0060 to list supported keys."
+              },
+              {
+                "name": "--curve",
+                "valueName": "CURVE",
+                "default": "LinearUp",
+                "description": "LinearUp | LinearDown | ExpUp | ExpDown"
+              },
+              {
+                "name": "--sections",
+                "valueName": "CSV|ALL",
+                "default": null,
+                "description": "Comma-separated section ids, or \u0027all\u0027 for every section"
+              },
+              {
+                "name": "--project",
+                "valueName": "PATH",
+                "default": null,
+                "description": "Path to .vibrai file (default: Untitled.vibrai in CWD)"
+              },
+              {
+                "name": "--in-memory",
+                "valueName": null,
+                "default": null,
+                "description": "Mutate but do not save (preview mode)"
+              },
+              {
+                "name": "--from",
+                "valueName": "0-1",
+                "default": null,
+                "description": "Curve start value (overrides the default 0 or 1 for the chosen shape)."
+              },
+              {
+                "name": "--to",
+                "valueName": "0-1",
+                "default": null,
+                "description": "Curve end value."
+              },
+              {
+                "name": "--subdivisions",
+                "valueName": "N",
+                "default": null,
+                "description": "Saw teeth (default 4)."
+              },
+              {
+                "name": "--center",
+                "valueName": "0-1",
+                "default": null,
+                "description": "Wander center value."
+              },
+              {
+                "name": "--range",
+                "valueName": "0-1",
+                "default": null,
+                "description": "Wander deviation amplitude."
+              },
+              {
+                "name": "--smoothness",
+                "valueName": "0-1",
+                "default": null,
+                "description": "Wander knot density."
+              },
+              {
+                "name": "--seed",
+                "valueName": "INT",
+                "default": null,
+                "description": "Wander RNG seed (auto if omitted)."
+              },
+              {
+                "name": "--apply-to-live",
+                "valueName": null,
+                "default": null,
+                "description": "Also push the applied slots into the running Live set via the safe bouncer. Requires an existing populated arrangement; slots without a clip at the section are skipped."
+              }
+            ]
+          },
+          {
+            "name": "automation get-arrangement-envelopes",
+            "description": "Read all envelopes on an arrangement-view clip (clip-relative beats)",
+            "arguments": [
+              {
+                "name": "track",
+                "required": true,
+                "description": "Track number (1-based: 1, 2, \u2026 or first, second, \u2026)"
+              },
+              {
+                "name": "clip",
+                "required": true,
+                "description": "Arrangement-clip number on the track (1-based: 1, 2, \u2026 or first, second, \u2026; from \u0060vibrai arrangement get-clips\u0060)"
+              }
+            ],
+            "options": []
+          },
+          {
+            "name": "automation bounce",
+            "description": "Bounce one or more automation envelopes into the arrangement view",
+            "arguments": [
+              {
+                "name": "track",
+                "required": true,
+                "description": "Track number (1-based, or \u0027first\u0027, \u0027second\u0027, \u2026)"
+              },
+              {
+                "name": "start-beat",
+                "required": true,
+                "description": "Start position (e.g. \u00270\u0027 or \u00272.3\u0027 for bar 2 beat 3)"
+              },
+              {
+                "name": "length-beats",
+                "required": true,
+                "description": "Bounce window length in beats"
+              }
+            ],
+            "options": [
+              {
+                "name": "--envelopes",
+                "valueName": "PATH",
+                "default": null,
+                "description": "Path to a JSON file containing an array of AutomationEnvelopeSpec (see MCP tool description for shape)"
+              }
+            ]
+          },
+          {
+            "name": "automation ledger",
+            "description": "Read the in-process ledger of arrangement envelopes committed by bounce/place.",
+            "arguments": [],
+            "options": [
+              {
+                "name": "--track",
+                "valueName": "T",
+                "default": null,
+                "description": "Optional track number (1-based). Omit for all tracks."
+              }
+            ]
+          }
+        ]
+      },
+      "mcp": {
+        "tools": [
+          {
+            "name": "list_automation_params",
+            "description": "List the automatable parameters of a device on a track.",
+            "parameters": [
+              {
+                "name": "track_id",
+                "type": "String",
+                "required": true,
+                "description": "Track number (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
+              },
+              {
+                "name": "device_id",
+                "type": "String",
+                "required": true,
+                "description": "Device ID or 1-based position number or name substring"
+              }
+            ]
+          },
+          {
+            "name": "get_automation",
+            "description": "Read the automation envelope for a parameter on a session-view clip.",
+            "parameters": [
+              {
+                "name": "track_id",
+                "type": "String",
+                "required": true,
+                "description": "Track number (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
+              },
+              {
+                "name": "scene_index",
+                "type": "String",
+                "required": true,
+                "description": "Scene number of the clip carrying the envelope (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
+              },
+              {
+                "name": "device_id",
+                "type": "String",
+                "required": true,
+                "description": "Device ID or 1-based position number or name substring"
+              },
+              {
+                "name": "param_id",
+                "type": "String",
+                "required": true,
+                "description": "Parameter index (from list_automation_params .param_id column) OR the parameter\u0027s display name (.param_name column)"
+              }
+            ]
+          },
+          {
+            "name": "write_automation",
+            "description": "Write an automation envelope onto a session-view clip (replaces existing points). Provide EITHER points (free-form) OR curveSpec (compact shape \u2014 Sine, Wander, etc \u2014 expanded server-side). Returns the readback so you can verify what landed.",
+            "parameters": [
+              {
+                "name": "track_id",
+                "type": "String",
+                "required": true,
+                "description": "Track number (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
+              },
+              {
+                "name": "scene_index",
+                "type": "String",
+                "required": true,
+                "description": "Scene number of the clip that should carry the envelope (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
+              },
+              {
+                "name": "device_id",
+                "type": "String",
+                "required": true,
+                "description": "Device ID or 1-based position number or name substring"
+              },
+              {
+                "name": "param_id",
+                "type": "String",
+                "required": true,
+                "description": "Parameter index (from list_automation_params .param_id column) OR the parameter\u0027s display name (.param_name column)"
+              },
+              {
+                "name": "points",
+                "type": "AutomationPoint[]",
+                "required": true,
+                "description": "Automation points (time \u002B value). Mutually exclusive with curveSpec."
+              },
+              {
+                "name": "curve_spec",
+                "type": "CurveSpec",
+                "required": true,
+                "description": "Compact curve specification. Mutually exclusive with points. Shape can be LinearUp/LinearDown/ExpUp/ExpDown/Sine/Triangle/SawUp/SawDown/Hold/Wander."
+              }
+            ]
+          },
+          {
+            "name": "clear_automation",
+            "description": "Remove a single automation envelope (one (device, param) pair) from a session-view clip.",
+            "parameters": [
+              {
+                "name": "track_id",
+                "type": "String",
+                "required": true,
+                "description": "Track number (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
+              },
+              {
+                "name": "scene_index",
+                "type": "String",
+                "required": true,
+                "description": "Scene number of the clip (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
+              },
+              {
+                "name": "device_id",
+                "type": "String",
+                "required": true,
+                "description": "Device ID or 1-based position number or name substring"
+              },
+              {
+                "name": "param_id",
+                "type": "String",
+                "required": true,
+                "description": "Parameter index (from list_automation_params .param_id column) OR the parameter\u0027s display name (.param_name column)"
+              }
+            ]
+          },
+          {
+            "name": "clear_all_automation",
+            "description": "Remove every automation envelope on a session-view clip.",
+            "parameters": [
+              {
+                "name": "track_id",
+                "type": "String",
+                "required": true,
+                "description": "Track number (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
+              },
+              {
+                "name": "scene_index",
+                "type": "String",
+                "required": true,
+                "description": "Scene number of the clip (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
+              }
+            ]
+          },
+          {
+            "name": "get_arrangement_clip_envelopes",
+            "description": "Read the clip-level envelopes attached to an arrangement clip. KNOWN ISSUE: returns empty for clips that arrived via duplicate-to-arrangement (which is how bounce_arrangement_automation and place_arrangement_clip both write). For verification of writes, use get_arrangement_envelopes_ledger instead.",
+            "parameters": [
+              {
+                "name": "track_id",
+                "type": "String",
+                "required": true,
+                "description": "Track number (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
+              },
+              {
+                "name": "clip_index",
+                "type": "String",
+                "required": true,
+                "description": "Arrangement-clip number on the track (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026; from get_arrangement_clips)"
+              }
+            ]
+          },
+          {
+            "name": "apply_automation_template",
+            "description": "Author a composition-level automation slot on the .vibrai project\u0027s arrangement template. The slot is a symbolic key resolved through AutomationTargetMap (see list_automation_slots for the vocabulary per PartType). Slots fall into two families: bare-synth slots (synth_cutoff, synth_resonance, synth_volume) target a parameter on device 0 by LOM name; rack-macro slots (cutoff, resonance, macro_1..macro_16) target a macro on the first Instrument Rack on the chain, resolved at bounce-time. The project is loaded, mutated, validated, and saved. Idempotent on (sectionId, partId, slot). Use \u0022all\u0022 in sections to apply to every section. Set apply_to_live: true to also push the just-applied slots into the running Live set via the safe bouncer (Spec A\u0027s atomic-rollback contract applies per slot). The .vibrai file is updated first, then each applied (section, part, slot) tuple is resolved to a bouncer-shaped envelope and bounced onto the existing arrangement clip at the section\u0027s position. Slots whose section has no arrangement clip are skipped with status SkippedNoArrangementClip \u2014 Spec B is an iteration tool, not bootstrapping. Verify what landed via get_arrangement_envelopes_ledger. Default false preserves the file-only flow that callers depend on today.",
+            "parameters": [
+              {
+                "name": "path",
+                "type": "String",
+                "required": true,
+                "description": "Absolute filesystem path to the .vibrai file."
+              },
+              {
+                "name": "part_id",
+                "type": "String",
+                "required": true,
+                "description": "Canonical part id from project.Parts[].Id"
+              },
+              {
+                "name": "slot",
+                "type": "String",
+                "required": true,
+                "description": "Symbolic slot key (e.g. \u0022cutoff\u0022, \u0022resonance\u0022, \u0022macro_3\u0022, \u0022synth_cutoff\u0022). Use list_automation_slots to enumerate keys for a PartType."
+              },
+              {
+                "name": "curve",
+                "type": "AutomationCurve",
+                "required": true,
+                "description": "AutomationCurve enum: LinearUp | LinearDown | ExpUp | ExpDown"
+              },
+              {
+                "name": "sections",
+                "type": "String[]",
+                "required": true,
+                "description": "Section ids to apply to, or the single literal \u0022all\u0022 to apply to every section in project.Sections"
+              },
+              {
+                "name": "apply_to_live",
+                "type": "Boolean",
+                "required": true,
+                "description": "If true, also push the applied slots into the running Live set via the safe bouncer. Default false \u2014 file-only authoring. Requires an existing populated arrangement; slots whose section has no arrangement clip are skipped with a status. See recipe \u0060apply_automation_template_live\u0060 for the iteration flow."
+              }
+            ]
+          },
+          {
+            "name": "list_automation_slots",
+            "description": "Enumerate the symbolic automation slots supported for a PartType. Returns a list of {slot_key, target_kind, target_details, description}. target_kind is \u0022device_param\u0022 or \u0022macro\u0022. Macro slots resolve at bounce-time; device_param slots resolve to a fixed (device_index, param_name) pair. Returns an empty list for PartTypes with no entries (e.g. Bd, Sd, Hh).",
+            "parameters": [
+              {
+                "name": "part_type",
+                "type": "PartType",
+                "required": true,
+                "description": "PartType enum value: Pad, Lead, Bass, Arp, Bd, Sd, Hh, Other"
+              }
+            ]
+          },
+          {
+            "name": "bounce_arrangement_automation",
+            "description": "ADVANCED PRIMITIVE \u2014 for routine \u0027write automation into the arrangement,\u0027 prefer place_arrangement_clip with carry_envelopes:true. Bounces one or more envelopes into Live\u0027s arrangement view by snapshotting overlapping clips, deleting them, writing a merged scratch clip, then duplicating it back into place. The operation is atomic: on any failure the original clips are restored to their pre-call state. On rollback failure the call throws BounceRollbackPartialException with per-clip restore status. Note: success rewrites every overlapping clip, losing clip name/color metadata in the process. See recipe \u0060write_arrangement_automation\u0060 for the canonical safe path.",
+            "parameters": [
+              {
+                "name": "track_id",
+                "type": "String",
+                "required": true,
+                "description": "Track number (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
+              },
+              {
+                "name": "start_beat",
+                "type": "String",
+                "required": true,
+                "description": "Start position in arrangement: bar.beat notation (e.g. \u00272.3\u0027 = bar 2, beat 3) or raw beats (e.g. \u00278\u0027 or \u00278.0\u0027)"
+              },
+              {
+                "name": "length_beats",
+                "type": "String",
+                "required": true,
+                "description": "Length of the bounce window in beats"
+              },
+              {
+                "name": "envelopes",
+                "type": "AutomationEnvelopeSpec[]",
+                "required": true,
+                "description": "Array of envelope specs. Each entry has a discriminated Target (kind=\u0022device_param\u0022 or \u0022macro\u0022) and EITHER points or curveSpec."
+              }
+            ]
+          },
+          {
+            "name": "get_arrangement_envelopes_ledger",
+            "description": "Read back the in-process ledger of envelopes committed to Live\u0027s arrangement view by bounce_arrangement_automation or place_arrangement_clip (carry_envelopes:true). Use this for programmatic verification \u2014 the LOM read-back path (get_arrangement_clip_envelopes) returns empty for clips that arrived via duplicate-to-arrangement. The ledger is in-process, bounded LRU (256 per track), and resets on MCP server restart. See recipe \u0060verify_arrangement_writes\u0060 for the full verification flow.",
+            "parameters": [
+              {
+                "name": "track_id",
+                "type": "Nullable\u00601",
+                "required": true,
+                "description": "Optional track number (1-based). Omit for all tracks."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "project",
+      "title": "Project",
+      "description": "Initialize, load, save, and inspect Vibrai project files.",
+      "cli": {
+        "branch": "project",
+        "commands": [
+          {
+            "name": "project init",
+            "description": "Initialize a new .vibrai project file",
+            "arguments": [],
+            "options": [
+              {
+                "name": "--name",
+                "valueName": "NAME",
+                "default": null,
+                "description": "Project name (default: basename of --project, or \u0022Untitled\u0022)"
+              },
+              {
+                "name": "--project",
+                "valueName": "PATH",
+                "default": null,
+                "description": "Path to .vibrai file (default: Untitled.vibrai in CWD; auto-uniquified to Untitled-2.vibrai, etc. if it already exists)"
+              },
+              {
+                "name": "--demo",
+                "valueName": null,
+                "default": null,
+                "description": "Write opinionated demo content (3 sections, 2 parts, exercises variation \u002B scale overrides \u002B naming) instead of the boilerplate"
+              },
+              {
+                "name": "--genre",
+                "valueName": "NAME",
+                "default": null,
+                "description": "Seed from a genre library by id or display name (run \u0027vibrai genre list\u0027)"
+              },
+              {
+                "name": "--preset",
+                "valueName": "ID",
+                "default": null,
+                "description": "Preset id within --genre (default: first preset alphabetically)"
+              }
+            ]
+          },
+          {
+            "name": "project load",
+            "description": "Load and display a project file",
+            "arguments": [],
+            "options": [
+              {
+                "name": "--project",
+                "valueName": "PATH",
+                "default": null,
+                "description": "Path to .vibrai file (default: Untitled.vibrai in CWD)"
+              }
+            ]
+          },
+          {
+            "name": "project save",
+            "description": "Save the current project state",
+            "arguments": [],
+            "options": [
+              {
+                "name": "--project",
+                "valueName": "PATH",
+                "default": null,
+                "description": "Path to .vibrai file (default: Untitled.vibrai in CWD)"
+              }
+            ]
+          },
+          {
+            "name": "project info",
+            "description": "Show project file info",
+            "arguments": [],
+            "options": [
+              {
+                "name": "--project",
+                "valueName": "PATH",
+                "default": null,
+                "description": "Path to .vibrai file (default: Untitled.vibrai in CWD)"
+              }
+            ]
+          }
+        ]
+      },
+      "mcp": {
+        "tools": [
+          {
+            "name": "init_project",
+            "description": "Create a new .vibrai YAML file at the given absolute path. Without \u0060demo\u0060, writes a minimal 2-section / 1-part boilerplate. With \u0060demo: true\u0060, writes an opinionated 3-section / 2-part starter that exercises variation, per-section scale overrides, naming, and both generator types. Track IDs are probed from the bridge (first N MIDI tracks); if the bridge is unreachable, falls back to track 1 (and 2 for demo).",
+            "parameters": [
+              {
+                "name": "path",
+                "type": "String",
+                "required": true,
+                "description": "Absolute filesystem path for the new .vibrai file."
+              },
+              {
+                "name": "name",
+                "type": "String",
+                "required": true,
+                "description": "Project display name. Defaults to the basename of \u0060path\u0060 (e.g. \u0022my-song\u0022 for \u0060\u2026/my-song.vibrai\u0060)."
+              },
+              {
+                "name": "demo",
+                "type": "Boolean",
+                "required": true,
+                "description": "If true, write the demo content instead of the boilerplate."
+              }
+            ]
+          },
+          {
+            "name": "load_project",
+            "description": "Load an .vibrai YAML file from the given absolute path. Returns the VibraiProject. Returns null if the file is missing.",
+            "parameters": [
+              {
+                "name": "path",
+                "type": "String",
+                "required": true,
+                "description": "Absolute filesystem path to the .vibrai file."
+              }
+            ]
+          },
+          {
+            "name": "save_project",
+            "description": "Save an VibraiProject (same shape as load_project\u0027s return value) to the given absolute path, overwriting any existing file. Validates the project first; rejects invalid input (e.g. section modifier \u003C= 0) without writing the file.",
+            "parameters": [
+              {
+                "name": "path",
+                "type": "String",
+                "required": true,
+                "description": "Absolute filesystem path to write to."
+              }
+            ]
+          },
+          {
+            "name": "project_info",
+            "description": "Return a summary of the project (counts of sections, parts, templates) at the given path.",
+            "parameters": [
+              {
+                "name": "path",
+                "type": "String",
+                "required": true,
+                "description": "Absolute filesystem path to the .vibrai file."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "recipe",
+      "title": "Recipes",
+      "description": "List and inspect built-in automation recipes.",
+      "cli": {
+        "branch": "recipe",
+        "commands": [
+          {
+            "name": "recipe list",
+            "description": "List all canonical recipes for common automation tasks",
+            "arguments": [],
+            "options": []
+          },
+          {
+            "name": "recipe show",
+            "description": "Print the body of a named recipe",
+            "arguments": [
+              {
+                "name": "name",
+                "required": true,
+                "description": "Recipe name (e.g., write_arrangement_automation). Use \u0027vibrai recipe list\u0027 to enumerate."
+              }
+            ],
+            "options": []
+          }
+        ]
+      },
+      "mcp": {
+        "tools": []
+      }
+    },
+    {
+      "id": "scale",
+      "title": "Scale",
+      "description": "Get and set the active scale for the Live session.",
+      "cli": {
+        "branch": "scale",
+        "commands": [
+          {
+            "name": "scale get",
+            "description": "Get the active scale",
+            "arguments": [],
+            "options": []
+          },
+          {
+            "name": "scale set",
+            "description": "Set the active scale (song-level; new clips inherit it)",
+            "arguments": [
+              {
+                "name": "root-note",
+                "required": true,
+                "description": "Root note: note name (C, C#, D, Db, \u2026, B) or pitch class 0\u201311"
+              },
+              {
+                "name": "scale-name",
+                "required": true,
+                "description": "Major, Ionian, Dorian, Phrygian, Lydian, Mixolydian, Minor, Aeolian, Locrian"
+              }
+            ],
+            "options": []
+          }
+        ]
+      },
+      "mcp": {
+        "tools": [
+          {
+            "name": "get_active_scale",
+            "description": "Get the active scale (root \u002B scale name) from the project, if set.",
+            "parameters": []
+          },
+          {
+            "name": "set_active_scale",
+            "description": "Set the song-level scale and enable Scale Mode. Newly-created clips inherit these settings.",
+            "parameters": [
+              {
+                "name": "root_note",
+                "type": "String",
+                "required": true,
+                "description": "Pitch class: note name (C, C#, D, Db, \u2026, B) or integer 0\u201311"
+              },
+              {
+                "name": "scale_name",
+                "type": "String",
+                "required": true,
+                "description": "Scale name: Major, Ionian, Dorian, Phrygian, Lydian, Mixolydian, Minor, Aeolian, Locrian"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "scene",
+      "title": "Scenes",
+      "description": "Create, rename, delete, and list session scenes.",
+      "cli": {
+        "branch": "scene",
+        "commands": [
+          {
+            "name": "scene list",
+            "description": "List all scenes",
+            "arguments": [],
+            "options": []
+          },
+          {
+            "name": "scene create",
+            "description": "Create a new scene",
+            "arguments": [],
+            "options": [
+              {
+                "name": "--at",
+                "valueName": "SCENE",
+                "default": null,
+                "description": "Optional scene number to insert at (1-based: 1, 2, \u2026 or first, second, \u2026); omit to append."
+              }
+            ]
+          },
+          {
+            "name": "scene delete",
+            "description": "Delete a scene by its index",
+            "arguments": [
+              {
+                "name": "scene",
+                "required": true,
+                "description": "Scene number to delete (1-based: 1, 2, \u2026 or first, second, \u2026)"
+              }
+            ],
+            "options": []
+          },
+          {
+            "name": "scene rename",
+            "description": "Rename a scene by its index",
+            "arguments": [
+              {
+                "name": "scene",
+                "required": true,
+                "description": "Scene number to rename (1-based: 1, 2, \u2026 or first, second, \u2026)"
+              },
+              {
+                "name": "name",
+                "required": true,
+                "description": "New scene name"
+              }
+            ],
+            "options": []
+          }
+        ]
+      },
+      "mcp": {
+        "tools": [
+          {
+            "name": "list_scenes",
+            "description": "List all scenes in the current Live set. Returned in order (1-based). Each entry has an index and a name (empty string if unnamed).",
+            "parameters": []
+          },
+          {
+            "name": "set_scene_name",
+            "description": "Rename the scene at the given index.",
+            "parameters": [
+              {
+                "name": "scene_index",
+                "type": "String",
+                "required": true,
+                "description": "Scene number (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
+              },
+              {
+                "name": "name",
+                "type": "String",
+                "required": true,
+                "description": "New scene name"
+              }
+            ]
+          },
+          {
+            "name": "create_scene",
+            "description": "Create a new scene. Omit insert_index to append at the end.",
+            "parameters": [
+              {
+                "name": "insert_index",
+                "type": "String",
+                "required": true,
+                "description": "Optional scene number to insert at (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026); omit to append at the end."
+              }
+            ]
+          },
+          {
+            "name": "delete_scene",
+            "description": "Delete a scene by its index. Idempotent: out-of-range and last-remaining-scene are no-ops.",
+            "parameters": [
+              {
+                "name": "scene_index",
+                "type": "String",
+                "required": true,
+                "description": "Scene number to delete (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "arrangement",
+      "title": "Arrangement",
+      "description": "Place, delete, and clear arrangement-view clips.",
+      "cli": {
+        "branch": "arrangement",
+        "commands": [
+          {
+            "name": "arrangement get-clips",
+            "description": "List arrangement clips for a track",
+            "arguments": [
+              {
+                "name": "track",
+                "required": true,
+                "description": "Track number (1-based: 1, 2, \u2026 or first, second, \u2026)"
+              }
+            ],
+            "options": []
+          },
+          {
+            "name": "arrangement place",
+            "description": "Place a session-view clip into the arrangement",
+            "arguments": [
+              {
+                "name": "track",
+                "required": true,
+                "description": "Track number (1-based: 1, 2, \u2026 or first, second, \u2026)"
+              },
+              {
+                "name": "scene",
+                "required": true,
+                "description": "Session-view scene number (1-based: 1, 2, \u2026 or first, second, \u2026)"
+              },
+              {
+                "name": "start",
+                "required": true,
+                "description": "Arrangement start: bar.beat notation (e.g. 2.1 = bar 2, beat 1) or raw beats"
+              }
+            ],
+            "options": [
+              {
+                "name": "--no-carry-envelopes",
+                "valueName": null,
+                "default": null,
+                "description": "Skip session-clip envelope carry (default: envelopes carry as track-lane automation)"
+              },
+              {
+                "name": "--force",
+                "valueName": null,
+                "default": null,
+                "description": "Allow envelope carry even when existing destination-track automation would be clobbered"
+              }
+            ]
+          },
+          {
+            "name": "arrangement delete",
+            "description": "Delete a single arrangement clip at (track, start-beat)",
+            "arguments": [
+              {
+                "name": "track",
+                "required": true,
+                "description": "Track number (1-based: 1, 2, \u2026 or first, second, \u2026)"
+              },
+              {
+                "name": "start",
+                "required": true,
+                "description": "Arrangement start: bar.beat notation (e.g. 5.1 = bar 5, beat 1) or raw beats"
+              }
+            ],
+            "options": []
+          },
+          {
+            "name": "arrangement clear-scoped",
+            "description": "Clear arrangement clips for specific tracks",
+            "arguments": [
+              {
+                "name": "tracks",
+                "required": true,
+                "description": "One or more track numbers to clear (1-based, space-separated)"
+              }
+            ],
+            "options": []
+          },
+          {
+            "name": "arrangement clear-all",
+            "description": "Clear all arrangement clips",
+            "arguments": [],
+            "options": []
+          }
+        ]
+      },
+      "mcp": {
+        "tools": [
+          {
+            "name": "get_arrangement_clips",
+            "description": "List the arrangement-view clips for a track.",
+            "parameters": [
+              {
+                "name": "track_id",
+                "type": "String",
+                "required": true,
+                "description": "Track number (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
+              }
+            ]
+          },
+          {
+            "name": "place_arrangement_clip",
+            "description": "Copy the session-view clip at (track_id, source_scene_index) into the arrangement on the same track, starting at the given beat. By default, session-clip envelopes are also carried into the arrangement as track-lane automation; pass carry_envelopes: false to disable. Refuses with ARRANGEMENT_OVERLAP if existing destination-track automation would be clobbered; pass force: true to override.",
+            "parameters": [
+              {
+                "name": "track_id",
+                "type": "String",
+                "required": true,
+                "description": "Track number (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
+              },
+              {
+                "name": "source_scene_index",
+                "type": "String",
+                "required": true,
+                "description": "Session-view scene number (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
+              },
+              {
+                "name": "start_beat",
+                "type": "String",
+                "required": true,
+                "description": "Start position in arrangement: bar.beat notation (e.g. \u00272.3\u0027 = bar 2, beat 3) or raw beats (e.g. \u00278\u0027 or \u00278.0\u0027)"
+              },
+              {
+                "name": "carry_envelopes",
+                "type": "Boolean",
+                "required": false,
+                "description": "Carry every session-clip envelope into the arrangement via a single transactional bounce. Returns carried_envelopes:N only after all N envelopes are committed; on any failure the placed clip is removed and the arrangement is left unchanged. Verify writes via get_arrangement_envelopes_ledger \u2014 the LOM read-back path returns empty for arrangement clips written this way. See recipe \u0060write_arrangement_automation\u0060 and recipe \u0060verify_arrangement_writes\u0060."
+              },
+              {
+                "name": "force",
+                "type": "Boolean",
+                "required": false,
+                "description": "Allow envelope carry even when existing track-lane automation would be clobbered (default: false)."
+              }
+            ]
+          },
+          {
+            "name": "delete_arrangement_clip",
+            "description": "Delete a single arrangement-view clip on a track at the given start beat (surgical \u2014 does not affect other clips on the track or track-level automation envelopes).",
+            "parameters": [
+              {
+                "name": "track_id",
+                "type": "String",
+                "required": true,
+                "description": "Track number (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
+              },
+              {
+                "name": "start_beat",
+                "type": "String",
+                "required": true,
+                "description": "Arrangement start: bar.beat notation (e.g. \u00272.3\u0027 = bar 2, beat 3) or raw beats (e.g. \u002716\u0027 or \u002716.0\u0027)"
+              }
+            ]
+          },
+          {
+            "name": "clear_arrangement_for_tracks",
+            "description": "Clear all arrangement-view clips for the specified tracks.",
+            "parameters": [
+              {
+                "name": "track_ids",
+                "type": "String[]",
+                "required": true,
+                "description": "Track numbers (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
+              }
+            ]
+          },
+          {
+            "name": "clear_arrangement_all",
+            "description": "Clear all arrangement-view clips across every track.",
+            "parameters": []
+          }
+        ]
+      }
+    },
+    {
+      "id": "genre",
+      "title": "Genre",
+      "description": "List, apply, and import genre libraries and presets.",
+      "cli": {
+        "branch": "genre",
+        "commands": [
+          {
+            "name": "genre list",
+            "description": "List installed genre libraries",
+            "arguments": [],
+            "options": []
+          },
+          {
+            "name": "genre presets",
+            "description": "List presets in a genre library",
+            "arguments": [
+              {
+                "name": "genre",
+                "required": true,
+                "description": "Genre id or display name (run \u0027vibrai genre list\u0027)"
+              }
+            ],
+            "options": []
+          },
+          {
+            "name": "genre import-songsketch",
+            "description": "Convert a Song Sketch lib JSON file to a .vibraigenre",
+            "arguments": [
+              {
+                "name": "json",
+                "required": true,
+                "description": "Path to a Song Sketch lib JSON file"
+              }
+            ],
+            "options": [
+              {
+                "name": "--out",
+                "valueName": "DIR",
+                "default": null,
+                "description": "Output directory (defaults to ~/.vibrai/genres)"
+              }
+            ]
+          },
+          {
+            "name": "genre apply",
+            "description": "Apply a genre\u002Bpreset to a .vibrai project",
+            "arguments": [
+              {
+                "name": "genre",
+                "required": false,
+                "description": "Genre id or display name (run \u0027vibrai genre list\u0027)."
+              },
+              {
+                "name": "preset",
+                "required": false,
+                "description": "Preset id within the genre (from \u0060vibrai genre presets \u003Cgenre\u003E\u0060)."
+              },
+              {
+                "name": "project-path",
+                "required": false,
+                "description": "Path to .vibrai (default: ./project.vibrai)"
+              }
+            ],
+            "options": [
+              {
+                "name": "--genre",
+                "valueName": "NAME",
+                "default": null,
+                "description": "(deprecated) Use positional \u003Cgenre\u003E instead. Will be removed in the next minor release."
+              },
+              {
+                "name": "--preset",
+                "valueName": "ID",
+                "default": null,
+                "description": "(deprecated) Use positional \u003Cpreset\u003E instead. Will be removed in the next minor release."
+              },
+              {
+                "name": "--yes",
+                "valueName": null,
+                "default": null,
+                "description": "Confirm destructive overwrite of sections / parts / templates / arrangement / generation"
+              }
+            ]
+          }
+        ]
+      },
+      "mcp": {
+        "tools": [
+          {
+            "name": "list_genres",
+            "description": "List installed genre libraries. Returns each genre\u0027s name (slug; other tools accept either the slug or the display name), display name, sub-genres, default BPM, and preset count. Embedded resources ship with Vibrai; users can override or add entries via ~/.vibrai/genres/\u003Cname\u003E.vibraigenre.",
+            "parameters": []
+          },
+          {
+            "name": "list_genre_presets",
+            "description": "List presets in a genre library. Each entry has id (use with apply_genre / init_project --preset), display name, sub-genre, and section/part counts.",
+            "parameters": [
+              {
+                "name": "genre",
+                "type": "String",
+                "required": true,
+                "description": "Genre id (slug from list_genres) or display name."
+              }
+            ]
+          },
+          {
+            "name": "apply_genre",
+            "description": "Materialize a genre\u002Bpreset into a .vibrai project at the given path. Destructive: overwrites sections, parts, templates, arrangement.blueprint, and generation. Preserves meta.name and meta.als_path from the existing project if present. Note: the \u0060preset_id\u0060 parameter was renamed to \u0060preset\u0060 for CLI/MCP naming parity; update any callers.",
+            "parameters": [
+              {
+                "name": "genre",
+                "type": "String",
+                "required": true,
+                "description": "Genre id (slug from list_genres) or display name."
+              },
+              {
+                "name": "preset",
+                "type": "String",
+                "required": true,
+                "description": "Preset id within the genre (from list_genre_presets)."
+              },
+              {
+                "name": "project_path",
+                "type": "String",
+                "required": true,
+                "description": "Absolute path to the .vibrai project file."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "install",
+      "title": "Install",
+      "description": "Install the Vibrai M4L device and Python remote script.",
+      "cli": {
+        "branch": "install",
+        "commands": [
+          {
+            "name": "install device",
+            "description": "Install the Vibrai Max-for-Live device \u002B JS bridge into Live\u0027s User Library",
+            "arguments": [],
+            "options": [
+              {
+                "name": "--force",
+                "valueName": null,
+                "default": null,
+                "description": "Overwrite an existing install whose files differ from the source."
+              },
+              {
+                "name": "--source",
+                "valueName": "PATH",
+                "default": null,
+                "description": "[advanced] Override the source directory (test/debug use)."
+              },
+              {
+                "name": "--dest",
+                "valueName": "PATH",
+                "default": null,
+                "description": "[advanced] Override the destination directory (test/debug use)."
+              }
+            ]
+          },
+          {
+            "name": "install remote-script",
+            "description": "Install the Vibrai Python remote script into Live\u0027s User Library",
+            "arguments": [],
+            "options": [
+              {
+                "name": "--force",
+                "valueName": null,
+                "default": null,
+                "description": "Overwrite an existing install whose files differ from the source."
+              },
+              {
+                "name": "--source",
+                "valueName": "PATH",
+                "default": null,
+                "description": "[advanced] Override the source directory (test/debug use)."
+              },
+              {
+                "name": "--dest",
+                "valueName": "PATH",
+                "default": null,
+                "description": "[advanced] Override the destination directory (test/debug use)."
+              }
+            ]
+          },
+          {
+            "name": "install all",
+            "description": "Run both \u0060install device\u0060 and \u0060install remote-script\u0060",
+            "arguments": [],
+            "options": [
+              {
+                "name": "--force",
+                "valueName": null,
+                "default": null,
+                "description": "Overwrite existing installs whose files differ from the source."
+              }
+            ]
+          }
+        ]
+      },
+      "mcp": {
+        "tools": [
+          {
+            "name": "install_device",
+            "description": "Copy the bundled vibrai.amxd Max-for-Live device \u002B JS bridge files into the user\u0027s Ableton User Library. By default refuses to overwrite a modified install \u2014 pass force=true to clobber. Run once after installing the .mcpb extension; then open Ableton Live and drag vibrai.amxd onto a track. Returns the source/destination paths, status (Installed | AlreadyUpToDate), and the list of files.",
+            "parameters": [
+              {
+                "name": "force",
+                "type": "Boolean",
+                "required": false,
+                "description": "Overwrite an existing install whose files differ from the source (default false)"
+              },
+              {
+                "name": "source_override",
+                "type": "String",
+                "required": false,
+                "description": "[advanced] Test-only override for the source directory"
+              },
+              {
+                "name": "dest_override",
+                "type": "String",
+                "required": false,
+                "description": "[advanced] Test-only override for the destination directory"
+              }
+            ]
+          },
+          {
+            "name": "install_vibrai_remote_script",
+            "description": "Copy the bundled Vibrai Python remote script into Live\u0027s User Library Remote Scripts directory. By default refuses to overwrite a modified install \u2014 pass force=true to clobber. After install, restart Live and enable \u0027Vibrai\u0027 under Preferences \u2192 Link/Tempo/MIDI \u2192 Control Surface. Returns the source/destination paths, status (Installed | AlreadyUpToDate), and the list of files.",
+            "parameters": [
+              {
+                "name": "force",
+                "type": "Boolean",
+                "required": false,
+                "description": "Overwrite an existing install whose files differ from the source (default false)"
+              },
+              {
+                "name": "source_override",
+                "type": "String",
+                "required": false,
+                "description": "[advanced] Test-only override for the source directory"
+              },
+              {
+                "name": "dest_override",
+                "type": "String",
+                "required": false,
+                "description": "[advanced] Test-only override for the destination directory"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "generation",
+      "title": "Generation",
+      "description": "Generate or plan a composition from a .vibrai project file.",
+      "cli": {
+        "branch": "generate",
+        "commands": [
+          {
+            "name": "generate",
+            "description": "Generate clips and arrangement from an .vibrai project file",
+            "arguments": [],
+            "options": [
+              {
+                "name": "--project",
+                "valueName": "PATH",
+                "default": null,
+                "description": "Path to .vibrai file (default: Untitled.vibrai in CWD)"
+              },
+              {
+                "name": "--force",
+                "valueName": null,
+                "default": null,
+                "description": "Overwrite existing session clips and arrangement content in project tracks"
+              },
+              {
+                "name": "--dry-run",
+                "valueName": null,
+                "default": null,
+                "description": "Plan only \u2014 do not call the bridge"
+              },
+              {
+                "name": "--seed",
+                "valueName": "VALUE",
+                "default": null,
+                "description": "Override the project\u0027s T2mHash seed for this run"
+              },
+              {
+                "name": "--allow-skip",
+                "valueName": null,
+                "default": null,
+                "description": "Continue when arrangement-automation entries cannot be resolved; default fails fast."
+              }
+            ]
+          },
+          {
+            "name": "plan",
+            "description": "Plan a composition from an .vibrai project file without writing to Live",
+            "arguments": [],
+            "options": [
+              {
+                "name": "--project",
+                "valueName": "PATH",
+                "default": null,
+                "description": "Path to .vibrai file (default: Untitled.vibrai in CWD)"
+              },
+              {
+                "name": "--seed",
+                "valueName": "VALUE",
+                "default": null,
+                "description": "Override the project\u0027s T2mHash seed for this run"
+              }
+            ]
+          }
+        ]
+      },
+      "mcp": {
+        "tools": [
+          {
+            "name": "plan",
+            "description": "Plan a composition from an .vibrai file without writing to Live. Returns a slim summary.",
+            "parameters": [
+              {
+                "name": "project_path",
+                "type": "String",
+                "required": true,
+                "description": "Path to the .vibrai file (defaults to Untitled.vibrai in CWD when omitted)"
+              },
+              {
+                "name": "seed",
+                "type": "Nullable\u00601",
+                "required": true,
+                "description": "Optional seed override"
+              }
+            ]
+          },
+          {
+            "name": "generate",
+            "description": "Plan \u002B render a composition into Live\u0027s session view and arrangement view. Requires force=true to overwrite existing clips. By default, fails fast when any ArrangementAutomationEntry cannot be resolved against the live device tree; pass allow_skip=true to log warnings and continue.",
+            "parameters": [
+              {
+                "name": "project_path",
+                "type": "String",
+                "required": true,
+                "description": "Path to the .vibrai file (defaults to Untitled.vibrai in CWD when omitted)"
+              },
+              {
+                "name": "force",
+                "type": "Boolean",
+                "required": true,
+                "description": "Overwrite existing session clips and arrangement content"
+              },
+              {
+                "name": "allow_skip",
+                "type": "Boolean",
+                "required": true,
+                "description": "Continue when arrangement-automation entries cannot be resolved; default fails fast."
+              },
+              {
+                "name": "seed",
+                "type": "Nullable\u00601",
+                "required": true,
+                "description": "Optional seed override"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "capture",
+      "title": "Capture",
+      "description": "Capture the current Live set as a .vibrai YAML file.",
+      "cli": {
+        "branch": "capture",
+        "commands": [
+          {
+            "name": "capture",
+            "description": "Capture the current Live set as a .vibrai YAML file.",
+            "arguments": [],
+            "options": [
+              {
+                "name": "--out",
+                "valueName": "PATH",
+                "default": null,
+                "description": "Output file path. Defaults to Captured.vibrai in CWD."
+              },
+              {
+                "name": "--force",
+                "valueName": null,
+                "default": null,
+                "description": "Overwrite the output file if it already exists."
+              },
+              {
+                "name": "--dry-run",
+                "valueName": null,
+                "default": null,
+                "description": "Emit the YAML to stdout, do not write a file."
+              },
+              {
+                "name": "--merge-with",
+                "valueName": "PATH",
+                "default": null,
+                "description": "Overlay section metadata (category, tension, modifier, variation, scale overrides) AND Templates[0].Automation from this prior .vibrai onto the captured project. Sections matched by id, falling back to position. Scene names always come from the captured set."
+              },
+              {
+                "name": "--no-warn-lossy-automation",
+                "valueName": null,
+                "default": null,
+                "description": "Suppress the lossy_arrangement_automation warning that capture emits when no --merge-with is provided and the captured arrangement_automation array is empty (the LOM-blind-spot for bouncer-produced envelopes)."
+              }
+            ]
+          }
+        ]
+      },
+      "mcp": {
+        "tools": [
+          {
+            "name": "capture_project",
+            "description": "Capture the running Live set as a .vibrai YAML file. Set dry_run=true to return the YAML in the response without writing to disk. Set merge_with=\u003Cpath\u003E to overlay section metadata (category, tension, modifier, variation, scale overrides) AND Templates[0].Automation from a previously-authored .vibrai onto the captured project \u2014 Live\u0027s LOM cannot read these, so capture cannot derive them. When no merge_with is supplied and the captured arrangement_automation array is empty, the summary includes a lossy_arrangement_automation warning explaining the LOM gap; pass warn_lossy_automation=false to suppress it.",
+            "parameters": [
+              {
+                "name": "out",
+                "type": "String",
+                "required": true,
+                "description": "Absolute file path to write the captured .vibrai YAML to."
+              },
+              {
+                "name": "force",
+                "type": "Boolean",
+                "required": false,
+                "description": "Overwrite the file if it already exists."
+              },
+              {
+                "name": "dry_run",
+                "type": "Boolean",
+                "required": false,
+                "description": "Return the YAML in the response without writing."
+              },
+              {
+                "name": "merge_with",
+                "type": "String",
+                "required": false,
+                "description": "Optional absolute path to a prior .vibrai whose section metadata AND Templates[0].Automation should overlay the captured sections (matched by Section.Id, falling back to Position). Scene names always come from the captured set."
+              },
+              {
+                "name": "warn_lossy_automation",
+                "type": "Boolean",
+                "required": false,
+                "description": "When true (default) AND merge_with is null AND captured arrangement_automation is empty, emit a lossy_arrangement_automation warning string in the summary explaining the LOM gap. Set to false to suppress the warning."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "version",
+      "title": "Version",
+      "description": "Show CLI, M4L bridge, and Python bridge versions.",
+      "cli": {
+        "branch": "version",
+        "commands": [
+          {
+            "name": "version",
+            "description": "Show Vibrai CLI, M4L bridge, and Python bridge versions.",
+            "arguments": [],
+            "options": []
+          }
+        ]
+      },
+      "mcp": {
+        "tools": [
+          {
+            "name": "get_version",
+            "description": "Get the running Vibrai.Mcp server version (assembly) and the M4L bridge version (package.json). Bridge version is best-effort: if the bridge is unreachable or times out, the response still includes the MCP version with a bridge_status indicating the failure.",
+            "parameters": []
+          }
+        ]
+      }
+    }
+  ],
+  "unpaired": {
+    "cliOnly": [
+      "recipe"
+    ],
+    "mcpOnly": [
+      "OnboardingTools"
+    ]
+  }
+}

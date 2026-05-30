@@ -1,0 +1,185 @@
+---
+title: "Devices"
+description: "Load, browse, and manage devices on tracks."
+---
+
+{/* GENERATED — do not edit by hand. Regenerate with `npm run generate:reference`. */}
+
+Load, browse, and manage devices on tracks.
+
+## Command line
+
+### `device list`
+
+List devices loaded on a track
+
+```bash
+vibrai device list <track>
+```
+
+<ParamField path="track" required>
+  Track number (1-based: 1, 2, … or first, second, …)
+</ParamField>
+
+### `device load`
+
+Load a stock device or User Library preset onto a track
+
+```bash
+vibrai device load <track> --path <PATH> --part-type <TYPE> --position <N>
+```
+
+<ParamField path="track" required>
+  Track number (1-based: 1, 2, … or first, second, …)
+</ParamField>
+<ParamField path="--path">
+  Browser path, e.g. 'Instruments/Operator'
+</ParamField>
+<ParamField path="--part-type">
+  PartType shorthand (Bass, Pad, Lead, …); resolves through defaults.instruments
+</ParamField>
+<ParamField path="--position">
+  Insert position in device chain (1-based: 1 = first slot; omit to append)
+</ParamField>
+
+### `device browse`
+
+List immediate children of a Live browser path
+
+```bash
+vibrai device browse [path]
+```
+
+<ParamField path="path">
+  Browser path; empty for the snapshot's top-level folders. Examples: "Drums", "Instruments/Operator", "Packs/F9 GALAXY", "User Library".
+</ParamField>
+
+### `device default`
+
+Show the resolved default device for a part-type
+
+```bash
+vibrai device default <partType>
+```
+
+<ParamField path="partType" required>
+  PartType to resolve
+</ParamField>
+
+### `device delete`
+
+Remove a device from a track's top-level device chain by index
+
+```bash
+vibrai device delete <track> <device-index>
+```
+
+<ParamField path="track" required>
+  Track number (1-based: 1, 2, … or first, second, …)
+</ParamField>
+<ParamField path="device-index" required>
+  Device chain position (1-based: 1 = first device in the chain)
+</ParamField>
+
+## MCP tools
+
+### `load_device`
+
+Load a stock device or User Library preset onto a track. Specify either path OR part_type, not both. The `path` argument accepts (a) classic browser paths like "Instruments/Operator" for stock devices, or (b) `query:` URIs from find_instruments_by_tag for user-tagged presets. NOTE: part_type=Bd/Snare/HiHat/Perc resolves to the bare "Instruments/Drum Rack", which loads empty (no samples). For drums to be audible, follow up with browse_devices "Drums" and load_device on a kit preset (.adg). Tonal part_types (Bass/Pad/Chord/etc.) load synths that sound by default.
+
+```json
+{
+  "tool": "load_device",
+  "arguments": {
+    "track_id": "<String>",
+    "path": "<String>",
+    "part_type": "<Nullable`1>",
+    "position": "<String>"
+  }
+}
+```
+
+<ParamField path="track_id" type="String" required>
+  Track number (1-based: 1, 2, … or 'first', 'second', …)
+</ParamField>
+<ParamField path="path" type="String" required>
+  Browser path (e.g. "Instruments/Operator") OR a query: URI from find_instruments_by_tag.
+</ParamField>
+<ParamField path="part_type" type="Nullable`1" required>
+  PartType shorthand; resolves through defaults.instruments
+</ParamField>
+<ParamField path="position" type="String" required>
+  Insert position in device chain (1-based: 1 = first slot; omit to append at the end)
+</ParamField>
+
+### `browse_devices`
+
+List immediate children of a Live browser path. Reads the Vibrai instrument-browser snapshot (written by the Vibrai Live remote script via SP9) in-process — no live Ableton connection required. Empty path returns the snapshot's top-level folders. Examples: 'Drums' (drum kit presets), 'Instruments/Operator' (Operator presets), 'Packs/&lt;PackName>' (pack contents), 'User Library' (user-saved presets). Returns an empty list when the snapshot is missing — run install_vibrai_remote_script and refresh in Live.
+
+```json
+{
+  "tool": "browse_devices",
+  "arguments": {
+    "path": "<String>"
+  }
+}
+```
+
+<ParamField path="path" type="String" required>
+  Browser path string; empty = top-level snapshot folders.
+</ParamField>
+
+### `delete_device`
+
+Remove a device from a track's top-level device chain by index. v1 scope: top-level chain only — nested racks (Drum Rack pads, Instrument Rack chains) are not addressable through this call. The device is gone immediately; there is no undo. Use list_devices to discover indices.
+
+```json
+{
+  "tool": "delete_device",
+  "arguments": {
+    "track_id": "<String>",
+    "device_index": "<String>"
+  }
+}
+```
+
+<ParamField path="track_id" type="String" required>
+  Track number (1-based: 1, 2, … or 'first', 'second', …)
+</ParamField>
+<ParamField path="device_index" type="String" required>
+  Device chain position (1-based: 1 = first device in the chain)
+</ParamField>
+
+### `list_devices`
+
+List devices currently loaded on a track in chain order. Returns each device's index, id, name, and class info — pass deviceId to list_automation_params / get_automation / write_automation.
+
+```json
+{
+  "tool": "list_devices",
+  "arguments": {
+    "track_id": "<String>"
+  }
+}
+```
+
+<ParamField path="track_id" type="String" required>
+  Track number (1-based: 1, 2, … or 'first', 'second', …)
+</ParamField>
+
+### `get_default_instrument`
+
+Return the resolved browser path for a part-type (defaults.instruments override or built-in).
+
+```json
+{
+  "tool": "get_default_instrument",
+  "arguments": {
+    "part_type": "<PartType>"
+  }
+}
+```
+
+<ParamField path="part_type" type="PartType" required>
+  PartType to resolve
+</ParamField>

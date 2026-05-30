@@ -1,0 +1,71 @@
+---
+title: "Scale"
+description: "Get and set the active scale for the Live session."
+---
+
+{/* GENERATED — do not edit by hand. Regenerate with `npm run generate:reference`. */}
+
+Get and set the active scale for the Live session.
+
+## Command line
+
+### `scale get`
+
+Get the active scale
+
+```bash
+vibrai scale get
+```
+
+
+
+### `scale set`
+
+Set the active scale (song-level; new clips inherit it)
+
+```bash
+vibrai scale set <root-note> <scale-name>
+```
+
+<ParamField path="root-note" required>
+  Root note: note name (C, C#, D, Db, …, B) or pitch class 0–11
+</ParamField>
+<ParamField path="scale-name" required>
+  Major, Ionian, Dorian, Phrygian, Lydian, Mixolydian, Minor, Aeolian, Locrian
+</ParamField>
+
+## MCP tools
+
+### `get_active_scale`
+
+Get the active scale (root + scale name) from the project, if set.
+
+```json
+{
+  "tool": "get_active_scale",
+  "arguments": {}
+}
+```
+
+
+
+### `set_active_scale`
+
+Set the song-level scale and enable Scale Mode. Newly-created clips inherit these settings.
+
+```json
+{
+  "tool": "set_active_scale",
+  "arguments": {
+    "root_note": "<String>",
+    "scale_name": "<String>"
+  }
+}
+```
+
+<ParamField path="root_note" type="String" required>
+  Pitch class: note name (C, C#, D, Db, …, B) or integer 0–11
+</ParamField>
+<ParamField path="scale_name" type="String" required>
+  Scale name: Major, Ionian, Dorian, Phrygian, Lydian, Mixolydian, Minor, Aeolian, Locrian
+</ParamField>

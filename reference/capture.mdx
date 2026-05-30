@@ -1,0 +1,69 @@
+---
+title: "Capture"
+description: "Capture the current Live set as a .vibrai YAML file."
+---
+
+{/* GENERATED — do not edit by hand. Regenerate with `npm run generate:reference`. */}
+
+Capture the current Live set as a .vibrai YAML file.
+
+## Command line
+
+### `capture`
+
+Capture the current Live set as a .vibrai YAML file.
+
+```bash
+vibrai capture --out <PATH> --force --dry-run --merge-with <PATH> --no-warn-lossy-automation
+```
+
+<ParamField path="--out">
+  Output file path. Defaults to Captured.vibrai in CWD.
+</ParamField>
+<ParamField path="--force">
+  Overwrite the output file if it already exists.
+</ParamField>
+<ParamField path="--dry-run">
+  Emit the YAML to stdout, do not write a file.
+</ParamField>
+<ParamField path="--merge-with">
+  Overlay section metadata (category, tension, modifier, variation, scale overrides) AND Templates[0].Automation from this prior .vibrai onto the captured project. Sections matched by id, falling back to position. Scene names always come from the captured set.
+</ParamField>
+<ParamField path="--no-warn-lossy-automation">
+  Suppress the lossy_arrangement_automation warning that capture emits when no --merge-with is provided and the captured arrangement_automation array is empty (the LOM-blind-spot for bouncer-produced envelopes).
+</ParamField>
+
+## MCP tools
+
+### `capture_project`
+
+Capture the running Live set as a .vibrai YAML file. Set dry_run=true to return the YAML in the response without writing to disk. Set merge_with=&lt;path> to overlay section metadata (category, tension, modifier, variation, scale overrides) AND Templates[0].Automation from a previously-authored .vibrai onto the captured project — Live's LOM cannot read these, so capture cannot derive them. When no merge_with is supplied and the captured arrangement_automation array is empty, the summary includes a lossy_arrangement_automation warning explaining the LOM gap; pass warn_lossy_automation=false to suppress it.
+
+```json
+{
+  "tool": "capture_project",
+  "arguments": {
+    "out": "<String>",
+    "force": "<Boolean>",
+    "dry_run": "<Boolean>",
+    "merge_with": "<String>",
+    "warn_lossy_automation": "<Boolean>"
+  }
+}
+```
+
+<ParamField path="out" type="String" required>
+  Absolute file path to write the captured .vibrai YAML to.
+</ParamField>
+<ParamField path="force" type="Boolean">
+  Overwrite the file if it already exists.
+</ParamField>
+<ParamField path="dry_run" type="Boolean">
+  Return the YAML in the response without writing.
+</ParamField>
+<ParamField path="merge_with" type="String">
+  Optional absolute path to a prior .vibrai whose section metadata AND Templates[0].Automation should overlay the captured sections (matched by Section.Id, falling back to Position). Scene names always come from the captured set.
+</ParamField>
+<ParamField path="warn_lossy_automation" type="Boolean">
+  When true (default) AND merge_with is null AND captured arrangement_automation is empty, emit a lossy_arrangement_automation warning string in the summary explaining the LOM gap. Set to false to suppress the warning.
+</ParamField>

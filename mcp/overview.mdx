@@ -1,0 +1,73 @@
+---
+title: "MCP Overview"
+description: "Connect an MCP client and drive Ableton Live with Vibrai's tools."
+---
+
+The Vibrai MCP server gives an AI assistant direct, bidirectional control over Ableton Live. You describe what you want in plain language — "create a four-bar bass loop in D minor" or "build a minimal techno track with three sections" — and the assistant calls the right sequence of tools while you watch the results appear in Live.
+
+## How the connection works
+
+The bridge is a three-layer stack:
+
+1. **`vibrai.amxd`** — a Max for Live device you load on any track. Inside it, a Node.js script runs an Express HTTP server on `localhost:3333` and translates REST calls into Live's LOM via the Max `js` object.
+2. **`Vibrai.Mcp`** — a C# process that communicates with your MCP client over stdio using JSON-RPC. Every tool call is proxied to the M4L device via HTTP.
+3. **Your MCP client** — Claude Desktop, Claude Code, Cursor, or any other MCP-capable host. It sees the tools via the standard `tools/list` / `tools/call` protocol.
+
+The M4L device is stateless. All Vibrai-specific state — project files, instrument tags, genre libraries — lives on disk alongside your Live set and is managed by the C# layer.
+
+## Connecting Claude Desktop
+
+Edit `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS) or `%APPDATA%\Claude\claude_desktop_config.json` (Windows):
+
+```json
+{
+  "mcpServers": {
+    "vibrai": {
+      "command": "/absolute/path/to/publish/Vibrai.Mcp/Vibrai.Mcp",
+      "env": {
+        "VIBRAI_LOG_FILE": "/tmp/vibrai-mcp.log",
+        "VIBRAI_LOG_LEVEL": "Warning"
+      }
+    }
+  }
+}
+```
+
+Restart Claude Desktop. Open a new conversation — the Vibrai tools will be available.
+
+## How tools map to engine operations
+
+Each MCP tool corresponds directly to a method on the underlying engine or bridge. Tools are grouped by domain: transport, tracks, clips, notes, follow actions, automation, devices, instruments, scenes, arrangement, scales, project, genre, generation, capture, and install.
+
+See the **[Reference](/reference/transport)** section for every tool, its parameters, and the matching CLI command.
+
+## snake_case parameter convention
+
+All MCP tool parameters use `snake_case`. This is enforced at the wire level:
+
+- `track_id`, `scene_index`, `start_beat`, `source_scene_index`, `part_type`
+
+If an LLM sends camelCase keys (for example `trackId` instead of `track_id`), the server's binding filter catches the failure and returns a clear error message pointing at the correct snake_case form.
+
+## First-song wizard
+
+The fastest way to hear Vibrai in action through MCP is the first-song wizard:
+
+```
+Build a lofi-house song, medium length.
+```
+
+The assistant calls `start_first_song(vibe="lofi-house", length="medium")`, which returns a step-by-step recipe. It then executes the recipe: Claude assembles a complete project and saves it, then loads instruments, generates the parts, and starts playback. A full arrangement appears in Live in about 30–60 seconds.
+
+Supported vibes: `ambient-techno` (default), `lofi-house`, `deep-house`, `ambient-downtempo`, `minimal-techno`.
+
+## Reference pages
+
+The full parameter schema for every tool lives in the generated Reference section:
+
+- [Transport](/reference/transport)
+- [Track](/reference/track)
+- [Clip](/reference/clip)
+- [Automation](/reference/automation)
+- [Generation](/reference/generation)
+- [Install](/reference/install)

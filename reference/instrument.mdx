@@ -1,0 +1,263 @@
+---
+title: "Instruments"
+description: "Browse, tag, and manage instruments in the Vibrai library."
+---
+
+{/* GENERATED — do not edit by hand. Regenerate with `npm run generate:reference`. */}
+
+Browse, tag, and manage instruments in the Vibrai library.
+
+## Command line
+
+### `instrument list`
+
+List browser items (with optional tag/search/kind filters)
+
+```bash
+vibrai instrument list --search <TEXT> --path-contains <TEXT> --path-prefix <PREFIX> --kind <PRESET|DEVICE|RACK> --tagged --untagged --tag <SUFFIX> --include-extra --offset <N> --limit <N>
+```
+
+<ParamField path="--search">
+  Filter by name substring (case-insensitive)
+</ParamField>
+<ParamField path="--path-contains">
+  Filter by browser path substring (case-insensitive)
+</ParamField>
+<ParamField path="--path-prefix">
+  Only items whose browser path starts with this prefix
+</ParamField>
+<ParamField path="--kind">
+  Filter by item kind
+</ParamField>
+<ParamField path="--tagged">
+  Only items with at least one user tag
+</ParamField>
+<ParamField path="--untagged">
+  Only items without any user tag
+</ParamField>
+<ParamField path="--tag">
+  Only items tagged with vibrai:&lt;suffix> (e.g. --tag bass). Case-insensitive.
+</ParamField>
+<ParamField path="--include-extra">
+  When used with --tag, also match unrecognized extra-tag suffixes
+</ParamField>
+<ParamField path="--offset" default="0">
+  Skip this many qualifying results (for pagination, default 0)
+</ParamField>
+<ParamField path="--limit" default="50">
+  Max results (default 50)
+</ParamField>
+
+### `instrument tag`
+
+Apply a Vibrai PartType tag to an instrument
+
+```bash
+vibrai instrument tag <uri-or-search> <part-type>
+```
+
+<ParamField path="uri-or-search" required>
+  Browser URI (exact, contains ':' + '#') or name substring (case-insensitive, single match required)
+</ParamField>
+<ParamField path="part-type" required>
+  PartType to apply (case-insensitive). Use an invalid value to see the full list.
+</ParamField>
+
+### `instrument untag`
+
+Remove a Vibrai PartType tag from an instrument
+
+```bash
+vibrai instrument untag <uri-or-search> <part-type>
+```
+
+<ParamField path="uri-or-search" required>
+  Browser URI (exact) or name substring (single match required)
+</ParamField>
+<ParamField path="part-type" required>
+  PartType to remove (case-insensitive)
+</ParamField>
+
+### `instrument show`
+
+Show one instrument record with all tags
+
+```bash
+vibrai instrument show <uri-or-search>
+```
+
+<ParamField path="uri-or-search" required>
+  Browser URI (exact) or name substring (single match required)
+</ParamField>
+
+### `instrument suggest`
+
+Suggest PartType tags from folder names (read-only, does not mutate)
+
+```bash
+vibrai instrument suggest --prefix <PATH> --pattern-set <NAME>
+```
+
+<ParamField path="--prefix">
+  Scope suggestions to this browser path prefix (e.g. 'Packs/F9 GALAXY'). Omit to scan all items.
+</ParamField>
+<ParamField path="--pattern-set">
+  Pattern set to use. Only 'default' is supported.
+</ParamField>
+
+## MCP tools
+
+### `find_instruments_by_tag`
+
+Find user presets tagged 'vibrai:&lt;suffix>'. Returns all matches: their browser URI (pass as load_device 'path'), display name, browser path, and the recognized/extra tag buckets. Empty array if no matches or no cache file. Tags are populated by the Vibrai Live remote script — see install_vibrai_remote_script.
+
+```json
+{
+  "tool": "find_instruments_by_tag",
+  "arguments": {
+    "suffix": "<String>",
+    "include_extra": "<Boolean>"
+  }
+}
+```
+
+<ParamField path="suffix" type="String" required>
+  Tag suffix to match (e.g. 'bass' for vibrai:bass). Case-insensitive.
+</ParamField>
+<ParamField path="include_extra" type="Boolean" required>
+  If true, also matches unrecognized 'extra' tag suffixes. Default false.
+</ParamField>
+
+### `refresh_instrument_tags`
+
+Ask the Vibrai Live remote script to rescan the browser. Touches the trigger file and waits up to 5 seconds for the browser snapshot to be rewritten. Returns the new scanned_at + item_count, or INSTRUMENT_TAG_SCRIPT_NOT_RUNNING if the script doesn't respond. If you get the not-running error, run install_vibrai_remote_script and make sure Vibrai is enabled in Live's Preferences → Link/Tempo/MIDI → Control Surface.
+
+```json
+{
+  "tool": "refresh_instrument_tags",
+  "arguments": {}
+}
+```
+
+
+
+### `list_browser_items`
+
+List items from the Vibrai browser snapshot, optionally filtered by name substring, path substring, path prefix, kind, or tagged state. The snapshot is written by the Vibrai Live remote script; the user tags items via tag_instrument. Returns up to `limit` results starting at `offset` (for pagination).
+
+```json
+{
+  "tool": "list_browser_items",
+  "arguments": {
+    "search": "<String>",
+    "path_contains": "<String>",
+    "path_prefix": "<String>",
+    "kind": "<String>",
+    "tagged": "<Nullable`1>",
+    "offset": "<Int32>",
+    "limit": "<Int32>"
+  }
+}
+```
+
+<ParamField path="search" type="String" required>
+  Case-insensitive substring match against item name. Null/empty = all.
+</ParamField>
+<ParamField path="path_contains" type="String" required>
+  Case-insensitive substring match against the full browser path (e.g. 'Basses' matches any item under a folder containing that word). Null = all.
+</ParamField>
+<ParamField path="path_prefix" type="String" required>
+  Only return items whose browser path starts with this prefix (case-insensitive), e.g. 'Packs/F9 GALAXY'. Null = all.
+</ParamField>
+<ParamField path="kind" type="String" required>
+  Filter by kind: 'preset', 'device', 'rack'. Null = all kinds.
+</ParamField>
+<ParamField path="tagged" type="Nullable`1" required>
+  If true, only items with at least one user tag; if false, only untagged; null = both.
+</ParamField>
+<ParamField path="offset" type="Int32" required>
+  Number of qualifying results to skip before returning (for pagination). Default 0.
+</ParamField>
+<ParamField path="limit" type="Int32" required>
+  Max results to return (default 50).
+</ParamField>
+
+### `show_instrument`
+
+Show one browser item plus any user tags applied to it. Accepts an exact uri (contains ':' and '#') or a name substring; case-insensitive. Errors: INSTRUMENT_NOT_FOUND, MULTIPLE_MATCHES.
+
+```json
+{
+  "tool": "show_instrument",
+  "arguments": {
+    "uri_or_search": "<String>"
+  }
+}
+```
+
+<ParamField path="uri_or_search" type="String" required>
+  Browser URI (exact match) or name substring (case-insensitive, single match required).
+</ParamField>
+
+### `tag_instrument`
+
+Apply a Vibrai PartType tag to a browser item. Accepts an exact uri or a name substring (single match). Atomically updates instrument-tags.json. Errors: INSTRUMENT_NOT_FOUND, MULTIPLE_MATCHES, INVALID_PART_TYPE.
+
+```json
+{
+  "tool": "tag_instrument",
+  "arguments": {
+    "uri_or_search": "<String>",
+    "part_type": "<String>"
+  }
+}
+```
+
+<ParamField path="uri_or_search" type="String" required>
+  Browser URI (exact) or name substring (case-insensitive, single match).
+</ParamField>
+<ParamField path="part_type" type="String" required>
+  PartType to apply (case-insensitive). E.g. 'bass', 'pad', 'lead'.
+</ParamField>
+
+### `untag_instrument`
+
+Remove a Vibrai PartType tag from a browser item. If the item ends with no tags at all (recognized + extra both empty), the record is dropped from the tag store. Errors: INSTRUMENT_NOT_FOUND, MULTIPLE_MATCHES, INVALID_PART_TYPE.
+
+```json
+{
+  "tool": "untag_instrument",
+  "arguments": {
+    "uri_or_search": "<String>",
+    "part_type": "<String>"
+  }
+}
+```
+
+<ParamField path="uri_or_search" type="String" required>
+  Browser URI (exact) or name substring (case-insensitive, single match).
+</ParamField>
+<ParamField path="part_type" type="String" required>
+  PartType to remove (case-insensitive).
+</ParamField>
+
+### `suggest_tags_from_folders`
+
+Scan the browser snapshot and infer PartType tags from folder names. Returns suggestions only — call tag_instrument to apply them. Use 'prefix' to scope to a single pack (e.g. 'Packs/F9 GALAXY'). The default pattern set maps common folder names (Basses→Bass, Kicks→Bd, Pads→Pad, etc.) to PartTypes. Does not mutate any state.
+
+```json
+{
+  "tool": "suggest_tags_from_folders",
+  "arguments": {
+    "prefix": "<String>",
+    "pattern_set": "<String>"
+  }
+}
+```
+
+<ParamField path="prefix" type="String" required>
+  Browser path prefix to restrict the scan (e.g. 'Packs/F9 GALAXY'). Null/empty = entire snapshot.
+</ParamField>
+<ParamField path="pattern_set" type="String" required>
+  Pattern set name. Only 'default' is supported. Null = default.
+</ParamField>
