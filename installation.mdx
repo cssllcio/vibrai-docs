@@ -1,0 +1,124 @@
+---
+title: "Installation"
+description: "Install the Vibrai CLI and connect the MCP server."
+---
+
+## Prerequisites
+
+| Requirement | Notes |
+|-------------|-------|
+| Ableton Live 12 | Standard, Suite, or Trial; must be open with a Live set loaded |
+| .NET 10 runtime | [dotnet.microsoft.com/download](https://dotnet.microsoft.com/download) — required for source builds |
+| `vibrai.amxd` device | The Max for Live device that runs the local bridge; loaded onto any track in your set |
+
+<Note>
+  The Vibrai device runs a small HTTP server on `http://localhost:3333`. Load it on any track in your Live set before running commands that talk to Live. Commands that only work with project files (`project info`, `project load`) work offline.
+</Note>
+
+## Install the CLI
+
+<Tabs>
+  <Tab title="macOS">
+    **When Vibrai 1.0 ships (coming soon):**
+
+    ```bash
+    brew install vibrai/tap/vibrai
+    ```
+
+    **Pre-release builds:** copy the binary to a directory on your `PATH` and make it executable:
+
+    ```bash
+    chmod +x /path/to/vibrai
+    cp /path/to/vibrai /usr/local/bin/vibrai
+    ```
+  </Tab>
+  <Tab title="Windows">
+    **When Vibrai 1.0 ships (coming soon):** a signed installer will be available at [vibrai.com](https://vibrai.com).
+
+    **Pre-release builds:** copy `vibrai.exe` to a folder that is in your `PATH`, or invoke it by its full path.
+  </Tab>
+</Tabs>
+
+## Install and connect the MCP server
+
+The MCP server (`Vibrai.Mcp`) runs as a subprocess launched by your MCP client. The easiest path is the one-click `.mcpb` bundle for Claude Desktop.
+
+**Claude Desktop (.mcpb bundle — recommended):**
+
+1. Download `Vibrai.mcpb` from [vibrai.com](https://vibrai.com).
+2. Open Claude Desktop → **Settings** → **Extensions**.
+3. Drag `Vibrai.mcpb` into the Extensions panel.
+
+Claude Desktop installs the extension and restarts. Then ask Claude: _"Install the Vibrai device."_ — it copies `vibrai.amxd` into your Ableton User Library automatically.
+
+**Manual registration (Claude Desktop, Claude Code, Cursor):**
+
+Edit the MCP client config and point it at the MCP server binary:
+
+```json
+{
+  "mcpServers": {
+    "vibrai": {
+      "command": "/absolute/path/to/publish/Vibrai.Mcp/Vibrai.Mcp",
+      "env": {
+        "VIBRAI_LOG_FILE": "/tmp/vibrai-mcp.log",
+        "VIBRAI_LOG_LEVEL": "Warning"
+      }
+    }
+  }
+}
+```
+
+The config file lives at `~/Library/Application Support/Claude/claude_desktop_config.json` on macOS and `%APPDATA%\Claude\claude_desktop_config.json` on Windows. Restart the client after editing.
+
+**Environment variables:**
+
+| Variable | Default | Purpose |
+|----------|---------|---------|
+| `VIBRAI_URL` | `http://localhost:3333` | Override the bridge URL |
+| `VIBRAI_LOG_LEVEL` | `Warning` | Verbosity: `Verbose` / `Debug` / `Information` / `Warning` / `Error` |
+| `VIBRAI_LOG_FILE` | (stderr only) | Write a rolling log to a file |
+
+## Load the device into your Live set
+
+1. In Ableton Live, open your **User Library** in the browser.
+2. Navigate to **Presets → Max Audio Effect → vibrai**.
+3. Drag **vibrai.amxd** onto any track in your set.
+
+The device runs a local server on `localhost:3333`. It does not process audio — it is purely the bridge between Vibrai and Live.
+
+## Verify
+
+**CLI:**
+
+```bash
+vibrai --version
+```
+
+A healthy response shows both the CLI and bridge versions:
+
+```
+vibrai CLI:    1.0.0
+vibrai bridge: 1.1.0 (vibrai-m4l)
+```
+
+If Live is not open yet, you will see `(unreachable at http://localhost:3333)` for the bridge — the CLI version still printed, so the install succeeded.
+
+**MCP (from your AI client):**
+
+Call `get_version`. A healthy response includes both the `bridge` and `python_bridge` fields:
+
+```json
+{
+  "mcp":           { "version": "1.0.0" },
+  "bridge":        { "name": "vibrai-m4l", "version": "1.1.0" },
+  "python_bridge": { "name": "vibrai-python-bridge", "version": "0.1.0",
+                     "live_version": "12.4.0", "schema_version": 1 }
+}
+```
+
+If `bridge` reports `"status": "unreachable"`, the M4L device is not loaded or port 3333 is occupied by another process.
+
+<Note>
+  The `python_bridge` field covers automation read/write operations. If it is `null`, run `install_vibrai_remote_script` from your MCP client (or `vibrai install remote-script` from the CLI), restart Live, and enable Vibrai under **Preferences → Link/Tempo/MIDI → Control Surface**.
+</Note>

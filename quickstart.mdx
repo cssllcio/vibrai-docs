@@ -1,47 +1,98 @@
 ---
 title: "Quickstart"
-description: "Begin with a guide on the fastest path to a successful outcome"
+description: "Create your first Vibrai arrangement from the CLI or an MCP client."
 ---
 
-Describe how someone begins using your product. What is the first thing they need to do? Are there any prerequisites?
+This page shows the same task — a lo-fi house arrangement — done two ways: from the terminal and from an AI chat. Both paths produce the same result in Live.
 
-A quickstart should take someone from zero to using your product. They'll get a quick win and a sense of what they can accomplish.
+Before you start: Ableton Live must be open with the Vibrai M4L device loaded on a track. See [Installation](/installation) if you haven't done that yet.
 
-## Prerequisites
+## First arrangement
 
-Before you begin, you must have:
+<CodeGroup>
 
-- Requirement one (for example, Node.js 18+, a free account, an API key)
-- Requirement two (for example, a compatible device, a compatible browser, a compatible operating system)
+```bash CLI
+# 1. See what genres are available
+vibrai genre list
 
-## Get started
+# 2. Check presets for lo-fi house
+vibrai genre presets lofi-house
 
-<Steps>
-  <Step title="Install">
-    Describe how to install your product or sign up.
+# 3. Create a project file from a preset
+vibrai project init --project my-song.vibrai --genre lofi-house --preset "Tech 1"
 
-    ```bash
-    npm install your-package
-    ```
-  </Step>
-  <Step title="Configure">
-    Describe any setup or configuration needed before first use.
+# 4. Dry-run to see what will be generated
+vibrai generate --project my-song.vibrai --dry-run
 
-    ```bash
-    your-cli init
-    ```
-  </Step>
-  <Step title="Run it">
-    Show the first thing a user does to see it working.
+# 5. Render into Live
+vibrai generate --project my-song.vibrai --force
 
-    ```bash
-    your-cli start
-    ```
-  </Step>
-</Steps>
+# 6. Start playback
+vibrai transport play
+```
 
-<Tip>
-  Give people a way to get help. This could be a link to a support page, a chat with a customer support agent, or a forum for your product.
+```text MCP (Claude Desktop)
+Open Claude Desktop and type:
 
-  Example: Need help? Reach out to us at [support@yourcompany.com](mailto:support@yourcompany.com).
-</Tip>
+  Set up a new project — lo-fi house, short. Let's hear what you've got.
+
+Claude will:
+  1. Call list_genres and list_genre_presets to pick a preset
+  2. Call init_project to create a .vibrai file
+  3. Call apply_genre to populate sections, parts, and templates
+  4. Call set_tempo to the genre's default BPM
+  5. Call generate(force=true) to render session + arrangement views
+  6. Call play to start playback
+
+The whole flow takes about 30–60 seconds. You don't need to
+click anything in Live.
+```
+
+</CodeGroup>
+
+## What you get
+
+After `generate` completes, Live's session view has one scene per section (named after each section) and one clip per track per scene, filled with MIDI notes. The arrangement view has the same clips laid out left to right.
+
+## Try a different seed
+
+The generator is deterministic: same project file + same seed = same output. To get a fresh variation without changing the structure:
+
+```bash
+vibrai generate --project my-song.vibrai --force --seed 42
+```
+
+Each integer seed gives a different but reproducible result.
+
+## Capture what you built
+
+If you've been working in Live by hand and want a project file:
+
+<CodeGroup>
+
+```bash CLI
+vibrai capture --out my-session.vibrai
+```
+
+```text MCP (Claude Desktop)
+Capture what I have here into a project file called my-session.vibrai.
+```
+
+</CodeGroup>
+
+## What's next
+
+<CardGroup cols={2}>
+  <Card title="CLI Overview" icon="terminal" href="/cli/overview">
+    Global flags, JSON output, exit codes, and the full branch structure.
+  </Card>
+  <Card title="MCP Overview" icon="robot" href="/mcp/overview">
+    How tools map to engine operations and the snake_case convention.
+  </Card>
+  <Card title="Concepts" icon="book" href="/concepts">
+    `.vibrai` files, generators, theme &amp; variation.
+  </Card>
+  <Card title="Troubleshooting" icon="wrench" href="/troubleshooting">
+    Bridge connection issues and common error messages.
+  </Card>
+</CardGroup>

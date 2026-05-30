@@ -1,0 +1,82 @@
+---
+title: "Concepts"
+description: "The ideas behind Vibrai: .vibrai files, generators, and theme & variation."
+---
+
+## `.vibrai` project files
+
+A `.vibrai` file is a plain YAML text file — a song blueprint. It sits next to your `.als` file and describes:
+
+- **Sections** — the named parts of the arrangement (Verse 1, Chorus 1, Drop, etc.), their lengths, tension category, and positions.
+- **Parts** — what plays in each section: which track, which generator, and any scale or variation overrides.
+- **Templates** — arrangement-view clip placements and automation slot definitions.
+- **Generation settings** — global tempo, scale (root + name), and a deterministic seed.
+
+```yaml
+meta:
+  name: "My Song"
+
+generation:
+  scale_root: 0      # C (MIDI pitch class 0–11)
+  scale_name: Minor
+  t2m_seed: "session-1"
+
+sections:
+  - id: s1
+    name: Verse 1
+    category: Verse
+    tension: Tension
+    modifier: 1.0
+    position: 0
+
+parts:
+  - id: p_kick
+    name: Kick
+    type: Bd
+    track_id: 1
+    generator: Euclidean
+```
+
+Project files are human-readable, version-controllable, and round-trippable. The same file + the same seed always produces byte-identical output, so `.vibrai` files are a lightweight way to version-control your music. The `vibrai capture` command (CLI) or `capture_project` tool (MCP) creates a `.vibrai` from whatever is currently in your Live set — you don't have to write one from scratch.
+
+## Generators
+
+The engine ships two generators today. Each generator receives a section's tension level, the active scale, and a stable seed, and produces a set of MIDI notes:
+
+**Euclidean** — for rhythmic parts (kick, snare, hi-hat, percussion). Uses the Bjorklund algorithm to spread hits evenly across a step grid. Tension controls density: higher tension = more hits; lower tension = sparser patterns.
+
+**Ambient** — for harmonic and melodic parts (pads, chords, bass, lead, arp). Generates drop-2 chord voicings from a bank of chord progressions, chosen per tension category. Scale-aware: output respects the resolved scale for each (section, part) pair.
+
+A third generator — targeting hip-hop and melodic lead patterns — is in development for Vibrai 1.0.
+
+Genre presets (`.vibraigenre` files) wire each part type to the appropriate generator and configure section lengths, tempo, and templates. Fourteen genre libraries ship with Vibrai today.
+
+## Theme and variation
+
+A Vibrai arrangement is built around a **theme** extracted from the first section (by position). Every other section's output is derived from that theme, not from scratch — this guarantees coherence across a song.
+
+**Variation operators** let you modify the theme per-section without breaking coherence. Three operators ship today, applied in fixed order (`transpose` → `density` → `motif`) regardless of the order you write them in YAML:
+
+| Operator | Field | Effect |
+|----------|-------|--------|
+| `transpose` | `semitones` (int) | Shifts all generated pitches by N semitones |
+| `density` | `delta` (-1.0 to 1.0) | Scales step density — more or fewer hits for drums, longer or shorter notes for pads |
+| `motif` | `amount` (0.0 to 1.0) | Blends an alternate motif over the theme |
+
+Variation is **relative to the theme, not cumulative**. Section 3's output depends only on the theme + section 3's own variation block — never on section 2. This means you can re-render a single section without affecting any other, and `vibrai generate --dry-run` can preview individual sections safely.
+
+```yaml
+sections:
+  - id: s1
+    name: Verse 1
+    position: 0          # this is the theme
+
+  - id: s2
+    name: Chorus 1
+    position: 1
+    variation:
+      - { type: transpose, semitones: 5 }   # up a fourth
+      - { type: density,   delta: 0.3 }     # slightly denser
+```
+
+Scale overrides follow a **Part &gt; Section &gt; Global** precedence, resolved field-by-field. A Part can override only the root note while inheriting the Section's scale name. This lets a single section set a key for all its parts while one part (say, the arp) plays in a different mode.

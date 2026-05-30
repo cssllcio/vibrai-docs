@@ -1,0 +1,91 @@
+---
+title: "Troubleshooting"
+description: "Common issues and fixes."
+---
+
+<AccordionGroup>
+  <Accordion title="vibrai can't reach the bridge">
+    Ensure Ableton Live is open with the Vibrai M4L device loaded, then retry. The CLI talks to the bridge at `http://localhost:3333` (override with `--url` or the `VIBRAI_URL` environment variable).
+
+    Check the three most common causes:
+    1. Is Live open?
+    2. Is `vibrai.amxd` loaded on a track in the current Live set?
+    3. Is the device's Active toggle on (the power button in the device header)?
+
+    You can verify the bridge directly:
+
+    ```bash
+    curl http://localhost:3333/transport
+    ```
+
+    A healthy response looks like `{"is_playing":false,"tempo":120.0,...}`. A connection refused means the device is not loaded or Live's Max console has an error.
+  </Accordion>
+
+  <Accordion title="MCP tools don't appear in Claude Desktop">
+    Confirm the `command` path in your config file is an absolute path to an executable binary, then restart Claude Desktop fully (the MCP server is launched at app start, not on demand).
+
+    On macOS, check `~/Library/Logs/Claude/mcp*.log` for startup errors.
+
+    Smoke-test the binary directly in a terminal:
+
+    ```bash
+    (echo '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{},"clientInfo":{"name":"smoke","version":"0"}}}'
+     echo '{"jsonrpc":"2.0","id":2,"method":"tools/list"}'
+     sleep 1) | ./publish/Vibrai.Mcp/Vibrai.Mcp 2>/dev/null
+    ```
+
+    You should see a `tools/list` response listing all 62 tools.
+  </Accordion>
+
+  <Accordion title="generate fails with 'target tracks already contain clips'">
+    `vibrai generate` is non-destructive by default. Add `--force` once you have reviewed the dry-run output:
+
+    ```bash
+    vibrai generate --project my-song.vibrai --dry-run   # preview
+    vibrai generate --project my-song.vibrai --force     # write
+    ```
+
+    The equivalent MCP parameter is `force: true` on the `generate` tool.
+  </Accordion>
+
+  <Accordion title="Automation write returns PYTHON_BRIDGE_UNAVAILABLE">
+    Session-view automation reads and writes route through the Vibrai Python remote script (`localhost:3334`), not the M4L bridge. If it is not running:
+
+    1. Call `install_vibrai_remote_script` (MCP) or `vibrai install remote-script` (CLI).
+    2. Restart Ableton Live.
+    3. Open **Preferences → Link/Tempo/MIDI** and set one Control Surface dropdown to **Vibrai**.
+    4. Call `get_version` to confirm the `python_bridge` field is populated.
+  </Accordion>
+
+  <Accordion title="vibrai --version shows '(unreachable)' for the bridge">
+    This is expected when Live is not open or the device is not loaded. The CLI version still printed, confirming the install is working. Commands that only read project files will work offline. Commands that talk to Live will return a clear `bridge unreachable` error (exit code 2).
+  </Accordion>
+
+  <Accordion title="Track IDs shifted after reordering tracks in Live">
+    Positional track IDs (`id` in `list_tracks`) are 0-based indices that can shift when you reorder, add, or delete tracks. Re-run `vibrai track list` (or call `list_tracks` via MCP) after any reorder to get current IDs.
+
+    For multi-step workflows that operate on the same track over time, use `liveset_id` (returned by `list_tracks`). It is stable within one Live session — it survives reorders, renames, and inserts. Pass it with `--liveset-id` on `track rename` and `track delete`, or as `liveset_id` on the MCP equivalents.
+  </Accordion>
+
+  <Accordion title="Drum kit loads but produces no sound">
+    `load_device --part-type bd` resolves to an empty Drum Rack. To get a kit with samples, browse for a kit preset file first:
+
+    ```bash
+    vibrai device browse "Drums"
+    vibrai device load 1 --path "Drums/Kit-Core 909.adg"
+    ```
+
+    From MCP: call `browse_devices("Drums")` to see available kits, then `load_device` with the `.adg` path. Tonal part types (bass, pad, lead) load synthesizers that make sound immediately without this extra step.
+  </Accordion>
+</AccordionGroup>
+
+## Log locations
+
+| Source | Location |
+|--------|----------|
+| CLI (with `--log-file`) | Path you specify |
+| MCP server (with `VIBRAI_LOG_FILE`) | Path you specify |
+| Claude Desktop MCP wrapper | `~/Library/Logs/Claude/mcp*.log` (macOS) |
+| M4L device (Express server) | Live's Max console |
+
+For deeper CLI tracing, add `--log-level Debug --log-file /tmp/vibrai.log` to any command. For the MCP server, set `VIBRAI_LOG_LEVEL=Debug` and `VIBRAI_LOG_FILE=/tmp/vibrai-mcp.log` in the server config.
