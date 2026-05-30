@@ -3,7 +3,7 @@ title: "MCP Overview"
 description: "Connect an MCP client and drive Ableton Live with Vibrai's tools."
 ---
 
-The Vibrai MCP server exposes 62 tools that give an AI assistant direct, bidirectional control over Ableton Live. You describe what you want in plain language — "create a four-bar bass loop in D minor" or "build a minimal techno track with three sections" — and the assistant calls the right sequence of tools while you watch the results appear in Live.
+The Vibrai MCP server gives an AI assistant direct, bidirectional control over Ableton Live. You describe what you want in plain language — "create a four-bar bass loop in D minor" or "build a minimal techno track with three sections" — and the assistant calls the right sequence of tools while you watch the results appear in Live.
 
 ## How the connection works
 
@@ -37,27 +37,9 @@ Restart Claude Desktop. Open a new conversation — the Vibrai tools will be ava
 
 ## How tools map to engine operations
 
-Each MCP tool corresponds directly to a method on the underlying engine or bridge. The 62 tools are grouped by surface area:
+Each MCP tool corresponds directly to a method on the underlying engine or bridge. Tools are grouped by domain: transport, tracks, clips, notes, follow actions, automation, devices, instruments, scenes, arrangement, scales, project, genre, generation, capture, and install.
 
-| Group | Tools |
-|-------|-------|
-| Transport | `get_transport`, `set_tempo`, `play`, `stop`, `seek` |
-| Tracks | `list_tracks`, `create_track`, `delete_track`, `set_track_name` |
-| Clips | `list_clips`, `get_clip`, `create_clip`, `delete_clip`, `fire_clip`, `set_clip_name` |
-| Notes | `list_notes`, `write_notes`, `add_notes` |
-| Scenes | `list_scenes`, `create_scene`, `delete_scene`, `set_scene_name` |
-| Follow actions | `get_follow_actions`, `set_follow_actions` |
-| Automation | `list_automation_params`, `get_automation`, `write_automation`, `clear_automation`, `clear_all_automation`, `bounce_arrangement_automation`, `apply_automation_template`, `list_automation_slots` |
-| Scale | `get_active_scale`, `set_active_scale` |
-| Arrangement | `get_arrangement_clips`, `place_arrangement_clip`, `clear_arrangement_for_tracks`, `clear_arrangement_all` |
-| Project | `init_project`, `load_project`, `save_project`, `project_info` |
-| Generation | `plan`, `generate` |
-| Capture | `capture_project` |
-| Devices | `load_device`, `browse_devices`, `list_devices`, `get_default_instrument` |
-| Genre library | `list_genres`, `list_genre_presets`, `apply_genre` |
-| Instrument tags | `find_instruments_by_tag`, `refresh_instrument_tags`, `tag_instrument`, `untag_instrument`, `show_instrument`, `list_browser_items`, `install_vibrai_remote_script` |
-| Install / onboarding | `install_device`, `start_hello_demo`, `start_first_song` |
-| Version | `get_version` |
+See the **[Reference](/reference/transport)** section for every tool, its parameters, and the matching CLI command.
 
 ## snake_case parameter convention
 
@@ -75,9 +57,9 @@ The fastest way to hear Vibrai in action through MCP is the first-song wizard:
 Build a lofi-house song, medium length.
 ```
 
-The assistant calls `start_first_song(vibe="lofi-house", length="medium")`, which returns a step-by-step recipe. It then executes the recipe: list genres, init a project, apply the genre preset, set tempo, load instruments, generate. A full arrangement appears in Live in about 30–60 seconds.
+The assistant calls `start_first_song(vibe="lofi-house", length="medium")`, which returns a step-by-step recipe. It then executes the recipe: Claude assembles a complete project and saves it, then loads instruments, generates the parts, and starts playback. A full arrangement appears in Live in about 30–60 seconds.
 
-Verified vibes: `lofi-house`, `minimal-techno`, `ambient-techno`, `ambient-downtempo`.
+Supported vibes: `ambient-techno` (default), `lofi-house`, `deep-house`, `ambient-downtempo`, `minimal-techno`.
 
 ## Reference pages
 

@@ -3,7 +3,7 @@ title: "Quickstart"
 description: "Create your first Vibrai arrangement from the CLI or an MCP client."
 ---
 
-This page shows the same task — a lo-fi house arrangement — done two ways: from the terminal and from an AI chat. Both paths produce the same result in Live.
+This page shows the same task — a house arrangement — done two ways: from the terminal and from an AI chat. Both paths produce the same result in Live.
 
 Before you start: Ableton Live must be open with the Vibrai M4L device loaded on a track. See [Installation](/installation) if you haven't done that yet.
 
@@ -15,11 +15,11 @@ Before you start: Ableton Live must be open with the Vibrai M4L device loaded on
 # 1. See what genres are available
 vibrai genre list
 
-# 2. Check presets for lo-fi house
-vibrai genre presets lofi-house
+# 2. Check presets for house
+vibrai genre presets house
 
 # 3. Create a project file from a preset
-vibrai project init --project my-song.vibrai --genre lofi-house --preset "Tech 1"
+vibrai project init --project my-song.vibrai --genre house --preset "Tech 1"
 
 # 4. Dry-run to see what will be generated
 vibrai generate --project my-song.vibrai --dry-run
@@ -34,15 +34,10 @@ vibrai transport play
 ```text MCP (Claude Desktop)
 Open Claude Desktop and type:
 
-  Set up a new project — lo-fi house, short. Let's hear what you've got.
+  Set up a new project — house, short. Let's hear what you've got.
 
-Claude will:
-  1. Call list_genres and list_genre_presets to pick a preset
-  2. Call init_project to create a .vibrai file
-  3. Call apply_genre to populate sections, parts, and templates
-  4. Call set_tempo to the genre's default BPM
-  5. Call generate(force=true) to render session + arrangement views
-  6. Call play to start playback
+Claude assembles a complete project and saves it, then loads
+instruments, generates the parts, and starts playback.
 
 The whole flow takes about 30–60 seconds. You don't need to
 click anything in Live.
