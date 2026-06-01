@@ -24,8 +24,8 @@ vibrai project init --project my-song.vibrai --genre house --preset "Tech 1"
 # 4. Dry-run to see what will be generated
 vibrai generate --project my-song.vibrai --dry-run
 
-# 5. Render into Live
-vibrai generate --project my-song.vibrai --force
+# 5. Render into Live, loading a default instrument on each track
+vibrai generate --project my-song.vibrai --force --with-instruments
 
 # 6. Start playback
 vibrai transport play
@@ -44,6 +44,10 @@ click anything in Live.
 ```
 
 </CodeGroup>
+
+<Note>
+  `--with-instruments` loads a default instrument on each track so the arrangement makes sound immediately — without it, `generate` writes MIDI to empty tracks. To load defaults onto an existing arrangement instead, use `vibrai device load-defaults` (or the `load_default_instruments` MCP tool).
+</Note>
 
 ## What you get
 

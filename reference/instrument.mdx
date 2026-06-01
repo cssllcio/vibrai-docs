@@ -105,6 +105,16 @@ vibrai instrument suggest --prefix <PATH> --pattern-set <NAME>
   Pattern set to use. Only 'default' is supported.
 </ParamField>
 
+### `instrument refresh`
+
+Rescan the browser snapshot via the Vibrai Live remote script
+
+```bash
+vibrai instrument refresh
+```
+
+
+
 ## MCP tools
 
 ### `find_instruments_by_tag`
@@ -130,7 +140,7 @@ Find user presets tagged 'vibrai:&lt;suffix>'. Returns all matches: their browse
 
 ### `refresh_instrument_tags`
 
-Ask the Vibrai Live remote script to rescan the browser. Touches the trigger file and waits up to 5 seconds for the browser snapshot to be rewritten. Returns the new scanned_at + item_count, or INSTRUMENT_TAG_SCRIPT_NOT_RUNNING if the script doesn't respond. If you get the not-running error, run install_vibrai_remote_script and make sure Vibrai is enabled in Live's Preferences → Link/Tempo/MIDI → Control Surface.
+Ask the Vibrai Live remote script to rescan the browser. Touches the trigger file and waits up to 30 seconds for the browser snapshot to be rewritten. Returns the new scanned_at + item_count, or INSTRUMENT_TAG_SCRIPT_NOT_RUNNING if the script doesn't respond. If you get the not-running error, run install_vibrai_remote_script and make sure Vibrai is enabled in Live's Preferences → Link/Tempo/MIDI → Control Surface. CLI: `vibrai instrument refresh`.
 
 ```json
 {

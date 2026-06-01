@@ -46,7 +46,9 @@
           "reference/install",
           "reference/generation",
           "reference/capture",
-          "reference/version"
+          "reference/license",
+          "reference/version",
+          "reference/update"
         ]
       },
       {

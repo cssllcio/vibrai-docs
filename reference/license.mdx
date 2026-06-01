@@ -1,0 +1,80 @@
+---
+title: "License"
+description: "Activate, deactivate, and check the Vibrai license / trial status. Activation and deactivation are CLI-only by design — both mutate the customer's machine-seat count and bind a key to a machine, so they are human-initiated, not agent-driven. The MCP surface (LicenseTools) exposes the non-destructive half: read status and idempotent recheck."
+---
+
+{/* GENERATED — do not edit by hand. Regenerate with `npm run generate:reference`. */}
+
+Activate, deactivate, and check the Vibrai license / trial status. Activation and deactivation are CLI-only by design — both mutate the customer's machine-seat count and bind a key to a machine, so they are human-initiated, not agent-driven. The MCP surface (LicenseTools) exposes the non-destructive half: read status and idempotent recheck.
+
+## Command line
+
+### `license activate`
+
+Activate a license key on this machine
+
+```bash
+vibrai license activate <key>
+```
+
+<ParamField path="key" required>
+  The license key from your purchase confirmation email
+</ParamField>
+
+### `license deactivate`
+
+Release this machine's seat
+
+```bash
+vibrai license deactivate
+```
+
+
+
+### `license status`
+
+Show license / trial status
+
+```bash
+vibrai license status
+```
+
+
+
+### `license recheck`
+
+Force an online license re-validation
+
+```bash
+vibrai license recheck
+```
+
+
+
+## MCP tools
+
+### `get_license_status`
+
+Get the current Vibrai license / trial status: state (trial, activated, offline_grace, trial_expired, license_unverifiable), whether features are enabled, trial days remaining, and the offline-grace day count. Read-only.
+
+```json
+{
+  "tool": "get_license_status",
+  "arguments": {}
+}
+```
+
+
+
+### `recheck_license`
+
+Force an online re-validation of the activated license against Lemon Squeezy and return the refreshed status. Idempotent — does not consume or release a seat. Use this to clear an offline-grace banner once back online. To ACTIVATE or DEACTIVATE a license, use the `vibrai license` CLI commands (CLI-only by design).
+
+```json
+{
+  "tool": "recheck_license",
+  "arguments": {}
+}
+```
+
+

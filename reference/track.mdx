@@ -94,6 +94,27 @@ List all tracks in the current Live set. Track `id` is 1-based. `midi_index` is 
 
 
 
+### `get_track`
+
+Get a single track. Pass either track_id (positional, 1-based) or liveset_id (stable across reorders within one Live session — get it from list_tracks). liveset_id wins if both are supplied. Returns the track in the same shape as list_tracks (1-based `id` and `midi_index`). Errors TRACK_NOT_FOUND if no such track exists.
+
+```json
+{
+  "tool": "get_track",
+  "arguments": {
+    "track_id": "<String>",
+    "liveset_id": "<String>"
+  }
+}
+```
+
+<ParamField path="track_id" type="String" required>
+  Positional track number (1-based: 1, 2, … or 'first', 'second', …)
+</ParamField>
+<ParamField path="liveset_id" type="String" required>
+  Stable liveset_id from list_tracks; preferred over track_id when available.
+</ParamField>
+
 ### `create_track`
 
 Create a new MIDI track of the given part type.
