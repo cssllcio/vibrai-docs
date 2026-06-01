@@ -14,7 +14,7 @@ Initialize, load, save, and inspect Vibrai project files.
 Initialize a new .vibrai project file
 
 ```bash
-vibrai project init --name <NAME> --project <PATH> --demo --genre <NAME> --preset <ID>
+vibrai project init --name <NAME> --project <PATH> --demo --genre <NAME> --preset <PRESET>
 ```
 
 <ParamField path="--name">
@@ -30,7 +30,7 @@ vibrai project init --name <NAME> --project <PATH> --demo --genre <NAME> --prese
   Seed from a genre library by id or display name (run 'vibrai genre list')
 </ParamField>
 <ParamField path="--preset">
-  Preset id within --genre (default: first preset alphabetically)
+  Preset id or display name within --genre (default: first preset alphabetically)
 </ParamField>
 
 ### `project load`

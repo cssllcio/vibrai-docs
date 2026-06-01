@@ -14,17 +14,20 @@ Install the Vibrai M4L device and Python remote script.
 Install the Vibrai Max-for-Live device + JS bridge into Live's User Library
 
 ```bash
-vibrai install device --force --source <PATH> --dest <PATH>
+vibrai install device --force --source <PATH> --dest <PATH> --user <NAME>
 ```
 
 <ParamField path="--force">
   Overwrite an existing install whose files differ from the source.
 </ParamField>
 <ParamField path="--source">
-  [advanced] Override the source directory (test/debug use).
+  [[advanced]] Override the source directory (test/debug use).
 </ParamField>
 <ParamField path="--dest">
-  [advanced] Override the destination directory (test/debug use).
+  [[advanced]] Override the destination directory (test/debug use).
+</ParamField>
+<ParamField path="--user">
+  Install into &lt;name>'s home directory instead of the current user's. Used by the macOS .pkg postinstall to deposit files into the real installing user's Ableton User Library when running as root.
 </ParamField>
 
 ### `install remote-script`
@@ -32,17 +35,20 @@ vibrai install device --force --source <PATH> --dest <PATH>
 Install the Vibrai Python remote script into Live's User Library
 
 ```bash
-vibrai install remote-script --force --source <PATH> --dest <PATH>
+vibrai install remote-script --force --source <PATH> --dest <PATH> --user <NAME>
 ```
 
 <ParamField path="--force">
   Overwrite an existing install whose files differ from the source.
 </ParamField>
 <ParamField path="--source">
-  [advanced] Override the source directory (test/debug use).
+  [[advanced]] Override the source directory (test/debug use).
 </ParamField>
 <ParamField path="--dest">
-  [advanced] Override the destination directory (test/debug use).
+  [[advanced]] Override the destination directory (test/debug use).
+</ParamField>
+<ParamField path="--user">
+  Install into &lt;name>'s home directory instead of the current user's. Used by the macOS .pkg postinstall to deposit files into the real installing user's Ableton User Library when running as root.
 </ParamField>
 
 ### `install all`
@@ -50,11 +56,14 @@ vibrai install remote-script --force --source <PATH> --dest <PATH>
 Run both `install device` and `install remote-script`
 
 ```bash
-vibrai install all --force
+vibrai install all --force --user <NAME>
 ```
 
 <ParamField path="--force">
   Overwrite existing installs whose files differ from the source.
+</ParamField>
+<ParamField path="--user">
+  Install into &lt;name>'s home directory instead of the current user's. Used by the macOS .pkg postinstall to deposit files into the real installing user's Ableton User Library when running as root.
 </ParamField>
 
 ## MCP tools

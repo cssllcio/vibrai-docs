@@ -1,6 +1,6 @@
 {
   "engineVersion": "1.0.0.0",
-  "generatedAt": "2026-05-30T02:42:12Z",
+  "generatedAt": "2026-06-01T06:23:46Z",
   "features": [
     {
       "id": "transport",
@@ -194,6 +194,24 @@
             "parameters": []
           },
           {
+            "name": "get_track",
+            "description": "Get a single track. Pass either track_id (positional, 1-based) or liveset_id (stable across reorders within one Live session \u2014 get it from list_tracks). liveset_id wins if both are supplied. Returns the track in the same shape as list_tracks (1-based \u0060id\u0060 and \u0060midi_index\u0060). Errors TRACK_NOT_FOUND if no such track exists.",
+            "parameters": [
+              {
+                "name": "track_id",
+                "type": "String",
+                "required": true,
+                "description": "Positional track number (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
+              },
+              {
+                "name": "liveset_id",
+                "type": "String",
+                "required": true,
+                "description": "Stable liveset_id from list_tracks; preferred over track_id when available."
+              }
+            ]
+          },
+          {
             "name": "create_track",
             "description": "Create a new MIDI track of the given part type.",
             "parameters": [
@@ -346,6 +364,19 @@
               }
             ],
             "options": []
+          },
+          {
+            "name": "device load-defaults",
+            "description": "Load default instruments for all parts in a .vibrai project",
+            "arguments": [],
+            "options": [
+              {
+                "name": "--project",
+                "valueName": "PATH",
+                "default": null,
+                "description": "Path to the .vibrai file whose parts get their default instruments"
+              }
+            ]
           }
         ]
       },
@@ -432,6 +463,18 @@
                 "type": "PartType",
                 "required": true,
                 "description": "PartType to resolve"
+              }
+            ]
+          },
+          {
+            "name": "load_default_instruments",
+            "description": "Load each MIDI part\u0027s default instrument from a .vibrai project onto its track, so the rendered song is audible. Tonal parts get their resolved synth (defaults.instruments override or built-in); drum parts get a stock kit (.adg) auto-picked from the browser snapshot, falling back to an empty Drum Rack \u002B warning when none is available. Idempotent: a track that already has a device is skipped. Run this after \u0060generate\u0060 (or pass with_instruments=true to generate).",
+            "parameters": [
+              {
+                "name": "project_path",
+                "type": "String",
+                "required": true,
+                "description": "Path to the .vibrai file (defaults to Untitled.vibrai in CWD when omitted)"
               }
             ]
           }
@@ -576,6 +619,12 @@
                 "description": "Pattern set to use. Only \u0027default\u0027 is supported."
               }
             ]
+          },
+          {
+            "name": "instrument refresh",
+            "description": "Rescan the browser snapshot via the Vibrai Live remote script",
+            "arguments": [],
+            "options": []
           }
         ]
       },
@@ -601,7 +650,7 @@
           },
           {
             "name": "refresh_instrument_tags",
-            "description": "Ask the Vibrai Live remote script to rescan the browser. Touches the trigger file and waits up to 5 seconds for the browser snapshot to be rewritten. Returns the new scanned_at \u002B item_count, or INSTRUMENT_TAG_SCRIPT_NOT_RUNNING if the script doesn\u0027t respond. If you get the not-running error, run install_vibrai_remote_script and make sure Vibrai is enabled in Live\u0027s Preferences \u2192 Link/Tempo/MIDI \u2192 Control Surface.",
+            "description": "Ask the Vibrai Live remote script to rescan the browser. Touches the trigger file and waits up to 30 seconds for the browser snapshot to be rewritten. Returns the new scanned_at \u002B item_count, or INSTRUMENT_TAG_SCRIPT_NOT_RUNNING if the script doesn\u0027t respond. If you get the not-running error, run install_vibrai_remote_script and make sure Vibrai is enabled in Live\u0027s Preferences \u2192 Link/Tempo/MIDI \u2192 Control Surface. CLI: \u0060vibrai instrument refresh\u0060.",
             "parameters": []
           },
           {
@@ -1866,9 +1915,9 @@
               },
               {
                 "name": "--preset",
-                "valueName": "ID",
+                "valueName": "PRESET",
                 "default": null,
-                "description": "Preset id within --genre (default: first preset alphabetically)"
+                "description": "Preset id or display name within --genre (default: first preset alphabetically)"
               }
             ]
           },
@@ -2413,7 +2462,7 @@
               {
                 "name": "preset",
                 "required": false,
-                "description": "Preset id within the genre (from \u0060vibrai genre presets \u003Cgenre\u003E\u0060)."
+                "description": "Preset id or display name within the genre (from \u0060vibrai genre presets \u003Cgenre\u003E\u0060)."
               },
               {
                 "name": "project-path",
@@ -2477,7 +2526,7 @@
                 "name": "preset",
                 "type": "String",
                 "required": true,
-                "description": "Preset id within the genre (from list_genre_presets)."
+                "description": "Preset id or display name within the genre (from list_genre_presets)."
               },
               {
                 "name": "project_path",
@@ -2512,13 +2561,19 @@
                 "name": "--source",
                 "valueName": "PATH",
                 "default": null,
-                "description": "[advanced] Override the source directory (test/debug use)."
+                "description": "[[advanced]] Override the source directory (test/debug use)."
               },
               {
                 "name": "--dest",
                 "valueName": "PATH",
                 "default": null,
-                "description": "[advanced] Override the destination directory (test/debug use)."
+                "description": "[[advanced]] Override the destination directory (test/debug use)."
+              },
+              {
+                "name": "--user",
+                "valueName": "NAME",
+                "default": null,
+                "description": "Install into \u003Cname\u003E\u0027s home directory instead of the current user\u0027s. Used by the macOS .pkg postinstall to deposit files into the real installing user\u0027s Ableton User Library when running as root."
               }
             ]
           },
@@ -2537,13 +2592,19 @@
                 "name": "--source",
                 "valueName": "PATH",
                 "default": null,
-                "description": "[advanced] Override the source directory (test/debug use)."
+                "description": "[[advanced]] Override the source directory (test/debug use)."
               },
               {
                 "name": "--dest",
                 "valueName": "PATH",
                 "default": null,
-                "description": "[advanced] Override the destination directory (test/debug use)."
+                "description": "[[advanced]] Override the destination directory (test/debug use)."
+              },
+              {
+                "name": "--user",
+                "valueName": "NAME",
+                "default": null,
+                "description": "Install into \u003Cname\u003E\u0027s home directory instead of the current user\u0027s. Used by the macOS .pkg postinstall to deposit files into the real installing user\u0027s Ableton User Library when running as root."
               }
             ]
           },
@@ -2557,6 +2618,12 @@
                 "valueName": null,
                 "default": null,
                 "description": "Overwrite existing installs whose files differ from the source."
+              },
+              {
+                "name": "--user",
+                "valueName": "NAME",
+                "default": null,
+                "description": "Install into \u003Cname\u003E\u0027s home directory instead of the current user\u0027s. Used by the macOS .pkg postinstall to deposit files into the real installing user\u0027s Ableton User Library when running as root."
               }
             ]
           }
@@ -2656,6 +2723,12 @@
                 "valueName": null,
                 "default": null,
                 "description": "Continue when arrangement-automation entries cannot be resolved; default fails fast."
+              },
+              {
+                "name": "--with-instruments",
+                "valueName": null,
+                "default": null,
+                "description": "After rendering, load each part\u0027s default instrument (drum kits for drum parts) so the song is audible."
               }
             ]
           },
@@ -2721,6 +2794,12 @@
                 "type": "Boolean",
                 "required": true,
                 "description": "Continue when arrangement-automation entries cannot be resolved; default fails fast."
+              },
+              {
+                "name": "with_instruments",
+                "type": "Boolean",
+                "required": true,
+                "description": "After rendering, load each part\u0027s default instrument (drum kits for drum parts) so the song is audible."
               },
               {
                 "name": "seed",
@@ -2821,6 +2900,60 @@
       }
     },
     {
+      "id": "license",
+      "title": "License",
+      "description": "Activate, deactivate, and check the Vibrai license / trial status. Activation and deactivation are CLI-only by design \u2014 both mutate the customer\u0027s machine-seat count and bind a key to a machine, so they are human-initiated, not agent-driven. The MCP surface (LicenseTools) exposes the non-destructive half: read status and idempotent recheck.",
+      "cli": {
+        "branch": "license",
+        "commands": [
+          {
+            "name": "license activate",
+            "description": "Activate a license key on this machine",
+            "arguments": [
+              {
+                "name": "key",
+                "required": true,
+                "description": "The license key from your purchase confirmation email"
+              }
+            ],
+            "options": []
+          },
+          {
+            "name": "license deactivate",
+            "description": "Release this machine\u0027s seat",
+            "arguments": [],
+            "options": []
+          },
+          {
+            "name": "license status",
+            "description": "Show license / trial status",
+            "arguments": [],
+            "options": []
+          },
+          {
+            "name": "license recheck",
+            "description": "Force an online license re-validation",
+            "arguments": [],
+            "options": []
+          }
+        ]
+      },
+      "mcp": {
+        "tools": [
+          {
+            "name": "get_license_status",
+            "description": "Get the current Vibrai license / trial status: state (trial, activated, offline_grace, trial_expired, license_unverifiable), whether features are enabled, trial days remaining, and the offline-grace day count. Read-only.",
+            "parameters": []
+          },
+          {
+            "name": "recheck_license",
+            "description": "Force an online re-validation of the activated license against Lemon Squeezy and return the refreshed status. Idempotent \u2014 does not consume or release a seat. Use this to clear an offline-grace banner once back online. To ACTIVATE or DEACTIVATE a license, use the \u0060vibrai license\u0060 CLI commands (CLI-only by design).",
+            "parameters": []
+          }
+        ]
+      }
+    },
+    {
       "id": "version",
       "title": "Version",
       "description": "Show CLI, M4L bridge, and Python bridge versions.",
@@ -2839,8 +2972,77 @@
         "tools": [
           {
             "name": "get_version",
-            "description": "Get the running Vibrai.Mcp server version (assembly) and the M4L bridge version (package.json). Bridge version is best-effort: if the bridge is unreachable or times out, the response still includes the MCP version with a bridge_status indicating the failure.",
+            "description": "Get the running Vibrai.Mcp server version (assembly) and the M4L bridge version (package.json), plus a best-effort license block (status, features_enabled, days_remaining). Bridge version is best-effort: if the bridge is unreachable or times out, the response still includes the MCP version with a bridge_status indicating the failure.",
             "parameters": []
+          }
+        ]
+      }
+    },
+    {
+      "id": "update",
+      "title": "Update",
+      "description": "Check for and apply self-updates to the Vibrai CLI, Max-for-Live device, and Python remote script. Scope: CLI binary \u002B M4L device \u002B Python remote script only \u2014 the MCP server binary is managed by Claude Desktop\u0027s extension manager. Supports check-only, interactive/non-interactive apply, force reinstall, and rollback to the previously installed binary.",
+      "cli": {
+        "branch": "update",
+        "commands": [
+          {
+            "name": "update",
+            "description": "Check for and optionally apply the latest Vibrai release",
+            "arguments": [],
+            "options": [
+              {
+                "name": "--check",
+                "valueName": null,
+                "default": null,
+                "description": "Only report whether an update is available; make no changes."
+              },
+              {
+                "name": "--yes",
+                "valueName": null,
+                "default": null,
+                "description": "Apply without the confirmation prompt (required for non-interactive use)."
+              },
+              {
+                "name": "--force",
+                "valueName": null,
+                "default": null,
+                "description": "Reinstall the latest release even if already up to date."
+              },
+              {
+                "name": "--rollback",
+                "valueName": null,
+                "default": null,
+                "description": "Restore the previously installed CLI binary from backup."
+              }
+            ]
+          }
+        ]
+      },
+      "mcp": {
+        "tools": [
+          {
+            "name": "update",
+            "description": "Check for and optionally install the latest Vibrai release. By default (apply=false) this only reports whether an update is available. Pass apply=true to download \u002B verify (SHA-256) \u002B swap the vibrai CLI binary and reinstall the Max-for-Live device \u002B Python remote script (via the same installer as install_device / install_vibrai_remote_script). Scope: CLI binary \u002B M4L \u002B Python only \u2014 it does NOT update this MCP server binary, which is managed by Claude Desktop\u0027s extension manager. If Ableton Live is running during an apply, M4L/Python changes take effect after you restart Live. Returns the current/latest version, update_available, per-component status, and (on apply) the actions taken.",
+            "parameters": [
+              {
+                "name": "apply",
+                "type": "Boolean",
+                "required": false,
+                "description": "Apply the update (download \u002B swap \u002B reinstall). Default false = check only."
+              },
+              {
+                "name": "force",
+                "type": "Boolean",
+                "required": false,
+                "description": "Reinstall even if already up to date (default false)."
+              },
+              {
+                "name": "rollback",
+                "type": "Boolean",
+                "required": false,
+                "description": "Roll back to the previously installed CLI binary (default false)."
+              }
+            ]
           }
         ]
       }

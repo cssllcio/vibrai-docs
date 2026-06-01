@@ -14,7 +14,7 @@ Generate or plan a composition from a .vibrai project file.
 Generate clips and arrangement from an .vibrai project file
 
 ```bash
-vibrai generate --project <PATH> --force --dry-run --seed <VALUE> --allow-skip
+vibrai generate --project <PATH> --force --dry-run --seed <VALUE> --allow-skip --with-instruments
 ```
 
 <ParamField path="--project">
@@ -31,6 +31,9 @@ vibrai generate --project <PATH> --force --dry-run --seed <VALUE> --allow-skip
 </ParamField>
 <ParamField path="--allow-skip">
   Continue when arrangement-automation entries cannot be resolved; default fails fast.
+</ParamField>
+<ParamField path="--with-instruments">
+  After rendering, load each part's default instrument (drum kits for drum parts) so the song is audible.
 </ParamField>
 
 ### `plan`
@@ -82,6 +85,7 @@ Plan + render a composition into Live's session view and arrangement view. Requi
     "project_path": "<String>",
     "force": "<Boolean>",
     "allow_skip": "<Boolean>",
+    "with_instruments": "<Boolean>",
     "seed": "<Nullable`1>"
   }
 }
@@ -95,6 +99,9 @@ Plan + render a composition into Live's session view and arrangement view. Requi
 </ParamField>
 <ParamField path="allow_skip" type="Boolean" required>
   Continue when arrangement-automation entries cannot be resolved; default fails fast.
+</ParamField>
+<ParamField path="with_instruments" type="Boolean" required>
+  After rendering, load each part's default instrument (drum kits for drum parts) so the song is audible.
 </ParamField>
 <ParamField path="seed" type="Nullable`1" required>
   Optional seed override

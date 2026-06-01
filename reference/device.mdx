@@ -81,6 +81,18 @@ vibrai device delete <track> <device-index>
   Device chain position (1-based: 1 = first device in the chain)
 </ParamField>
 
+### `device load-defaults`
+
+Load default instruments for all parts in a .vibrai project
+
+```bash
+vibrai device load-defaults --project <PATH>
+```
+
+<ParamField path="--project">
+  Path to the .vibrai file whose parts get their default instruments
+</ParamField>
+
 ## MCP tools
 
 ### `load_device`
@@ -182,4 +194,21 @@ Return the resolved browser path for a part-type (defaults.instruments override 
 
 <ParamField path="part_type" type="PartType" required>
   PartType to resolve
+</ParamField>
+
+### `load_default_instruments`
+
+Load each MIDI part's default instrument from a .vibrai project onto its track, so the rendered song is audible. Tonal parts get their resolved synth (defaults.instruments override or built-in); drum parts get a stock kit (.adg) auto-picked from the browser snapshot, falling back to an empty Drum Rack + warning when none is available. Idempotent: a track that already has a device is skipped. Run this after `generate` (or pass with_instruments=true to generate).
+
+```json
+{
+  "tool": "load_default_instruments",
+  "arguments": {
+    "project_path": "<String>"
+  }
+}
+```
+
+<ParamField path="project_path" type="String" required>
+  Path to the .vibrai file (defaults to Untitled.vibrai in CWD when omitted)
 </ParamField>

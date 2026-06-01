@@ -122,3 +122,60 @@ If `bridge` reports `"status": "unreachable"`, the M4L device is not loaded or p
 <Note>
   The `python_bridge` field covers automation read/write operations. If it is `null`, run `install_vibrai_remote_script` from your MCP client (or `vibrai install remote-script` from the CLI), restart Live, and enable Vibrai under **Preferences → Link/Tempo/MIDI → Control Surface**.
 </Note>
+
+## Activate your license
+
+Vibrai runs as a time-limited trial until you activate a license key. Activation binds your purchased key to this machine and is **CLI-only by design** — it changes your seat count, so it is never performed by an AI agent.
+
+<CodeGroup>
+
+```bash CLI
+# Activate the key from your purchase confirmation email
+vibrai license activate VIBRAI-XXXX-XXXX-XXXX
+
+# Check trial or activation status at any time
+vibrai license status
+```
+
+```text MCP (Claude Desktop)
+Activation is CLI-only. From an MCP client you can still read status:
+
+  What's my Vibrai license status?
+
+Claude calls get_license_status (read-only). To clear an offline-grace
+banner after reconnecting, ask it to recheck the license.
+```
+
+</CodeGroup>
+
+See the [License reference](/reference/license) for every command and the read-only MCP tools.
+
+## Keep Vibrai up to date
+
+Vibrai updates itself in place — the CLI binary, the Max for Live device, and the Python remote script. The MCP server binary is managed separately by Claude Desktop's extension manager, so `vibrai update` does not touch it.
+
+<CodeGroup>
+
+```bash CLI
+# See whether a newer release is available — makes no changes
+vibrai update --check
+
+# Download, verify (SHA-256), and apply the latest release
+vibrai update --yes
+
+# Roll back to the previously installed binary
+vibrai update --rollback
+```
+
+```text MCP (Claude Desktop)
+Ask Claude:
+
+  Check for a Vibrai update.            (calls update — report only)
+  Update Vibrai to the latest version.  (calls update with apply=true)
+```
+
+</CodeGroup>
+
+<Note>
+  If Ableton Live is open during an update, the device and remote-script changes take effect after you restart Live.
+</Note>

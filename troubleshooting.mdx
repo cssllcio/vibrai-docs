@@ -77,6 +77,49 @@ description: "Common issues and fixes."
 
     From MCP: call `browse_devices("Drums")` to see available kits, then `load_device` with the `.adg` path. Tonal part types (bass, pad, lead) load synthesizers that make sound immediately without this extra step.
   </Accordion>
+
+  <Accordion title="generate wrote clips but they play no sound">
+    By default `vibrai generate` writes MIDI to empty tracks — nothing plays until each track has an instrument. Generate with instruments in one step, or load defaults onto an existing arrangement:
+
+    ```bash
+    vibrai generate --project my-song.vibrai --force --with-instruments
+    vibrai device load-defaults --project my-song.vibrai
+    ```
+
+    From MCP, the guided `generate` flow loads instruments for you; to load defaults onto a set that already has clips, call `load_default_instruments`. If a drum rack loads but stays silent, see the kit note above.
+  </Accordion>
+
+  <Accordion title="Features are disabled or a trial/license banner appears">
+    Check your license or trial state:
+
+    ```bash
+    vibrai license status
+    ```
+
+    If the trial has expired, activate the key from your purchase email (activation is CLI-only):
+
+    ```bash
+    vibrai license activate VIBRAI-XXXX-XXXX-XXXX
+    ```
+
+    If you were offline and now see an offline-grace banner, force a re-validation once you are back online:
+
+    ```bash
+    vibrai license recheck
+    ```
+
+    From MCP you can read status with `get_license_status` and clear an offline-grace banner with `recheck_license` — both are read-only. Activation and deactivation stay on the CLI by design.
+  </Accordion>
+
+  <Accordion title="An update failed, or you want to undo one">
+    Roll back to the binary you had before the last update:
+
+    ```bash
+    vibrai update --rollback
+    ```
+
+    To check for an update without applying it, use `vibrai update --check`; to apply non-interactively, use `vibrai update --yes`. Updates cover the CLI, the M4L device, and the Python remote script — restart Live afterward so the device and script changes load. The MCP server binary updates through Claude Desktop's extension manager, not `vibrai update`. From MCP, the `update` tool reports availability by default and applies when called with `apply=true` (it also supports `rollback`).
+  </Accordion>
 </AccordionGroup>
 
 ## Log locations

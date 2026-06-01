@@ -58,7 +58,7 @@ vibrai genre apply [genre] [preset] [project-path] --genre <NAME> --preset <ID> 
   Genre id or display name (run 'vibrai genre list').
 </ParamField>
 <ParamField path="preset">
-  Preset id within the genre (from `vibrai genre presets &lt;genre>`).
+  Preset id or display name within the genre (from `vibrai genre presets &lt;genre>`).
 </ParamField>
 <ParamField path="project-path">
   Path to .vibrai (default: ./project.vibrai)
@@ -124,7 +124,7 @@ Materialize a genre+preset into a .vibrai project at the given path. Destructive
   Genre id (slug from list_genres) or display name.
 </ParamField>
 <ParamField path="preset" type="String" required>
-  Preset id within the genre (from list_genre_presets).
+  Preset id or display name within the genre (from list_genre_presets).
 </ParamField>
 <ParamField path="project_path" type="String" required>
   Absolute path to the .vibrai project file.
