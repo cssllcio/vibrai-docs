@@ -64,12 +64,6 @@
     "dark": "/logo/dark.svg"
   },
   "navbar": {
-    "links": [
-      {
-        "label": "GitHub",
-        "href": "https://github.com/cssllcio/vibrai"
-      }
-    ],
     "primary": {
       "type": "button",
       "label": "Get Vibrai",
@@ -87,10 +81,5 @@
       "cursor",
       "vscode"
     ]
-  },
-  "footer": {
-    "socials": {
-      "github": "https://github.com/cssllcio/vibrai"
-    }
   }
 }
