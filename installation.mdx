@@ -8,29 +8,35 @@ description: "Install the Vibrai CLI and connect the MCP server."
 | Requirement | Notes |
 |-------------|-------|
 | Ableton Live 12 | Standard, Suite, or Trial; must be open with a Live set loaded |
-| .NET 10 runtime | [dotnet.microsoft.com/download](https://dotnet.microsoft.com/download) — required for source builds |
-| `vibrai.amxd` device | The Max for Live device that runs the local bridge; loaded onto any track in your set |
+| .NET 10 runtime | [dotnet.microsoft.com/download](https://dotnet.microsoft.com/download) — only needed for source builds; the package installer is self-contained |
+| `vibrai.amxd` device | The Max for Live device that runs the local bridge. The package installer copies it into your Ableton User Library for you — you just drag it onto a track |
 
 <Note>
   The Vibrai device runs a small HTTP server on `http://localhost:3333`. Load it on any track in your Live set before running commands that talk to Live. Commands that only work with project files (`project info`, `project load`) work offline.
 </Note>
 
-## Install the CLI
+## Install Vibrai
 
 <Tabs>
   <Tab title="macOS">
-    **When Vibrai 1.0 ships (coming soon):**
+    Vibrai installs from a single signed **package installer** (`.pkg`) — no Homebrew. One installer sets up everything: the `vibrai` CLI, the MCP server and its Claude Desktop bundle, the Max for Live device, and the Python remote script.
 
-    ```bash
-    brew install vibrai/tap/vibrai
-    ```
+    1. **Quit Ableton Live** if it's open — the installer refuses to run while Live is running.
+    2. Download the **Vibrai package installer** (`.pkg`) from [vibrai.com](https://vibrai.com).
+    3. Double-click the `.pkg` and follow the prompts.
 
-    **Pre-release builds:** copy the binary to a directory on your `PATH` and make it executable:
+    The installer:
 
-    ```bash
-    chmod +x /path/to/vibrai
-    cp /path/to/vibrai /usr/local/bin/vibrai
-    ```
+    - puts the `vibrai` CLI on your `PATH` at `/usr/local/bin/vibrai`,
+    - installs the MCP server and drops the Claude Desktop bundle at `/usr/local/lib/vibrai/Vibrai.mcpb` (no separate download),
+    - copies the `vibrai.amxd` device into your Ableton **User Library**,
+    - installs the Python remote script.
+
+    Next: [connect Claude Desktop](#connect-the-mcp-server) and [load the device into your Live set](#load-the-device-into-your-live-set).
+
+    <Note>
+      **Pre-release builds (before 1.0):** copy the raw CLI binary to a directory on your `PATH` and make it executable — `chmod +x /path/to/vibrai && cp /path/to/vibrai /usr/local/bin/vibrai`. The full `.pkg` flow above is the path for 1.0 and later.
+    </Note>
   </Tab>
   <Tab title="Windows">
     **When Vibrai 1.0 ships (coming soon):** a signed installer will be available at [vibrai.com](https://vibrai.com).
@@ -39,27 +45,29 @@ description: "Install the Vibrai CLI and connect the MCP server."
   </Tab>
 </Tabs>
 
-## Install and connect the MCP server
+## Connect the MCP server
 
 The MCP server (`Vibrai.Mcp`) runs as a subprocess launched by your MCP client. The easiest path is the one-click `.mcpb` bundle for Claude Desktop.
 
 **Claude Desktop (.mcpb bundle — recommended):**
 
-1. Download `Vibrai.mcpb` from [vibrai.com](https://vibrai.com).
+On macOS the package installer already put the bundle on disk — there is **no separate download from vibrai.com**. It lives at `/usr/local/lib/vibrai/Vibrai.mcpb`.
+
+1. In Finder, press **⌘⇧G** and enter `/usr/local/lib/vibrai/` to reveal the bundle.
 2. Open Claude Desktop → **Settings** → **Extensions**.
 3. Drag `Vibrai.mcpb` into the Extensions panel.
 
-Claude Desktop installs the extension and restarts. Then ask Claude: _"Install the Vibrai device."_ — it copies `vibrai.amxd` into your Ableton User Library automatically.
+Claude Desktop installs the extension and restarts. The `vibrai.amxd` device is already in your Ableton User Library (the installer put it there) — just drag it onto a track (see below).
 
-**Manual registration (Claude Desktop, Claude Code, Cursor):**
+**Manual registration (Claude Code, Cursor, or any MCP client):**
 
-Edit the MCP client config and point it at the MCP server binary:
+Point the MCP client config at the MCP server binary the installer placed on disk:
 
 ```json
 {
   "mcpServers": {
     "vibrai": {
-      "command": "/absolute/path/to/publish/Vibrai.Mcp/Vibrai.Mcp",
+      "command": "/usr/local/lib/vibrai/Vibrai.Mcp",
       "env": {
         "VIBRAI_LOG_FILE": "/tmp/vibrai-mcp.log",
         "VIBRAI_LOG_LEVEL": "Warning"
@@ -80,6 +88,8 @@ The config file lives at `~/Library/Application Support/Claude/claude_desktop_co
 | `VIBRAI_LOG_FILE` | (stderr only) | Write a rolling log to a file |
 
 ## Load the device into your Live set
+
+The package installer already copied `vibrai.amxd` into your Ableton **User Library**. To use it:
 
 1. In Ableton Live, open your **User Library** in the browser.
 2. Navigate to **Presets → Max Audio Effect → vibrai**.
