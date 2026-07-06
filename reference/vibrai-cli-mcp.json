@@ -1,6 +1,6 @@
 {
   "engineVersion": "1.0.0.0",
-  "generatedAt": "2026-07-06T06:17:34Z",
+  "generatedAt": "2026-07-06T06:48:55Z",
   "features": [
     {
       "id": "transport",
@@ -551,7 +551,7 @@
               {
                 "name": "--kind",
                 "valueName": "KIND",
-                "default": "System.String[]",
+                "default": null,
                 "description": "Filter by kind (repeatable): Rack, Device, Preset, Plugin, MidiClip, AudioEffect, MidiEffect. Case-insensitive. Omit = all kinds."
               },
               {
@@ -658,7 +658,7 @@
               {
                 "name": "--kind",
                 "valueName": "KIND",
-                "default": "System.String[]",
+                "default": null,
                 "description": "Restrict to these kinds (repeatable). Default: instrument-bearing (Rack, Device, Preset); Plugin and MIDI/FX are excluded. Pass e.g. --kind Plugin or --kind MidiClip to opt back in. Case-insensitive."
               }
             ]

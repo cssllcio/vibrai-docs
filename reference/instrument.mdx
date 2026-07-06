@@ -26,7 +26,7 @@ vibrai instrument list --search <TEXT> --path-contains <TEXT> --path-prefix <PRE
 <ParamField path="--path-prefix">
   Only items whose browser path starts with this prefix
 </ParamField>
-<ParamField path="--kind" default="System.String[]">
+<ParamField path="--kind">
   Filter by kind (repeatable): Rack, Device, Preset, Plugin, MidiClip, AudioEffect, MidiEffect. Case-insensitive. Omit = all kinds.
 </ParamField>
 <ParamField path="--tagged">
@@ -104,7 +104,7 @@ vibrai instrument suggest --prefix <PATH> --pattern-set <NAME> --kind <KIND>
 <ParamField path="--pattern-set">
   Pattern set to use. Only 'default' is supported.
 </ParamField>
-<ParamField path="--kind" default="System.String[]">
+<ParamField path="--kind">
   Restrict to these kinds (repeatable). Default: instrument-bearing (Rack, Device, Preset); Plugin and MIDI/FX are excluded. Pass e.g. --kind Plugin or --kind MidiClip to opt back in. Case-insensitive.
 </ParamField>
 
