@@ -33,7 +33,7 @@ vibrai automation slots <part-type>
 ```
 
 <ParamField path="part-type" required>
-  PartType enum value: Pad | Lead | Bass | Arp | Bd | Sd | Hh | Other
+  Any PartType enum value. Melodic/textural types (Pad | Lead | Bass | Arp | Ambience | Chords | Riff | Melody | Solo | Hook | Loop | Other) and FX types (FxRiser | FxRelease) have slots; drum types return an empty list.
 </ParamField>
 
 ### `automation get`
@@ -408,7 +408,7 @@ Read the clip-level envelopes attached to an arrangement clip. KNOWN ISSUE: retu
 
 ### `apply_automation_template`
 
-Author a composition-level automation slot on the .vibrai project's arrangement template. The slot is a symbolic key resolved through AutomationTargetMap (see list_automation_slots for the vocabulary per PartType). Slots fall into two families: bare-synth slots (synth_cutoff, synth_resonance, synth_volume) target a parameter on device 0 by LOM name; rack-macro slots (cutoff, resonance, macro_1..macro_16) target a macro on the first Instrument Rack on the chain, resolved at bounce-time. The project is loaded, mutated, validated, and saved. Idempotent on (sectionId, partId, slot). Use "all" in sections to apply to every section. Set apply_to_live: true to also push the just-applied slots into the running Live set via the safe bouncer (Spec A's atomic-rollback contract applies per slot). The .vibrai file is updated first, then each applied (section, part, slot) tuple is resolved to a bouncer-shaped envelope and bounced onto the existing arrangement clip at the section's position. Slots whose section has no arrangement clip are skipped with status SkippedNoArrangementClip — Spec B is an iteration tool, not bootstrapping. Verify what landed via get_arrangement_envelopes_ledger. Default false preserves the file-only flow that callers depend on today.
+Author a composition-level automation slot on the .vibrai project's arrangement template. The slot is a symbolic key resolved through AutomationTargetMap (see list_automation_slots for the vocabulary per PartType). Slots fall into two families: bare-synth slots (synth_cutoff, synth_resonance, synth_volume) target a parameter on device 0 by LOM name; rack-macro slots (cutoff, resonance, macro_1..macro_16) target a macro on the first Instrument Rack on the chain, resolved at bounce-time. The project is loaded, mutated, validated, and saved. Idempotent on (sectionId, partId, slot). Use "all" in sections to apply to every section. Sparse captured projects are supported: a targeted section where the part has no clip source (literal-clip-only part, no clip for that section) is skipped and listed in skipped_no_clip_source rather than failing — "all" means everywhere the part plays. Set apply_to_live: true to also push the just-applied slots into the running Live set via the safe bouncer (Spec A's atomic-rollback contract applies per slot). The .vibrai file is updated first, then each applied (section, part, slot) tuple is resolved to a bouncer-shaped envelope and bounced onto the existing arrangement clip at the section's position. Slots whose section has no arrangement clip are skipped with status SkippedNoArrangementClip — Spec B is an iteration tool, not bootstrapping. Verify what landed via get_arrangement_envelopes_ledger. Default false preserves the file-only flow that callers depend on today.
 
 ```json
 {
@@ -437,7 +437,7 @@ Author a composition-level automation slot on the .vibrai project's arrangement 
   AutomationCurve enum: LinearUp | LinearDown | ExpUp | ExpDown
 </ParamField>
 <ParamField path="sections" type="String[]" required>
-  Section ids to apply to, or the single literal "all" to apply to every section in project.Sections
+  Section ids to apply to, or the single literal "all" to apply to every section in project.Sections. Sections where the part has no clip source are skipped and reported in skipped_no_clip_source.
 </ParamField>
 <ParamField path="apply_to_live" type="Boolean" required>
   If true, also push the applied slots into the running Live set via the safe bouncer. Default false — file-only authoring. Requires an existing populated arrangement; slots whose section has no arrangement clip are skipped with a status. See recipe `apply_automation_template_live` for the iteration flow.
@@ -457,7 +457,7 @@ Enumerate the symbolic automation slots supported for a PartType. Returns a list
 ```
 
 <ParamField path="part_type" type="PartType" required>
-  PartType enum value: Pad, Lead, Bass, Arp, Bd, Sd, Hh, Other
+  Any PartType enum value. Melodic/textural types (Pad, Lead, Bass, Arp, Ambience, Chords, Riff, Melody, Solo, Hook, Loop, Other) and FX types (FxRiser, FxRelease) have slots; drum types return an empty list.
 </ParamField>
 
 ### `bounce_arrangement_automation`

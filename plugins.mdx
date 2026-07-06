@@ -1,0 +1,150 @@
+---
+title: "Plug-ins (VST3 & AU)"
+description: "List, tag, find, and load third-party VST3 and Audio Unit plug-ins from the CLI or MCP."
+keywords: ["plugin", "plug-in", "vst3", "audio unit", "auv2", "load_device", "instrument"]
+---
+
+Vibrai's browser snapshot includes your installed third-party plug-ins — VST3 and Audio Units — as the `Plugin` kind. They flow through the same list → tag → find → load workflow as stock devices and presets, and every step works on both surfaces.
+
+## How plug-ins appear in the browser
+
+Plug-ins live under the `Plug-Ins` browser root, organized by format folder, then vendor, then plug-in name:
+
+```
+Plug-Ins/AUv2/Apple/DLSMusicDevice
+Plug-Ins/VST3/Arturia/Acid V
+```
+
+<Note>
+The Audio Unit format folder is `AUv2` — not "Audio Units". The path root is `Plug-Ins` (with the hyphen), but the URI token is `Plugins`.
+</Note>
+
+Each item carries a `query:` URI you pass to `load_device` / `vibrai device load`:
+
+```
+query:Plugins#AUv2:Apple:DLSMusicDevice
+```
+
+AU factory presets (`.aupreset`) appear as individually loadable children under their plug-in's entry, each with its own URI.
+
+## Workflow
+
+The examples below use Apple's `DLSMusicDevice` (an AU instrument that ships with macOS), so you can run them verbatim.
+
+<Steps>
+  <Step title="Refresh the browser snapshot">
+    Make sure the snapshot reflects your currently installed plug-ins. This asks the Vibrai Live remote script to rescan the browser.
+
+    <CodeGroup>
+
+    ```bash CLI
+    vibrai instrument refresh
+    ```
+
+    ```json MCP
+    {
+      "tool": "refresh_instrument_tags",
+      "arguments": {}
+    }
+    ```
+
+    </CodeGroup>
+  </Step>
+
+  <Step title="List your plug-ins">
+    Filter the snapshot to the `Plugin` kind. The output includes each item's browser path and its `query:` URI.
+
+    <CodeGroup>
+
+    ```bash CLI
+    vibrai instrument list --kind Plugin
+    ```
+
+    ```json MCP
+    {
+      "tool": "list_browser_items",
+      "arguments": {
+        "kinds": ["Plugin"]
+      }
+    }
+    ```
+
+    </CodeGroup>
+  </Step>
+
+  <Step title="Tag a plug-in with a part type">
+    Tag the plug-in so generation and search can find it by role. Pass the exact URI (or a name substring that matches a single item).
+
+    <CodeGroup>
+
+    ```bash CLI
+    vibrai instrument tag "query:Plugins#AUv2:Apple:DLSMusicDevice" pad
+    ```
+
+    ```json MCP
+    {
+      "tool": "tag_instrument",
+      "arguments": {
+        "uri_or_search": "query:Plugins#AUv2:Apple:DLSMusicDevice",
+        "part_type": "pad"
+      }
+    }
+    ```
+
+    </CodeGroup>
+  </Step>
+
+  <Step title="Find it by tag">
+    Look the plug-in up by its tag. The match includes the URI to load.
+
+    <CodeGroup>
+
+    ```bash CLI
+    vibrai instrument list --tag pad
+    ```
+
+    ```json MCP
+    {
+      "tool": "find_instruments_by_tag",
+      "arguments": {
+        "suffix": "pad"
+      }
+    }
+    ```
+
+    </CodeGroup>
+  </Step>
+
+  <Step title="Load it onto a track">
+    Pass the URI as the device path. Plug-in instantiation is slower than stock devices — a few seconds is normal — but the device is queryable as soon as the call returns.
+
+    <CodeGroup>
+
+    ```bash CLI
+    vibrai device load 2 --path "query:Plugins#AUv2:Apple:DLSMusicDevice"
+    ```
+
+    ```json MCP
+    {
+      "tool": "load_device",
+      "arguments": {
+        "track_id": "2",
+        "path": "query:Plugins#AUv2:Apple:DLSMusicDevice"
+      }
+    }
+    ```
+
+    </CodeGroup>
+
+    Loading an instrument onto a track that already has one **replaces it in place** — the device chain doesn't grow.
+  </Step>
+</Steps>
+
+## Limits
+
+- **One kind, no instrument/effect split.** `Plugin` covers both instrument and effect plug-ins; Vibrai can't tell them apart without loading them. Tag them with the roles you use.
+- **Excluded from tag suggestions by default.** `vibrai instrument suggest` / `suggest_tags_from_folders` skip plug-ins unless you pass `--kind Plugin` / `kinds: ["Plugin"]` — plug-in paths are vendor folders, so folder-name inference rarely helps. Tag plug-ins directly instead.
+- **Never auto-picked.** Default-instrument resolution (`vibrai device load-defaults`, `generate --with-instruments`, `load_default_instruments`) sticks to stock devices and presets. Load plug-ins explicitly by URI, or tag them and reference them from your project's `defaults.instruments`.
+- **Parameter automation works after load.** Once loaded, a plug-in's parameters are addressable by the same automation tools as any other device.
+
+See the [Device](/reference/device) and [Instrument](/reference/instrument) reference pages for every flag and parameter.

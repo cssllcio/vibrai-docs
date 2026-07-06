@@ -107,7 +107,7 @@ List presets in a genre library. Each entry has id (use with apply_genre / init_
 
 ### `apply_genre`
 
-Materialize a genre+preset into a .vibrai project at the given path. Destructive: overwrites sections, parts, templates, arrangement.blueprint, and generation. Preserves meta.name and meta.als_path from the existing project if present. Note: the `preset_id` parameter was renamed to `preset` for CLI/MCP naming parity; update any callers.
+Materialize a genre+preset into a .vibrai project at the given path. Destructive: overwrites sections, parts, templates, arrangement.blueprint, and generation — requires confirm=true (parity with the CLI's `genre apply --yes`); refuses without modifying the project otherwise. Preserves meta.name and meta.als_path from the existing project if present. Note: the `preset_id` parameter was renamed to `preset` for CLI/MCP naming parity; update any callers.
 
 ```json
 {
@@ -115,7 +115,8 @@ Materialize a genre+preset into a .vibrai project at the given path. Destructive
   "arguments": {
     "genre": "<String>",
     "preset": "<String>",
-    "project_path": "<String>"
+    "project_path": "<String>",
+    "confirm": "<Boolean>"
   }
 }
 ```
@@ -128,4 +129,7 @@ Materialize a genre+preset into a .vibrai project at the given path. Destructive
 </ParamField>
 <ParamField path="project_path" type="String" required>
   Absolute path to the .vibrai project file.
+</ParamField>
+<ParamField path="confirm" type="Boolean">
+  Confirm the destructive overwrite (CLI --yes equivalent). Must be true to proceed; confirm with the user first when the project already has content.
 </ParamField>

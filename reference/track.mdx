@@ -117,7 +117,7 @@ Get a single track. Pass either track_id (positional, 1-based) or liveset_id (st
 
 ### `create_track`
 
-Create a new MIDI track of the given part type.
+Create a new MIDI track of the given part type. Returns the created track with a 1-based `id` (matching list_tracks).
 
 ```json
 {
@@ -138,7 +138,7 @@ Create a new MIDI track of the given part type.
 
 ### `delete_track`
 
-Delete a track. Pass either track_id (positional, 1-based) or liveset_id (stable across reorders — get it from list_tracks). liveset_id wins if both are supplied. Subsequent tracks shift down so positional IDs stay dense; existing liveset_ids on the remaining tracks are unaffected. Destructive — no undo.
+Delete a track. Pass either track_id (positional, 1-based) or liveset_id (stable across reorders — get it from list_tracks). liveset_id wins if both are supplied. Subsequent tracks shift down so positional IDs stay dense; existing liveset_ids on the remaining tracks are unaffected. Destructive — no undo. Errors: TRACK_NOT_FOUND, CANNOT_DELETE_LAST_TRACK.
 
 ```json
 {

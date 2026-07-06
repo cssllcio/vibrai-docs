@@ -1,6 +1,6 @@
 {
   "engineVersion": "1.0.0.0",
-  "generatedAt": "2026-06-01T06:23:46Z",
+  "generatedAt": "2026-07-06T06:17:34Z",
   "features": [
     {
       "id": "transport",
@@ -213,7 +213,7 @@
           },
           {
             "name": "create_track",
-            "description": "Create a new MIDI track of the given part type.",
+            "description": "Create a new MIDI track of the given part type. Returns the created track with a 1-based \u0060id\u0060 (matching list_tracks).",
             "parameters": [
               {
                 "name": "name",
@@ -231,7 +231,7 @@
           },
           {
             "name": "delete_track",
-            "description": "Delete a track. Pass either track_id (positional, 1-based) or liveset_id (stable across reorders \u2014 get it from list_tracks). liveset_id wins if both are supplied. Subsequent tracks shift down so positional IDs stay dense; existing liveset_ids on the remaining tracks are unaffected. Destructive \u2014 no undo.",
+            "description": "Delete a track. Pass either track_id (positional, 1-based) or liveset_id (stable across reorders \u2014 get it from list_tracks). liveset_id wins if both are supplied. Subsequent tracks shift down so positional IDs stay dense; existing liveset_ids on the remaining tracks are unaffected. Destructive \u2014 no undo. Errors: TRACK_NOT_FOUND, CANNOT_DELETE_LAST_TRACK.",
             "parameters": [
               {
                 "name": "track_id",
@@ -294,8 +294,27 @@
             "options": []
           },
           {
+            "name": "device drum-pads",
+            "description": "List a Drum Rack\u0027s pads (index, name, trigger note) on a track",
+            "arguments": [
+              {
+                "name": "track",
+                "required": true,
+                "description": "Track number (1-based: 1, 2, \u2026 or first, second, \u2026)"
+              }
+            ],
+            "options": [
+              {
+                "name": "--device",
+                "valueName": "INDEX",
+                "default": "0",
+                "description": "Index of the Drum Rack device in the track\u0027s chain (default 0)"
+              }
+            ]
+          },
+          {
             "name": "device load",
-            "description": "Load a stock device or User Library preset onto a track",
+            "description": "Load a stock device, User Library preset, or plug-in (VST3/AU) onto a track",
             "arguments": [
               {
                 "name": "track",
@@ -308,7 +327,7 @@
                 "name": "--path",
                 "valueName": "PATH",
                 "default": null,
-                "description": "Browser path, e.g. \u0027Instruments/Operator\u0027"
+                "description": "Browser path or URI. Accepts (a) classic stock-device paths like \u0027Instruments/Operator\u0027, (b) preset \u0027.adg\u0027 browser paths like \u0027Drums/F9 TK Menu_ Hat Closed V2.adg\u0027 (auto-resolved to their query: URI), or (c) query: URIs from find_instruments_by_tag/show_instrument, including plug-in URIs from the Plug-Ins browser section."
               },
               {
                 "name": "--part-type",
@@ -384,7 +403,7 @@
         "tools": [
           {
             "name": "load_device",
-            "description": "Load a stock device or User Library preset onto a track. Specify either path OR part_type, not both. The \u0060path\u0060 argument accepts (a) classic browser paths like \u0022Instruments/Operator\u0022 for stock devices, or (b) \u0060query:\u0060 URIs from find_instruments_by_tag for user-tagged presets. NOTE: part_type=Bd/Snare/HiHat/Perc resolves to the bare \u0022Instruments/Drum Rack\u0022, which loads empty (no samples). For drums to be audible, follow up with browse_devices \u0022Drums\u0022 and load_device on a kit preset (.adg). Tonal part_types (Bass/Pad/Chord/etc.) load synths that sound by default.",
+            "description": "Load a stock device, User Library preset, or plug-in (VST3/AU) onto a track. Specify either path OR part_type, not both. The \u0060path\u0060 argument accepts (a) classic browser paths like \u0022Instruments/Operator\u0022 for stock devices, (b) \u0060query:\u0060 URIs from find_instruments_by_tag for user-tagged presets, or (c) plug-in URIs from the Plug-Ins browser section. NOTE: part_type=Bd/Snare/HiHat/Perc resolves to the bare \u0022Instruments/Drum Rack\u0022, which loads empty (no samples). For drums to be audible, follow up with browse_devices \u0022Drums\u0022 and load_device on a kit preset (.adg). Tonal part_types (Bass/Pad/Chord/etc.) load synths that sound by default.",
             "parameters": [
               {
                 "name": "track_id",
@@ -396,7 +415,7 @@
                 "name": "path",
                 "type": "String",
                 "required": true,
-                "description": "Browser path (e.g. \u0022Instruments/Operator\u0022) OR a query: URI from find_instruments_by_tag."
+                "description": "Browser path or URI. Accepts (a) classic stock-device paths like \u0027Instruments/Operator\u0027, (b) preset \u0027.adg\u0027 browser paths like \u0027Drums/F9 TK Menu_ Hat Closed V2.adg\u0027 (auto-resolved to their query: URI), or (c) query: URIs from find_instruments_by_tag/show_instrument, including plug-in URIs from the Plug-Ins browser section."
               },
               {
                 "name": "part_type",
@@ -455,6 +474,24 @@
             ]
           },
           {
+            "name": "list_drum_pads",
+            "description": "List the pads of a Drum Rack on a track: each pad\u0027s index, name, and the MIDI note that triggers it. Use this to see which sounds a loaded kit maps to (e.g. which note is the snare). Returns an empty list when the device at device_index is not a Drum Rack.",
+            "parameters": [
+              {
+                "name": "track_id",
+                "type": "String",
+                "required": true,
+                "description": "Track number (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
+              },
+              {
+                "name": "device_index",
+                "type": "Nullable\u00601",
+                "required": true,
+                "description": "Index of the Drum Rack device in the track\u0027s chain (default 0 = first device)"
+              }
+            ]
+          },
+          {
             "name": "get_default_instrument",
             "description": "Return the resolved browser path for a part-type (defaults.instruments override or built-in).",
             "parameters": [
@@ -468,7 +505,7 @@
           },
           {
             "name": "load_default_instruments",
-            "description": "Load each MIDI part\u0027s default instrument from a .vibrai project onto its track, so the rendered song is audible. Tonal parts get their resolved synth (defaults.instruments override or built-in); drum parts get a stock kit (.adg) auto-picked from the browser snapshot, falling back to an empty Drum Rack \u002B warning when none is available. Idempotent: a track that already has a device is skipped. Run this after \u0060generate\u0060 (or pass with_instruments=true to generate).",
+            "description": "Load each MIDI part\u0027s default instrument from a .vibrai project onto its track, so the rendered song is audible. Tonal parts get their resolved synth (defaults.instruments override or built-in); drum parts get a stock kit (.adg) auto-picked from the browser snapshot, falling back to an empty Drum Rack \u002B warning when none is available. Idempotent: a track that already has a device is skipped. Run this after \u0060generate\u0060 (or pass with_instruments=true to generate). live_track_id in the result is 1-based, matching list_tracks and load_device.",
             "parameters": [
               {
                 "name": "project_path",
@@ -513,9 +550,9 @@
               },
               {
                 "name": "--kind",
-                "valueName": "PRESET|DEVICE|RACK",
-                "default": null,
-                "description": "Filter by item kind"
+                "valueName": "KIND",
+                "default": "System.String[]",
+                "description": "Filter by kind (repeatable): Rack, Device, Preset, Plugin, MidiClip, AudioEffect, MidiEffect. Case-insensitive. Omit = all kinds."
               },
               {
                 "name": "--tagged",
@@ -617,6 +654,12 @@
                 "valueName": "NAME",
                 "default": null,
                 "description": "Pattern set to use. Only \u0027default\u0027 is supported."
+              },
+              {
+                "name": "--kind",
+                "valueName": "KIND",
+                "default": "System.String[]",
+                "description": "Restrict to these kinds (repeatable). Default: instrument-bearing (Rack, Device, Preset); Plugin and MIDI/FX are excluded. Pass e.g. --kind Plugin or --kind MidiClip to opt back in. Case-insensitive."
               }
             ]
           },
@@ -632,7 +675,7 @@
         "tools": [
           {
             "name": "find_instruments_by_tag",
-            "description": "Find user presets tagged \u0027vibrai:\u003Csuffix\u003E\u0027. Returns all matches: their browser URI (pass as load_device \u0027path\u0027), display name, browser path, and the recognized/extra tag buckets. Empty array if no matches or no cache file. Tags are populated by the Vibrai Live remote script \u2014 see install_vibrai_remote_script.",
+            "description": "Find tagged browser items (user presets, racks, plug-ins) tagged \u0027vibrai:\u003Csuffix\u003E\u0027. Returns all matches: their browser URI (pass as load_device \u0027path\u0027), display name, browser path, and the recognized/extra tag buckets. Empty array if no matches or no cache file. Tags are populated by the Vibrai Live remote script \u2014 see install_vibrai_remote_script.",
             "parameters": [
               {
                 "name": "suffix",
@@ -655,48 +698,48 @@
           },
           {
             "name": "list_browser_items",
-            "description": "List items from the Vibrai browser snapshot, optionally filtered by name substring, path substring, path prefix, kind, or tagged state. The snapshot is written by the Vibrai Live remote script; the user tags items via tag_instrument. Returns up to \u0060limit\u0060 results starting at \u0060offset\u0060 (for pagination).",
+            "description": "List items from the Vibrai browser snapshot, optionally filtered by name substring, path substring, path prefix, kinds, or tagged state. The snapshot is written by the Vibrai Live remote script; the user tags items via tag_instrument. Returns up to \u0060limit\u0060 results starting at \u0060offset\u0060 (for pagination).",
             "parameters": [
               {
                 "name": "search",
                 "type": "String",
-                "required": true,
-                "description": "Case-insensitive substring match against item name. Null/empty = all."
+                "required": false,
+                "description": "Case-insensitive substring match against item name. Omit/null = all."
               },
               {
                 "name": "path_contains",
                 "type": "String",
-                "required": true,
-                "description": "Case-insensitive substring match against the full browser path (e.g. \u0027Basses\u0027 matches any item under a folder containing that word). Null = all."
+                "required": false,
+                "description": "Case-insensitive substring match against the full browser path (e.g. \u0027Basses\u0027 matches any item under a folder containing that word). Omit/null = all."
               },
               {
                 "name": "path_prefix",
                 "type": "String",
-                "required": true,
-                "description": "Only return items whose browser path starts with this prefix (case-insensitive), e.g. \u0027Packs/F9 GALAXY\u0027. Null = all."
+                "required": false,
+                "description": "Only return items whose browser path starts with this prefix (case-insensitive), e.g. \u0027Packs/F9 GALAXY\u0027. Omit/null = all."
               },
               {
-                "name": "kind",
-                "type": "String",
-                "required": true,
-                "description": "Filter by kind: \u0027preset\u0027, \u0027device\u0027, \u0027rack\u0027. Null = all kinds."
+                "name": "kinds",
+                "type": "String[]",
+                "required": false,
+                "description": "Filter by kinds (any of): \u0027Rack\u0027, \u0027Device\u0027, \u0027Preset\u0027, \u0027Plugin\u0027, \u0027MidiClip\u0027, \u0027AudioEffect\u0027, \u0027MidiEffect\u0027. Case-insensitive. Null/empty = all kinds."
               },
               {
                 "name": "tagged",
                 "type": "Nullable\u00601",
-                "required": true,
-                "description": "If true, only items with at least one user tag; if false, only untagged; null = both."
+                "required": false,
+                "description": "If true, only items with at least one user tag; if false, only untagged; omit/null = both."
               },
               {
                 "name": "offset",
                 "type": "Int32",
-                "required": true,
+                "required": false,
                 "description": "Number of qualifying results to skip before returning (for pagination). Default 0."
               },
               {
                 "name": "limit",
                 "type": "Int32",
-                "required": true,
+                "required": false,
                 "description": "Max results to return (default 50)."
               }
             ]
@@ -751,19 +794,25 @@
           },
           {
             "name": "suggest_tags_from_folders",
-            "description": "Scan the browser snapshot and infer PartType tags from folder names. Returns suggestions only \u2014 call tag_instrument to apply them. Use \u0027prefix\u0027 to scope to a single pack (e.g. \u0027Packs/F9 GALAXY\u0027). The default pattern set maps common folder names (Basses\u2192Bass, Kicks\u2192Bd, Pads\u2192Pad, etc.) to PartTypes. Does not mutate any state.",
+            "description": "Scan the browser snapshot and infer PartType tags from folder names. Returns suggestions only \u2014 call tag_instrument to apply them. By default only instrument-bearing items (racks/devices/presets) are scanned; plug-ins, MIDI clips, and audio/MIDI-effect presets are excluded \u2014 pass \u0060kinds\u0060 to override (plug-in paths are vendor folders, so folder inference rarely helps them; tag plug-ins directly with tag_instrument). Use \u0027prefix\u0027 to scope to a single pack. Does not mutate state.",
             "parameters": [
               {
                 "name": "prefix",
                 "type": "String",
-                "required": true,
+                "required": false,
                 "description": "Browser path prefix to restrict the scan (e.g. \u0027Packs/F9 GALAXY\u0027). Null/empty = entire snapshot."
               },
               {
                 "name": "pattern_set",
                 "type": "String",
-                "required": true,
+                "required": false,
                 "description": "Pattern set name. Only \u0027default\u0027 is supported. Null = default."
+              },
+              {
+                "name": "kinds",
+                "type": "String[]",
+                "required": false,
+                "description": "Restrict to these kinds. Default (null/empty) = instrument-bearing (Rack, Device, Preset); Plugin, MIDI clips, and audio/MIDI effects are excluded. Pass e.g. [\u0027Plugin\u0027] or [\u0027MidiClip\u0027] to opt them back in. Case-insensitive."
               }
             ]
           }
@@ -1298,7 +1347,7 @@
               {
                 "name": "part-type",
                 "required": true,
-                "description": "PartType enum value: Pad | Lead | Bass | Arp | Bd | Sd | Hh | Other"
+                "description": "Any PartType enum value. Melodic/textural types (Pad | Lead | Bass | Arp | Ambience | Chords | Riff | Melody | Solo | Hook | Loop | Other) and FX types (FxRiser | FxRelease) have slots; drum types return an empty list."
               }
             ],
             "options": []
@@ -1780,7 +1829,7 @@
           },
           {
             "name": "apply_automation_template",
-            "description": "Author a composition-level automation slot on the .vibrai project\u0027s arrangement template. The slot is a symbolic key resolved through AutomationTargetMap (see list_automation_slots for the vocabulary per PartType). Slots fall into two families: bare-synth slots (synth_cutoff, synth_resonance, synth_volume) target a parameter on device 0 by LOM name; rack-macro slots (cutoff, resonance, macro_1..macro_16) target a macro on the first Instrument Rack on the chain, resolved at bounce-time. The project is loaded, mutated, validated, and saved. Idempotent on (sectionId, partId, slot). Use \u0022all\u0022 in sections to apply to every section. Set apply_to_live: true to also push the just-applied slots into the running Live set via the safe bouncer (Spec A\u0027s atomic-rollback contract applies per slot). The .vibrai file is updated first, then each applied (section, part, slot) tuple is resolved to a bouncer-shaped envelope and bounced onto the existing arrangement clip at the section\u0027s position. Slots whose section has no arrangement clip are skipped with status SkippedNoArrangementClip \u2014 Spec B is an iteration tool, not bootstrapping. Verify what landed via get_arrangement_envelopes_ledger. Default false preserves the file-only flow that callers depend on today.",
+            "description": "Author a composition-level automation slot on the .vibrai project\u0027s arrangement template. The slot is a symbolic key resolved through AutomationTargetMap (see list_automation_slots for the vocabulary per PartType). Slots fall into two families: bare-synth slots (synth_cutoff, synth_resonance, synth_volume) target a parameter on device 0 by LOM name; rack-macro slots (cutoff, resonance, macro_1..macro_16) target a macro on the first Instrument Rack on the chain, resolved at bounce-time. The project is loaded, mutated, validated, and saved. Idempotent on (sectionId, partId, slot). Use \u0022all\u0022 in sections to apply to every section. Sparse captured projects are supported: a targeted section where the part has no clip source (literal-clip-only part, no clip for that section) is skipped and listed in skipped_no_clip_source rather than failing \u2014 \u0022all\u0022 means everywhere the part plays. Set apply_to_live: true to also push the just-applied slots into the running Live set via the safe bouncer (Spec A\u0027s atomic-rollback contract applies per slot). The .vibrai file is updated first, then each applied (section, part, slot) tuple is resolved to a bouncer-shaped envelope and bounced onto the existing arrangement clip at the section\u0027s position. Slots whose section has no arrangement clip are skipped with status SkippedNoArrangementClip \u2014 Spec B is an iteration tool, not bootstrapping. Verify what landed via get_arrangement_envelopes_ledger. Default false preserves the file-only flow that callers depend on today.",
             "parameters": [
               {
                 "name": "path",
@@ -1810,7 +1859,7 @@
                 "name": "sections",
                 "type": "String[]",
                 "required": true,
-                "description": "Section ids to apply to, or the single literal \u0022all\u0022 to apply to every section in project.Sections"
+                "description": "Section ids to apply to, or the single literal \u0022all\u0022 to apply to every section in project.Sections. Sections where the part has no clip source are skipped and reported in skipped_no_clip_source."
               },
               {
                 "name": "apply_to_live",
@@ -1828,7 +1877,7 @@
                 "name": "part_type",
                 "type": "PartType",
                 "required": true,
-                "description": "PartType enum value: Pad, Lead, Bass, Arp, Bd, Sd, Hh, Other"
+                "description": "Any PartType enum value. Melodic/textural types (Pad, Lead, Bass, Arp, Ambience, Chords, Riff, Melody, Solo, Hook, Loop, Other) and FX types (FxRiser, FxRelease) have slots; drum types return an empty list."
               }
             ]
           },
@@ -1966,7 +2015,7 @@
         "tools": [
           {
             "name": "init_project",
-            "description": "Create a new .vibrai YAML file at the given absolute path. Without \u0060demo\u0060, writes a minimal 2-section / 1-part boilerplate. With \u0060demo: true\u0060, writes an opinionated 3-section / 2-part starter that exercises variation, per-section scale overrides, naming, and both generator types. Track IDs are probed from the bridge (first N MIDI tracks); if the bridge is unreachable, falls back to track 1 (and 2 for demo).",
+            "description": "Create a new .vibrai YAML file at the given absolute path. Without \u0060demo\u0060, writes a minimal 2-section / 1-part boilerplate. With \u0060demo: true\u0060, writes an opinionated 3-section / 2-part starter that exercises variation, per-section scale overrides, naming, and both generator types. Track IDs are probed from the bridge (first N MIDI tracks) and each probed binding records the track\u0027s current name (part \u0060track_name\u0060) so \u0060generate\u0060 reuses those tracks; if the bridge is unreachable, falls back to track 1 (and 2 for demo) with no binding.",
             "parameters": [
               {
                 "name": "path",
@@ -2514,7 +2563,7 @@
           },
           {
             "name": "apply_genre",
-            "description": "Materialize a genre\u002Bpreset into a .vibrai project at the given path. Destructive: overwrites sections, parts, templates, arrangement.blueprint, and generation. Preserves meta.name and meta.als_path from the existing project if present. Note: the \u0060preset_id\u0060 parameter was renamed to \u0060preset\u0060 for CLI/MCP naming parity; update any callers.",
+            "description": "Materialize a genre\u002Bpreset into a .vibrai project at the given path. Destructive: overwrites sections, parts, templates, arrangement.blueprint, and generation \u2014 requires confirm=true (parity with the CLI\u0027s \u0060genre apply --yes\u0060); refuses without modifying the project otherwise. Preserves meta.name and meta.als_path from the existing project if present. Note: the \u0060preset_id\u0060 parameter was renamed to \u0060preset\u0060 for CLI/MCP naming parity; update any callers.",
             "parameters": [
               {
                 "name": "genre",
@@ -2533,6 +2582,12 @@
                 "type": "String",
                 "required": true,
                 "description": "Absolute path to the .vibrai project file."
+              },
+              {
+                "name": "confirm",
+                "type": "Boolean",
+                "required": false,
+                "description": "Confirm the destructive overwrite (CLI --yes equivalent). Must be true to proceed; confirm with the user first when the project already has content."
               }
             ]
           }
@@ -2729,6 +2784,42 @@
                 "valueName": null,
                 "default": null,
                 "description": "After rendering, load each part\u0027s default instrument (drum kits for drum parts) so the song is audible."
+              },
+              {
+                "name": "--on-existing-tracks",
+                "valueName": "MODE",
+                "default": null,
+                "description": "How to treat existing MIDI tracks: replace (delete them) or append (keep, add after last MIDI track). Default: append. Audio/return tracks are always left in place."
+              },
+              {
+                "name": "--keep-empty-clips",
+                "valueName": null,
+                "default": null,
+                "description": "Keep generator-produced clips that resolve to zero notes. By default these are skipped, leaving a gap in both session and arrangement views. Authored literal empty clips are always kept."
+              },
+              {
+                "name": "--swing",
+                "valueName": "PCT",
+                "default": null,
+                "description": "Swing amount 0-100 (0 straight, 100 hard triplet). Overrides genre/preset default."
+              },
+              {
+                "name": "--humanize",
+                "valueName": "PCT",
+                "default": null,
+                "description": "Velocity/timing jitter 0-100. Overrides genre/preset default."
+              },
+              {
+                "name": "--ornaments",
+                "valueName": "PCT",
+                "default": null,
+                "description": "Grace-note/roll density 0-100. Overrides genre/preset default."
+              },
+              {
+                "name": "--dropout",
+                "valueName": "PCT",
+                "default": null,
+                "description": "Tension-section note thinning 0-100. Overrides genre/preset default."
               }
             ]
           },
@@ -2748,6 +2839,36 @@
                 "valueName": "VALUE",
                 "default": null,
                 "description": "Override the project\u0027s T2mHash seed for this run"
+              },
+              {
+                "name": "--keep-empty-clips",
+                "valueName": null,
+                "default": null,
+                "description": "Keep generator-produced clips that resolve to zero notes. By default these are skipped, leaving a gap in both session and arrangement views. Authored literal empty clips are always kept."
+              },
+              {
+                "name": "--swing",
+                "valueName": "PCT",
+                "default": null,
+                "description": "Swing amount 0-100 (0 straight, 100 hard triplet). Overrides genre/preset default."
+              },
+              {
+                "name": "--humanize",
+                "valueName": "PCT",
+                "default": null,
+                "description": "Velocity/timing jitter 0-100. Overrides genre/preset default."
+              },
+              {
+                "name": "--ornaments",
+                "valueName": "PCT",
+                "default": null,
+                "description": "Grace-note/roll density 0-100. Overrides genre/preset default."
+              },
+              {
+                "name": "--dropout",
+                "valueName": "PCT",
+                "default": null,
+                "description": "Tension-section note thinning 0-100. Overrides genre/preset default."
               }
             ]
           }
@@ -2757,7 +2878,7 @@
         "tools": [
           {
             "name": "plan",
-            "description": "Plan a composition from an .vibrai file without writing to Live. Returns a slim summary.",
+            "description": "Plan a composition from an .vibrai file without writing to Live. Returns a slim summary. Track ids in the summary (session_clips, arrangement_placements, instruments, current_tracks) are 1-based, matching list_tracks and load_device.",
             "parameters": [
               {
                 "name": "project_path",
@@ -2770,12 +2891,42 @@
                 "type": "Nullable\u00601",
                 "required": true,
                 "description": "Optional seed override"
+              },
+              {
+                "name": "keep_empty_clips",
+                "type": "Boolean",
+                "required": false,
+                "description": "Keep generator-produced clips that resolve to zero notes. Default false: such clips (and their arrangement placements) are skipped, leaving a gap. Authored literal empty clips are always kept."
+              },
+              {
+                "name": "swing",
+                "type": "Nullable\u00601",
+                "required": false,
+                "description": "Swing 0-100 (0 straight, 100 hard triplet); overrides genre/preset default"
+              },
+              {
+                "name": "humanize",
+                "type": "Nullable\u00601",
+                "required": false,
+                "description": "Velocity/timing jitter 0-100; overrides genre/preset default"
+              },
+              {
+                "name": "ornament_density",
+                "type": "Nullable\u00601",
+                "required": false,
+                "description": "Grace-note/roll density 0-100; overrides genre/preset default"
+              },
+              {
+                "name": "dropout",
+                "type": "Nullable\u00601",
+                "required": false,
+                "description": "Tension-section note thinning 0-100; overrides genre/preset default"
               }
             ]
           },
           {
             "name": "generate",
-            "description": "Plan \u002B render a composition into Live\u0027s session view and arrangement view. Requires force=true to overwrite existing clips. By default, fails fast when any ArrangementAutomationEntry cannot be resolved against the live device tree; pass allow_skip=true to log warnings and continue.",
+            "description": "Plan \u002B render a composition into Live\u0027s session view and arrangement view. force=true is required only when append re-renders onto an existing part track whose target slots are non-empty; replace implies consent and never requires force. By default, fails fast when any ArrangementAutomationEntry cannot be resolved against the live device tree; pass allow_skip=true to log warnings and continue. Track ids in the summary (session_clips, arrangement_placements, instruments, current_tracks) are 1-based, matching list_tracks and load_device.",
             "parameters": [
               {
                 "name": "project_path",
@@ -2802,10 +2953,46 @@
                 "description": "After rendering, load each part\u0027s default instrument (drum kits for drum parts) so the song is audible."
               },
               {
+                "name": "on_existing_tracks",
+                "type": "String",
+                "required": true,
+                "description": "How to treat MIDI tracks already in the Live set: \u0022replace\u0022 (delete existing MIDI tracks, audio/return untouched) or \u0022append\u0022 (keep them, add new tracks after the last MIDI track). Omit to receive a needs_decision result listing the current tracks."
+              },
+              {
                 "name": "seed",
                 "type": "Nullable\u00601",
                 "required": true,
                 "description": "Optional seed override"
+              },
+              {
+                "name": "keep_empty_clips",
+                "type": "Boolean",
+                "required": false,
+                "description": "Keep generator-produced clips that resolve to zero notes. Default false: such clips (and their arrangement placements) are skipped, leaving a gap. Authored literal empty clips are always kept."
+              },
+              {
+                "name": "swing",
+                "type": "Nullable\u00601",
+                "required": false,
+                "description": "Swing 0-100 (0 straight, 100 hard triplet); overrides genre/preset default"
+              },
+              {
+                "name": "humanize",
+                "type": "Nullable\u00601",
+                "required": false,
+                "description": "Velocity/timing jitter 0-100; overrides genre/preset default"
+              },
+              {
+                "name": "ornament_density",
+                "type": "Nullable\u00601",
+                "required": false,
+                "description": "Grace-note/roll density 0-100; overrides genre/preset default"
+              },
+              {
+                "name": "dropout",
+                "type": "Nullable\u00601",
+                "required": false,
+                "description": "Tension-section note thinning 0-100; overrides genre/preset default"
               }
             ]
           }
@@ -3022,7 +3209,7 @@
         "tools": [
           {
             "name": "update",
-            "description": "Check for and optionally install the latest Vibrai release. By default (apply=false) this only reports whether an update is available. Pass apply=true to download \u002B verify (SHA-256) \u002B swap the vibrai CLI binary and reinstall the Max-for-Live device \u002B Python remote script (via the same installer as install_device / install_vibrai_remote_script). Scope: CLI binary \u002B M4L \u002B Python only \u2014 it does NOT update this MCP server binary, which is managed by Claude Desktop\u0027s extension manager. If Ableton Live is running during an apply, M4L/Python changes take effect after you restart Live. Returns the current/latest version, update_available, per-component status, and (on apply) the actions taken.",
+            "description": "Check for and optionally install the latest Vibrai release. By default (apply=false) this only reports whether an update is available. Pass apply=true to download \u002B verify (SHA-256) \u002B swap the vibrai CLI binary and reinstall the Max-for-Live device \u002B Python remote script (via the same installer as install_device / install_vibrai_remote_script). Scope: CLI binary \u002B M4L \u002B Python only \u2014 it does NOT update this MCP server binary, which is managed by Claude Desktop\u0027s extension manager. If Ableton Live is running during an apply, M4L/Python changes take effect after you restart Live. Returns the current/latest version, update_available, per-component status, and (on apply) the actions taken. Applying is destructive (swaps the CLI binary); requires confirm=true (parity with the CLI\u0027s \u0060vibrai update --yes\u0060); refuses without changing anything otherwise.",
             "parameters": [
               {
                 "name": "apply",
@@ -3041,6 +3228,12 @@
                 "type": "Boolean",
                 "required": false,
                 "description": "Roll back to the previously installed CLI binary (default false)."
+              },
+              {
+                "name": "confirm",
+                "type": "Boolean",
+                "required": false,
+                "description": "Confirm the binary swap (CLI --yes equivalent). Must be true when apply=true; confirm with the user first."
               }
             ]
           }

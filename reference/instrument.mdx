@@ -14,7 +14,7 @@ Browse, tag, and manage instruments in the Vibrai library.
 List browser items (with optional tag/search/kind filters)
 
 ```bash
-vibrai instrument list --search <TEXT> --path-contains <TEXT> --path-prefix <PREFIX> --kind <PRESET|DEVICE|RACK> --tagged --untagged --tag <SUFFIX> --include-extra --offset <N> --limit <N>
+vibrai instrument list --search <TEXT> --path-contains <TEXT> --path-prefix <PREFIX> --kind <KIND> --tagged --untagged --tag <SUFFIX> --include-extra --offset <N> --limit <N>
 ```
 
 <ParamField path="--search">
@@ -26,8 +26,8 @@ vibrai instrument list --search <TEXT> --path-contains <TEXT> --path-prefix <PRE
 <ParamField path="--path-prefix">
   Only items whose browser path starts with this prefix
 </ParamField>
-<ParamField path="--kind">
-  Filter by item kind
+<ParamField path="--kind" default="System.String[]">
+  Filter by kind (repeatable): Rack, Device, Preset, Plugin, MidiClip, AudioEffect, MidiEffect. Case-insensitive. Omit = all kinds.
 </ParamField>
 <ParamField path="--tagged">
   Only items with at least one user tag
@@ -95,7 +95,7 @@ vibrai instrument show <uri-or-search>
 Suggest PartType tags from folder names (read-only, does not mutate)
 
 ```bash
-vibrai instrument suggest --prefix <PATH> --pattern-set <NAME>
+vibrai instrument suggest --prefix <PATH> --pattern-set <NAME> --kind <KIND>
 ```
 
 <ParamField path="--prefix">
@@ -103,6 +103,9 @@ vibrai instrument suggest --prefix <PATH> --pattern-set <NAME>
 </ParamField>
 <ParamField path="--pattern-set">
   Pattern set to use. Only 'default' is supported.
+</ParamField>
+<ParamField path="--kind" default="System.String[]">
+  Restrict to these kinds (repeatable). Default: instrument-bearing (Rack, Device, Preset); Plugin and MIDI/FX are excluded. Pass e.g. --kind Plugin or --kind MidiClip to opt back in. Case-insensitive.
 </ParamField>
 
 ### `instrument refresh`
@@ -119,7 +122,7 @@ vibrai instrument refresh
 
 ### `find_instruments_by_tag`
 
-Find user presets tagged 'vibrai:&lt;suffix>'. Returns all matches: their browser URI (pass as load_device 'path'), display name, browser path, and the recognized/extra tag buckets. Empty array if no matches or no cache file. Tags are populated by the Vibrai Live remote script — see install_vibrai_remote_script.
+Find tagged browser items (user presets, racks, plug-ins) tagged 'vibrai:&lt;suffix>'. Returns all matches: their browser URI (pass as load_device 'path'), display name, browser path, and the recognized/extra tag buckets. Empty array if no matches or no cache file. Tags are populated by the Vibrai Live remote script — see install_vibrai_remote_script.
 
 ```json
 {
@@ -153,7 +156,7 @@ Ask the Vibrai Live remote script to rescan the browser. Touches the trigger fil
 
 ### `list_browser_items`
 
-List items from the Vibrai browser snapshot, optionally filtered by name substring, path substring, path prefix, kind, or tagged state. The snapshot is written by the Vibrai Live remote script; the user tags items via tag_instrument. Returns up to `limit` results starting at `offset` (for pagination).
+List items from the Vibrai browser snapshot, optionally filtered by name substring, path substring, path prefix, kinds, or tagged state. The snapshot is written by the Vibrai Live remote script; the user tags items via tag_instrument. Returns up to `limit` results starting at `offset` (for pagination).
 
 ```json
 {
@@ -162,7 +165,7 @@ List items from the Vibrai browser snapshot, optionally filtered by name substri
     "search": "<String>",
     "path_contains": "<String>",
     "path_prefix": "<String>",
-    "kind": "<String>",
+    "kinds": "<String[]>",
     "tagged": "<Nullable`1>",
     "offset": "<Int32>",
     "limit": "<Int32>"
@@ -170,25 +173,25 @@ List items from the Vibrai browser snapshot, optionally filtered by name substri
 }
 ```
 
-<ParamField path="search" type="String" required>
-  Case-insensitive substring match against item name. Null/empty = all.
+<ParamField path="search" type="String">
+  Case-insensitive substring match against item name. Omit/null = all.
 </ParamField>
-<ParamField path="path_contains" type="String" required>
-  Case-insensitive substring match against the full browser path (e.g. 'Basses' matches any item under a folder containing that word). Null = all.
+<ParamField path="path_contains" type="String">
+  Case-insensitive substring match against the full browser path (e.g. 'Basses' matches any item under a folder containing that word). Omit/null = all.
 </ParamField>
-<ParamField path="path_prefix" type="String" required>
-  Only return items whose browser path starts with this prefix (case-insensitive), e.g. 'Packs/F9 GALAXY'. Null = all.
+<ParamField path="path_prefix" type="String">
+  Only return items whose browser path starts with this prefix (case-insensitive), e.g. 'Packs/F9 GALAXY'. Omit/null = all.
 </ParamField>
-<ParamField path="kind" type="String" required>
-  Filter by kind: 'preset', 'device', 'rack'. Null = all kinds.
+<ParamField path="kinds" type="String[]">
+  Filter by kinds (any of): 'Rack', 'Device', 'Preset', 'Plugin', 'MidiClip', 'AudioEffect', 'MidiEffect'. Case-insensitive. Null/empty = all kinds.
 </ParamField>
-<ParamField path="tagged" type="Nullable`1" required>
-  If true, only items with at least one user tag; if false, only untagged; null = both.
+<ParamField path="tagged" type="Nullable`1">
+  If true, only items with at least one user tag; if false, only untagged; omit/null = both.
 </ParamField>
-<ParamField path="offset" type="Int32" required>
+<ParamField path="offset" type="Int32">
   Number of qualifying results to skip before returning (for pagination). Default 0.
 </ParamField>
-<ParamField path="limit" type="Int32" required>
+<ParamField path="limit" type="Int32">
   Max results to return (default 50).
 </ParamField>
 
@@ -253,21 +256,25 @@ Remove a Vibrai PartType tag from a browser item. If the item ends with no tags 
 
 ### `suggest_tags_from_folders`
 
-Scan the browser snapshot and infer PartType tags from folder names. Returns suggestions only — call tag_instrument to apply them. Use 'prefix' to scope to a single pack (e.g. 'Packs/F9 GALAXY'). The default pattern set maps common folder names (Basses→Bass, Kicks→Bd, Pads→Pad, etc.) to PartTypes. Does not mutate any state.
+Scan the browser snapshot and infer PartType tags from folder names. Returns suggestions only — call tag_instrument to apply them. By default only instrument-bearing items (racks/devices/presets) are scanned; plug-ins, MIDI clips, and audio/MIDI-effect presets are excluded — pass `kinds` to override (plug-in paths are vendor folders, so folder inference rarely helps them; tag plug-ins directly with tag_instrument). Use 'prefix' to scope to a single pack. Does not mutate state.
 
 ```json
 {
   "tool": "suggest_tags_from_folders",
   "arguments": {
     "prefix": "<String>",
-    "pattern_set": "<String>"
+    "pattern_set": "<String>",
+    "kinds": "<String[]>"
   }
 }
 ```
 
-<ParamField path="prefix" type="String" required>
+<ParamField path="prefix" type="String">
   Browser path prefix to restrict the scan (e.g. 'Packs/F9 GALAXY'). Null/empty = entire snapshot.
 </ParamField>
-<ParamField path="pattern_set" type="String" required>
+<ParamField path="pattern_set" type="String">
   Pattern set name. Only 'default' is supported. Null = default.
+</ParamField>
+<ParamField path="kinds" type="String[]">
+  Restrict to these kinds. Default (null/empty) = instrument-bearing (Rack, Device, Preset); Plugin, MIDI clips, and audio/MIDI effects are excluded. Pass e.g. ['Plugin'] or ['MidiClip'] to opt them back in. Case-insensitive.
 </ParamField>

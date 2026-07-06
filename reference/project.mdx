@@ -73,7 +73,7 @@ vibrai project info --project <PATH>
 
 ### `init_project`
 
-Create a new .vibrai YAML file at the given absolute path. Without `demo`, writes a minimal 2-section / 1-part boilerplate. With `demo: true`, writes an opinionated 3-section / 2-part starter that exercises variation, per-section scale overrides, naming, and both generator types. Track IDs are probed from the bridge (first N MIDI tracks); if the bridge is unreachable, falls back to track 1 (and 2 for demo).
+Create a new .vibrai YAML file at the given absolute path. Without `demo`, writes a minimal 2-section / 1-part boilerplate. With `demo: true`, writes an opinionated 3-section / 2-part starter that exercises variation, per-section scale overrides, naming, and both generator types. Track IDs are probed from the bridge (first N MIDI tracks) and each probed binding records the track's current name (part `track_name`) so `generate` reuses those tracks; if the bridge is unreachable, falls back to track 1 (and 2 for demo) with no binding.
 
 ```json
 {

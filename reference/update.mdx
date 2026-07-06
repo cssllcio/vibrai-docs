@@ -34,7 +34,7 @@ vibrai update --check --yes --force --rollback
 
 ### `update`
 
-Check for and optionally install the latest Vibrai release. By default (apply=false) this only reports whether an update is available. Pass apply=true to download + verify (SHA-256) + swap the vibrai CLI binary and reinstall the Max-for-Live device + Python remote script (via the same installer as install_device / install_vibrai_remote_script). Scope: CLI binary + M4L + Python only — it does NOT update this MCP server binary, which is managed by Claude Desktop's extension manager. If Ableton Live is running during an apply, M4L/Python changes take effect after you restart Live. Returns the current/latest version, update_available, per-component status, and (on apply) the actions taken.
+Check for and optionally install the latest Vibrai release. By default (apply=false) this only reports whether an update is available. Pass apply=true to download + verify (SHA-256) + swap the vibrai CLI binary and reinstall the Max-for-Live device + Python remote script (via the same installer as install_device / install_vibrai_remote_script). Scope: CLI binary + M4L + Python only — it does NOT update this MCP server binary, which is managed by Claude Desktop's extension manager. If Ableton Live is running during an apply, M4L/Python changes take effect after you restart Live. Returns the current/latest version, update_available, per-component status, and (on apply) the actions taken. Applying is destructive (swaps the CLI binary); requires confirm=true (parity with the CLI's `vibrai update --yes`); refuses without changing anything otherwise.
 
 ```json
 {
@@ -42,7 +42,8 @@ Check for and optionally install the latest Vibrai release. By default (apply=fa
   "arguments": {
     "apply": "<Boolean>",
     "force": "<Boolean>",
-    "rollback": "<Boolean>"
+    "rollback": "<Boolean>",
+    "confirm": "<Boolean>"
   }
 }
 ```
@@ -55,4 +56,7 @@ Check for and optionally install the latest Vibrai release. By default (apply=fa
 </ParamField>
 <ParamField path="rollback" type="Boolean">
   Roll back to the previously installed CLI binary (default false).
+</ParamField>
+<ParamField path="confirm" type="Boolean">
+  Confirm the binary swap (CLI --yes equivalent). Must be true when apply=true; confirm with the user first.
 </ParamField>

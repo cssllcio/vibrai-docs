@@ -14,7 +14,7 @@ Generate or plan a composition from a .vibrai project file.
 Generate clips and arrangement from an .vibrai project file
 
 ```bash
-vibrai generate --project <PATH> --force --dry-run --seed <VALUE> --allow-skip --with-instruments
+vibrai generate --project <PATH> --force --dry-run --seed <VALUE> --allow-skip --with-instruments --on-existing-tracks <MODE> --keep-empty-clips --swing <PCT> --humanize <PCT> --ornaments <PCT> --dropout <PCT>
 ```
 
 <ParamField path="--project">
@@ -35,13 +35,31 @@ vibrai generate --project <PATH> --force --dry-run --seed <VALUE> --allow-skip -
 <ParamField path="--with-instruments">
   After rendering, load each part's default instrument (drum kits for drum parts) so the song is audible.
 </ParamField>
+<ParamField path="--on-existing-tracks">
+  How to treat existing MIDI tracks: replace (delete them) or append (keep, add after last MIDI track). Default: append. Audio/return tracks are always left in place.
+</ParamField>
+<ParamField path="--keep-empty-clips">
+  Keep generator-produced clips that resolve to zero notes. By default these are skipped, leaving a gap in both session and arrangement views. Authored literal empty clips are always kept.
+</ParamField>
+<ParamField path="--swing">
+  Swing amount 0-100 (0 straight, 100 hard triplet). Overrides genre/preset default.
+</ParamField>
+<ParamField path="--humanize">
+  Velocity/timing jitter 0-100. Overrides genre/preset default.
+</ParamField>
+<ParamField path="--ornaments">
+  Grace-note/roll density 0-100. Overrides genre/preset default.
+</ParamField>
+<ParamField path="--dropout">
+  Tension-section note thinning 0-100. Overrides genre/preset default.
+</ParamField>
 
 ### `plan`
 
 Plan a composition from an .vibrai project file without writing to Live
 
 ```bash
-vibrai plan --project <PATH> --seed <VALUE>
+vibrai plan --project <PATH> --seed <VALUE> --keep-empty-clips --swing <PCT> --humanize <PCT> --ornaments <PCT> --dropout <PCT>
 ```
 
 <ParamField path="--project">
@@ -50,19 +68,39 @@ vibrai plan --project <PATH> --seed <VALUE>
 <ParamField path="--seed">
   Override the project's T2mHash seed for this run
 </ParamField>
+<ParamField path="--keep-empty-clips">
+  Keep generator-produced clips that resolve to zero notes. By default these are skipped, leaving a gap in both session and arrangement views. Authored literal empty clips are always kept.
+</ParamField>
+<ParamField path="--swing">
+  Swing amount 0-100 (0 straight, 100 hard triplet). Overrides genre/preset default.
+</ParamField>
+<ParamField path="--humanize">
+  Velocity/timing jitter 0-100. Overrides genre/preset default.
+</ParamField>
+<ParamField path="--ornaments">
+  Grace-note/roll density 0-100. Overrides genre/preset default.
+</ParamField>
+<ParamField path="--dropout">
+  Tension-section note thinning 0-100. Overrides genre/preset default.
+</ParamField>
 
 ## MCP tools
 
 ### `plan`
 
-Plan a composition from an .vibrai file without writing to Live. Returns a slim summary.
+Plan a composition from an .vibrai file without writing to Live. Returns a slim summary. Track ids in the summary (session_clips, arrangement_placements, instruments, current_tracks) are 1-based, matching list_tracks and load_device.
 
 ```json
 {
   "tool": "plan",
   "arguments": {
     "project_path": "<String>",
-    "seed": "<Nullable`1>"
+    "seed": "<Nullable`1>",
+    "keep_empty_clips": "<Boolean>",
+    "swing": "<Nullable`1>",
+    "humanize": "<Nullable`1>",
+    "ornament_density": "<Nullable`1>",
+    "dropout": "<Nullable`1>"
   }
 }
 ```
@@ -73,10 +111,25 @@ Plan a composition from an .vibrai file without writing to Live. Returns a slim 
 <ParamField path="seed" type="Nullable`1" required>
   Optional seed override
 </ParamField>
+<ParamField path="keep_empty_clips" type="Boolean">
+  Keep generator-produced clips that resolve to zero notes. Default false: such clips (and their arrangement placements) are skipped, leaving a gap. Authored literal empty clips are always kept.
+</ParamField>
+<ParamField path="swing" type="Nullable`1">
+  Swing 0-100 (0 straight, 100 hard triplet); overrides genre/preset default
+</ParamField>
+<ParamField path="humanize" type="Nullable`1">
+  Velocity/timing jitter 0-100; overrides genre/preset default
+</ParamField>
+<ParamField path="ornament_density" type="Nullable`1">
+  Grace-note/roll density 0-100; overrides genre/preset default
+</ParamField>
+<ParamField path="dropout" type="Nullable`1">
+  Tension-section note thinning 0-100; overrides genre/preset default
+</ParamField>
 
 ### `generate`
 
-Plan + render a composition into Live's session view and arrangement view. Requires force=true to overwrite existing clips. By default, fails fast when any ArrangementAutomationEntry cannot be resolved against the live device tree; pass allow_skip=true to log warnings and continue.
+Plan + render a composition into Live's session view and arrangement view. force=true is required only when append re-renders onto an existing part track whose target slots are non-empty; replace implies consent and never requires force. By default, fails fast when any ArrangementAutomationEntry cannot be resolved against the live device tree; pass allow_skip=true to log warnings and continue. Track ids in the summary (session_clips, arrangement_placements, instruments, current_tracks) are 1-based, matching list_tracks and load_device.
 
 ```json
 {
@@ -86,7 +139,13 @@ Plan + render a composition into Live's session view and arrangement view. Requi
     "force": "<Boolean>",
     "allow_skip": "<Boolean>",
     "with_instruments": "<Boolean>",
-    "seed": "<Nullable`1>"
+    "on_existing_tracks": "<String>",
+    "seed": "<Nullable`1>",
+    "keep_empty_clips": "<Boolean>",
+    "swing": "<Nullable`1>",
+    "humanize": "<Nullable`1>",
+    "ornament_density": "<Nullable`1>",
+    "dropout": "<Nullable`1>"
   }
 }
 ```
@@ -103,6 +162,24 @@ Plan + render a composition into Live's session view and arrangement view. Requi
 <ParamField path="with_instruments" type="Boolean" required>
   After rendering, load each part's default instrument (drum kits for drum parts) so the song is audible.
 </ParamField>
+<ParamField path="on_existing_tracks" type="String" required>
+  How to treat MIDI tracks already in the Live set: "replace" (delete existing MIDI tracks, audio/return untouched) or "append" (keep them, add new tracks after the last MIDI track). Omit to receive a needs_decision result listing the current tracks.
+</ParamField>
 <ParamField path="seed" type="Nullable`1" required>
   Optional seed override
+</ParamField>
+<ParamField path="keep_empty_clips" type="Boolean">
+  Keep generator-produced clips that resolve to zero notes. Default false: such clips (and their arrangement placements) are skipped, leaving a gap. Authored literal empty clips are always kept.
+</ParamField>
+<ParamField path="swing" type="Nullable`1">
+  Swing 0-100 (0 straight, 100 hard triplet); overrides genre/preset default
+</ParamField>
+<ParamField path="humanize" type="Nullable`1">
+  Velocity/timing jitter 0-100; overrides genre/preset default
+</ParamField>
+<ParamField path="ornament_density" type="Nullable`1">
+  Grace-note/roll density 0-100; overrides genre/preset default
+</ParamField>
+<ParamField path="dropout" type="Nullable`1">
+  Tension-section note thinning 0-100; overrides genre/preset default
 </ParamField>

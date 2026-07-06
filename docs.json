@@ -23,7 +23,8 @@
         "pages": [
           "cli/overview",
           "mcp/overview",
-          "concepts"
+          "concepts",
+          "plugins"
         ]
       },
       {
