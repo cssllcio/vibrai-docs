@@ -1,0 +1,98 @@
+---
+title: "Session journal & export"
+description: "Vibrai records every command you run and can replay a session as a runnable script — from the CLI or MCP."
+keywords: ["session", "journal", "export", "replay", "script", "list_sessions", "export_session", "mark_session"]
+---
+
+Vibrai keeps an always-on **journal** of everything you do — every MCP tool call and every `vibrai` CLI invocation — written to a local file as you work. Any stretch of that journal can be exported as a runnable script of `vibrai` commands, so you can replay a build, hand it to a teammate, or drop it into CI. Nothing to turn on; it records by default.
+
+<Note>
+The journal is **local only** — it never leaves your machine, and a journal failure never affects the command you ran. Names containing `key`/`secret`/`token`/`password` and license keys are redacted at write time.
+</Note>
+
+## What gets recorded
+
+Every call, across both surfaces, lands in a per-day journal file. Vibrai splits the stream into **segments** at idle gaps (default 30 minutes), so a "session" is one continuous working stretch. Read-only calls (`list`, `get`, `show`) are recorded but skipped on export by default — the exported script is the sequence of changes that built your set.
+
+## Replay a session
+
+<Steps>
+  <Step title="List your sessions">
+    Segments are shown newest-first, with their index, id, name (if you set one), time range, and call count.
+
+    <CodeGroup>
+
+    ```bash CLI
+    vibrai session list
+    ```
+
+    ```json MCP
+    {
+      "tool": "list_sessions",
+      "arguments": {}
+    }
+    ```
+
+    </CodeGroup>
+  </Step>
+
+  <Step title="Name the current segment (optional)">
+    A marker makes a session easy to find later and becomes a comment in the exported script. The call itself is the marker — the journal records it in place.
+
+    <CodeGroup>
+
+    ```bash CLI
+    vibrai session mark "big room jam" --note "124 BPM, F minor"
+    ```
+
+    ```json MCP
+    {
+      "tool": "mark_session",
+      "arguments": { "name": "big room jam", "note": "124 BPM, F minor" }
+    }
+    ```
+
+    </CodeGroup>
+  </Step>
+
+  <Step title="Export it as a script">
+    With no selector it exports the latest session; you can also pass an index, id, or name, or a `--from`/`--to` ISO-8601 range. Omit `--out` to print to stdout.
+
+    <CodeGroup>
+
+    ```bash CLI
+    vibrai session export "big room jam" --annotate "recreate the drop" --out build.sh
+    ```
+
+    ```json MCP
+    {
+      "tool": "export_session",
+      "arguments": {
+        "session": "big room jam",
+        "annotate": "recreate the drop",
+        "out_path": "build.sh"
+      }
+    }
+    ```
+
+    </CodeGroup>
+
+    The result is an annotated shell script of `vibrai` commands. Any command that carried a file payload (e.g. notes JSON) gets a sidecar file written next to `build.sh`.
+  </Step>
+
+  <Step title="Replay">
+    Run the script against a fresh Live set to rebuild the arrangement deterministically.
+
+    ```bash
+    sh build.sh
+    ```
+  </Step>
+</Steps>
+
+## Notes & limits
+
+- **Reads are excluded by default.** Pass `--include-reads` / `include_reads: true` to render read-only calls as live commands too — useful for a full transcript, noisy for a build script.
+- **Raw journal.** `--format jsonl` / `format: "jsonl"` emits the underlying journal entries instead of a script, for tooling.
+- **Tunable via env vars.** `VIBRAI_SESSION_DISABLE=1` turns recording off entirely; `VIBRAI_SESSION_GAP_MINUTES` (default 30) sets the idle gap that starts a new segment; `VIBRAI_SESSION_RETENTION_DAYS` (default 30) controls how long journal files are kept.
+
+See the [Sessions reference](/reference/session) for every flag and parameter.

@@ -1,0 +1,142 @@
+---
+title: "Sessions"
+description: "List, export, and mark recorded session segments (an always-on journal of MCP tool calls and CLI invocations, replayable as a runnable script)."
+---
+
+{/* GENERATED — do not edit by hand. Regenerate with `npm run generate:reference`. */}
+
+List, export, and mark recorded session segments (an always-on journal of MCP tool calls and CLI invocations, replayable as a runnable script).
+
+## Command line
+
+### `session list`
+
+List recorded session segments
+
+```bash
+vibrai session list
+```
+
+
+
+### `session export`
+
+Export a session as a runnable script of vibrai commands
+
+```bash
+vibrai session export [session] --from <TIMESTAMP> --to <TIMESTAMP> --include-reads --format <FORMAT> --annotate <TEXT> --out <PATH>
+```
+
+<ParamField path="session">
+  Session selector: index, id, or name (default: latest)
+</ParamField>
+<ParamField path="--from">
+  Range start (ISO 8601) — alternative to a session selector
+</ParamField>
+<ParamField path="--to">
+  Range end (ISO 8601)
+</ParamField>
+<ParamField path="--include-reads">
+  Render read-only calls as live commands too
+</ParamField>
+<ParamField path="--format" default="script">
+  Output format: script (default) or jsonl
+</ParamField>
+<ParamField path="--annotate">
+  Free-text note added to the script header
+</ParamField>
+<ParamField path="--out">
+  Write to this path (payload sidecars land next to it); omit to print to stdout
+</ParamField>
+
+### `session mark`
+
+Name the current session segment
+
+```bash
+vibrai session mark <name> --note <TEXT>
+```
+
+<ParamField path="name" required>
+  Segment name, e.g. 'big room jam'
+</ParamField>
+<ParamField path="--note">
+  Optional free-text note (rendered as a comment on export)
+</ParamField>
+
+## MCP tools
+
+### `list_sessions`
+
+List recorded session segments (always-on journal of MCP tool calls and CLI invocations).
+
+```json
+{
+  "tool": "list_sessions",
+  "arguments": {}
+}
+```
+
+
+
+### `export_session`
+
+Export a recorded session as a runnable, annotated shell script of vibrai CLI commands (or raw jsonl). Defaults to the latest session.
+
+```json
+{
+  "tool": "export_session",
+  "arguments": {
+    "session": "<String>",
+    "from": "<Nullable`1>",
+    "to": "<Nullable`1>",
+    "include_reads": "<Boolean>",
+    "format": "<String>",
+    "annotate": "<String>",
+    "out_path": "<String>"
+  }
+}
+```
+
+<ParamField path="session" type="String">
+  Session selector: index, id, or name. Default: latest.
+</ParamField>
+<ParamField path="from" type="Nullable`1">
+  Range start (ISO 8601) — alternative to session.
+</ParamField>
+<ParamField path="to" type="Nullable`1">
+  Range end (ISO 8601).
+</ParamField>
+<ParamField path="include_reads" type="Boolean">
+  Render read-only calls as live commands too.
+</ParamField>
+<ParamField path="format" type="String">
+  Output format: script (default) or jsonl.
+</ParamField>
+<ParamField path="annotate" type="String">
+  Free-text note added to the script header.
+</ParamField>
+<ParamField path="out_path" type="String">
+  Write to this path (sidecar payload files land next to it); omit to return inline.
+</ParamField>
+
+### `mark_session`
+
+Name the current session segment. The call itself is the marker — the journal records it.
+
+```json
+{
+  "tool": "mark_session",
+  "arguments": {
+    "name": "<String>",
+    "note": "<String>"
+  }
+}
+```
+
+<ParamField path="name" type="String" required>
+  Segment name, e.g. 'big room jam'.
+</ParamField>
+<ParamField path="note" type="String">
+  Optional free-text note (rendered as a comment on export).
+</ParamField>

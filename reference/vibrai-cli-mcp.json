@@ -1,6 +1,6 @@
 {
   "engineVersion": "1.0.0.0",
-  "generatedAt": "2026-07-06T06:48:55Z",
+  "generatedAt": "2026-07-07T07:32:43Z",
   "features": [
     {
       "id": "transport",
@@ -403,7 +403,7 @@
         "tools": [
           {
             "name": "load_device",
-            "description": "Load a stock device, User Library preset, or plug-in (VST3/AU) onto a track. Specify either path OR part_type, not both. The \u0060path\u0060 argument accepts (a) classic browser paths like \u0022Instruments/Operator\u0022 for stock devices, (b) \u0060query:\u0060 URIs from find_instruments_by_tag for user-tagged presets, or (c) plug-in URIs from the Plug-Ins browser section. NOTE: part_type=Bd/Snare/HiHat/Perc resolves to the bare \u0022Instruments/Drum Rack\u0022, which loads empty (no samples). For drums to be audible, follow up with browse_devices \u0022Drums\u0022 and load_device on a kit preset (.adg). Tonal part_types (Bass/Pad/Chord/etc.) load synths that sound by default.",
+            "description": "Load a stock device, User Library preset, or plug-in (VST3/AU) onto a track. Specify either path OR part_type, not both. The \u0060path\u0060 argument accepts (a) classic browser paths like \u0022Instruments/Operator\u0022 for stock devices, (b) \u0060query:\u0060 URIs from find_instruments_by_tag for user-tagged presets, or (c) plug-in URIs from the Plug-Ins browser section. part_type=Bd/Snare/HiHat/Perc/Crash/Fill/Roll/Drums auto-picks a stock kit (.adg) from the browser snapshot, falling back to an empty \u0022Instruments/Drum Rack\u0022 \u002B warning when none is available (use browse_devices \u0022Drums\u0022 and load_device on a specific kit preset to override). Tonal part_types (Bass/Pad/Chord/etc.) load synths that sound by default.",
             "parameters": [
               {
                 "name": "track_id",
@@ -512,6 +512,168 @@
                 "type": "String",
                 "required": true,
                 "description": "Path to the .vibrai file (defaults to Untitled.vibrai in CWD when omitted)"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "drums",
+      "title": "Drum maps \u0026 retargeting",
+      "description": "Persistent drum part\u2192pitch overrides and kit-swap note retargeting.",
+      "cli": {
+        "branch": "drums",
+        "commands": [
+          {
+            "name": "drums map show",
+            "description": "Show the project drum map (part-type \u2192 pitch overrides)",
+            "arguments": [],
+            "options": [
+              {
+                "name": "--project",
+                "valueName": "PATH",
+                "default": null,
+                "description": "Path to the .vibrai file (defaults to Untitled.vibrai in CWD)"
+              }
+            ]
+          },
+          {
+            "name": "drums map set",
+            "description": "Set drum map entries (merged), e.g. snare=40 hi_hat=42",
+            "arguments": [
+              {
+                "name": "entries",
+                "required": true,
+                "description": "Drum map entries like snare=40 hi_hat=42 (keys: bd, snare, hi_hat, hi_hat_plus, percussion, crash, fill, roll, drums)"
+              }
+            ],
+            "options": [
+              {
+                "name": "--project",
+                "valueName": "PATH",
+                "default": null,
+                "description": "Path to the .vibrai file (defaults to Untitled.vibrai in CWD)"
+              }
+            ]
+          },
+          {
+            "name": "drums map clear",
+            "description": "Clear the drum map, or only the named part keys",
+            "arguments": [
+              {
+                "name": "parts",
+                "required": false,
+                "description": "Drum part keys to remove; omit to clear the whole map"
+              }
+            ],
+            "options": [
+              {
+                "name": "--project",
+                "valueName": "PATH",
+                "default": null,
+                "description": "Path to the .vibrai file (defaults to Untitled.vibrai in CWD)"
+              }
+            ]
+          },
+          {
+            "name": "drums retarget",
+            "description": "Re-resolve drum pitches against current kits and remap written notes (kit-swap fixer)",
+            "arguments": [],
+            "options": [
+              {
+                "name": "--track",
+                "valueName": "N",
+                "default": null,
+                "description": "Live track number (1-based); repeatable to limit the retarget"
+              },
+              {
+                "name": "--dry-run",
+                "valueName": null,
+                "default": null,
+                "description": "Preview without remapping or saving"
+              },
+              {
+                "name": "--project",
+                "valueName": "PATH",
+                "default": null,
+                "description": "Path to the .vibrai file (defaults to Untitled.vibrai in CWD)"
+              }
+            ]
+          }
+        ]
+      },
+      "mcp": {
+        "tools": [
+          {
+            "name": "get_drum_map",
+            "description": "Show the project\u0027s drum map: explicit drum-part\u2192pitch overrides used as the first rung of drum-pitch resolution. Empty map = fully automatic (pad names, then GM).",
+            "parameters": [
+              {
+                "name": "project_path",
+                "type": "String",
+                "required": true,
+                "description": "Path to the .vibrai file (defaults to Untitled.vibrai in CWD when omitted)"
+              }
+            ]
+          },
+          {
+            "name": "set_drum_map",
+            "description": "Set drum map entries (merged into the existing map) like [\u0022snare=40\u0022,\u0022hi_hat=42\u0022]. Keys are drum part types (bd, snare, hi_hat, hi_hat_plus, percussion, crash, fill, roll, drums); pitches 0-127. Mapped pitches win over pad-name matching at generate time; run retarget_drums to move already-written notes.",
+            "parameters": [
+              {
+                "name": "entries",
+                "type": "String[]",
+                "required": true,
+                "description": "Entries like \u0022snare=40\u0022"
+              },
+              {
+                "name": "project_path",
+                "type": "String",
+                "required": true,
+                "description": "Path to the .vibrai file (defaults to Untitled.vibrai in CWD when omitted)"
+              }
+            ]
+          },
+          {
+            "name": "clear_drum_map",
+            "description": "Clear the project drum map entirely, or only the named drum part keys (e.g. [\u0022snare\u0022]).",
+            "parameters": [
+              {
+                "name": "parts",
+                "type": "String[]",
+                "required": true,
+                "description": "Drum part keys to remove; omit/empty to clear the whole map"
+              },
+              {
+                "name": "project_path",
+                "type": "String",
+                "required": true,
+                "description": "Path to the .vibrai file (defaults to Untitled.vibrai in CWD when omitted)"
+              }
+            ]
+          },
+          {
+            "name": "retarget_drums",
+            "description": "Re-resolve every drum part\u0027s pitch against the CURRENT kits (drum map \u2192 pad names \u2192 GM \u2192 snap) and remap already-written notes from the last-generated pitch to the new one \u2014 session and arrangement clips, server-side. Run after swapping a kit. dry_run previews without writing. Tracks with no recorded pitch (never generated with this feature) are skipped with a warning; use remap_pitch for those.",
+            "parameters": [
+              {
+                "name": "project_path",
+                "type": "String",
+                "required": true,
+                "description": "Path to the .vibrai file (defaults to Untitled.vibrai in CWD when omitted)"
+              },
+              {
+                "name": "tracks",
+                "type": "String[]",
+                "required": true,
+                "description": "Optional live track numbers (1-based, as in list_tracks) to limit the retarget"
+              },
+              {
+                "name": "dry_run",
+                "type": "Boolean",
+                "required": true,
+                "description": "Preview the plan without remapping or saving"
               }
             ]
           }
@@ -1139,6 +1301,43 @@
                 "description": "Path to JSON file containing notes array"
               }
             ]
+          },
+          {
+            "name": "note remap",
+            "description": "Move every note at one pitch to another, server-side (session/arrangement/both)",
+            "arguments": [
+              {
+                "name": "track",
+                "required": true,
+                "description": "Track number (1-based: 1, 2, \u2026 or first, second, \u2026)"
+              }
+            ],
+            "options": [
+              {
+                "name": "--from",
+                "valueName": "PITCH",
+                "default": null,
+                "description": "Source MIDI pitch 0-127 (only notes at this pitch move)"
+              },
+              {
+                "name": "--to",
+                "valueName": "PITCH",
+                "default": null,
+                "description": "Target MIDI pitch 0-127"
+              },
+              {
+                "name": "--scope",
+                "valueName": "SCOPE",
+                "default": null,
+                "description": "session, arrangement, or both (default both)"
+              },
+              {
+                "name": "--scene",
+                "valueName": "N",
+                "default": null,
+                "description": "Scene number (1-based) to limit to one session clip; requires --scope session"
+              }
+            ]
           }
         ]
       },
@@ -1207,6 +1406,42 @@
                 "type": "NoteEvent[]",
                 "required": true,
                 "description": "Notes to append."
+              }
+            ]
+          },
+          {
+            "name": "remap_pitch",
+            "description": "Move every note at from_pitch to to_pitch on one track, server-side \u2014 no note round-tripping, all other note fields preserved. Scope \u0027session\u0027, \u0027arrangement\u0027, or \u0027both\u0027 (default both); scene_index (session scope only) narrows to one clip. Reports clips_touched/notes_changed. The drum-pad retargeting primitive; see retarget_drums for the automatic kit-swap flow.",
+            "parameters": [
+              {
+                "name": "track_id",
+                "type": "String",
+                "required": true,
+                "description": "Track number (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
+              },
+              {
+                "name": "from_pitch",
+                "type": "Int32",
+                "required": true,
+                "description": "Source MIDI pitch 0-127 (only notes at this pitch move)"
+              },
+              {
+                "name": "to_pitch",
+                "type": "Int32",
+                "required": true,
+                "description": "Target MIDI pitch 0-127"
+              },
+              {
+                "name": "scope",
+                "type": "String",
+                "required": true,
+                "description": "\u0027session\u0027, \u0027arrangement\u0027, or \u0027both\u0027 (default)"
+              },
+              {
+                "name": "scene_index",
+                "type": "String",
+                "required": true,
+                "description": "Scene number (1-based) to limit to one session clip; requires scope=\u0027session\u0027"
               }
             ]
           }
@@ -3234,6 +3469,165 @@
                 "type": "Boolean",
                 "required": false,
                 "description": "Confirm the binary swap (CLI --yes equivalent). Must be true when apply=true; confirm with the user first."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "session",
+      "title": "Sessions",
+      "description": "List, export, and mark recorded session segments (an always-on journal of MCP tool calls and CLI invocations, replayable as a runnable script).",
+      "cli": {
+        "branch": "session",
+        "commands": [
+          {
+            "name": "session list",
+            "description": "List recorded session segments",
+            "arguments": [],
+            "options": []
+          },
+          {
+            "name": "session export",
+            "description": "Export a session as a runnable script of vibrai commands",
+            "arguments": [
+              {
+                "name": "session",
+                "required": false,
+                "description": "Session selector: index, id, or name (default: latest)"
+              }
+            ],
+            "options": [
+              {
+                "name": "--from",
+                "valueName": "TIMESTAMP",
+                "default": null,
+                "description": "Range start (ISO 8601) \u2014 alternative to a session selector"
+              },
+              {
+                "name": "--to",
+                "valueName": "TIMESTAMP",
+                "default": null,
+                "description": "Range end (ISO 8601)"
+              },
+              {
+                "name": "--include-reads",
+                "valueName": null,
+                "default": null,
+                "description": "Render read-only calls as live commands too"
+              },
+              {
+                "name": "--format",
+                "valueName": "FORMAT",
+                "default": "script",
+                "description": "Output format: script (default) or jsonl"
+              },
+              {
+                "name": "--annotate",
+                "valueName": "TEXT",
+                "default": null,
+                "description": "Free-text note added to the script header"
+              },
+              {
+                "name": "--out",
+                "valueName": "PATH",
+                "default": null,
+                "description": "Write to this path (payload sidecars land next to it); omit to print to stdout"
+              }
+            ]
+          },
+          {
+            "name": "session mark",
+            "description": "Name the current session segment",
+            "arguments": [
+              {
+                "name": "name",
+                "required": true,
+                "description": "Segment name, e.g. \u0027big room jam\u0027"
+              }
+            ],
+            "options": [
+              {
+                "name": "--note",
+                "valueName": "TEXT",
+                "default": null,
+                "description": "Optional free-text note (rendered as a comment on export)"
+              }
+            ]
+          }
+        ]
+      },
+      "mcp": {
+        "tools": [
+          {
+            "name": "list_sessions",
+            "description": "List recorded session segments (always-on journal of MCP tool calls and CLI invocations).",
+            "parameters": []
+          },
+          {
+            "name": "export_session",
+            "description": "Export a recorded session as a runnable, annotated shell script of vibrai CLI commands (or raw jsonl). Defaults to the latest session.",
+            "parameters": [
+              {
+                "name": "session",
+                "type": "String",
+                "required": false,
+                "description": "Session selector: index, id, or name. Default: latest."
+              },
+              {
+                "name": "from",
+                "type": "Nullable\u00601",
+                "required": false,
+                "description": "Range start (ISO 8601) \u2014 alternative to session."
+              },
+              {
+                "name": "to",
+                "type": "Nullable\u00601",
+                "required": false,
+                "description": "Range end (ISO 8601)."
+              },
+              {
+                "name": "include_reads",
+                "type": "Boolean",
+                "required": false,
+                "description": "Render read-only calls as live commands too."
+              },
+              {
+                "name": "format",
+                "type": "String",
+                "required": false,
+                "description": "Output format: script (default) or jsonl."
+              },
+              {
+                "name": "annotate",
+                "type": "String",
+                "required": false,
+                "description": "Free-text note added to the script header."
+              },
+              {
+                "name": "out_path",
+                "type": "String",
+                "required": false,
+                "description": "Write to this path (sidecar payload files land next to it); omit to return inline."
+              }
+            ]
+          },
+          {
+            "name": "mark_session",
+            "description": "Name the current session segment. The call itself is the marker \u2014 the journal records it.",
+            "parameters": [
+              {
+                "name": "name",
+                "type": "String",
+                "required": true,
+                "description": "Segment name, e.g. \u0027big room jam\u0027."
+              },
+              {
+                "name": "note",
+                "type": "String",
+                "required": false,
+                "description": "Optional free-text note (rendered as a comment on export)."
               }
             ]
           }

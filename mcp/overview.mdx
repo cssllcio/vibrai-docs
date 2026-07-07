@@ -7,13 +7,15 @@ The Vibrai MCP server gives an AI assistant direct, bidirectional control over A
 
 ## How the connection works
 
-The bridge is a three-layer stack:
+The core request path is a three-layer stack:
 
 1. **`vibrai.amxd`** — a Max for Live device you load on any track. Inside it, a Node.js script runs an Express HTTP server on `localhost:3333` and translates REST calls into Live's LOM via the Max `js` object.
 2. **`Vibrai.Mcp`** — a C# process that communicates with your MCP client over stdio using JSON-RPC. Every tool call is proxied to the M4L device via HTTP.
 3. **Your MCP client** — Claude Desktop, Claude Code, Cursor, or any other MCP-capable host. It sees the tools via the standard `tools/list` / `tools/call` protocol.
 
 The M4L device is stateless. All Vibrai-specific state — project files, instrument tags, genre libraries — lives on disk alongside your Live set and is managed by the C# layer.
+
+Session-view automation (envelope reads and writes) additionally routes through the **Vibrai Python remote script** on `localhost:3334`, installed separately via `install_vibrai_remote_script` / `vibrai install remote-script`. `get_version` reports it as the `python_bridge` field. See [Installation](/installation) and [Troubleshooting](/troubleshooting).
 
 ## Connecting Claude Desktop
 
@@ -23,7 +25,7 @@ Edit `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS) o
 {
   "mcpServers": {
     "vibrai": {
-      "command": "/absolute/path/to/publish/Vibrai.Mcp/Vibrai.Mcp",
+      "command": "/usr/local/lib/vibrai/Vibrai.Mcp",
       "env": {
         "VIBRAI_LOG_FILE": "/tmp/vibrai-mcp.log",
         "VIBRAI_LOG_LEVEL": "Warning"
@@ -37,7 +39,7 @@ Restart Claude Desktop. Open a new conversation — the Vibrai tools will be ava
 
 ## How tools map to engine operations
 
-Each MCP tool corresponds directly to a method on the underlying engine or bridge. Tools are grouped by domain: transport, tracks, clips, notes, follow actions, automation, devices, instruments, scenes, arrangement, scales, project, genre, generation, capture, and install.
+Each MCP tool corresponds directly to a method on the underlying engine or bridge. Tools are grouped by domain: transport, tracks, clips, notes, drum maps, follow actions, automation, devices, instruments, scenes, arrangement, scales, project, genre, generation, capture, sessions, license, install, update, and version.
 
 See the **[Reference](/reference/transport)** section for every tool, its parameters, and the matching CLI command.
 
