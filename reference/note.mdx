@@ -66,6 +66,30 @@ vibrai note add <track> <scene> --json-data <JSON> --file <PATH>
   Path to JSON file containing notes array
 </ParamField>
 
+### `note remap`
+
+Move every note at one pitch to another, server-side (session/arrangement/both)
+
+```bash
+vibrai note remap <track> --from <PITCH> --to <PITCH> --scope <SCOPE> --scene <N>
+```
+
+<ParamField path="track" required>
+  Track number (1-based: 1, 2, … or first, second, …)
+</ParamField>
+<ParamField path="--from">
+  Source MIDI pitch 0-127 (only notes at this pitch move)
+</ParamField>
+<ParamField path="--to">
+  Target MIDI pitch 0-127
+</ParamField>
+<ParamField path="--scope">
+  session, arrangement, or both (default both)
+</ParamField>
+<ParamField path="--scene">
+  Scene number (1-based) to limit to one session clip; requires --scope session
+</ParamField>
+
 ## MCP tools
 
 ### `list_notes`
@@ -137,4 +161,37 @@ Append notes to a clip without removing existing notes.
 </ParamField>
 <ParamField path="notes" type="NoteEvent[]" required>
   Notes to append.
+</ParamField>
+
+### `remap_pitch`
+
+Move every note at from_pitch to to_pitch on one track, server-side — no note round-tripping, all other note fields preserved. Scope 'session', 'arrangement', or 'both' (default both); scene_index (session scope only) narrows to one clip. Reports clips_touched/notes_changed. The drum-pad retargeting primitive; see retarget_drums for the automatic kit-swap flow.
+
+```json
+{
+  "tool": "remap_pitch",
+  "arguments": {
+    "track_id": "<String>",
+    "from_pitch": "<Int32>",
+    "to_pitch": "<Int32>",
+    "scope": "<String>",
+    "scene_index": "<String>"
+  }
+}
+```
+
+<ParamField path="track_id" type="String" required>
+  Track number (1-based: 1, 2, … or 'first', 'second', …)
+</ParamField>
+<ParamField path="from_pitch" type="Int32" required>
+  Source MIDI pitch 0-127 (only notes at this pitch move)
+</ParamField>
+<ParamField path="to_pitch" type="Int32" required>
+  Target MIDI pitch 0-127
+</ParamField>
+<ParamField path="scope" type="String" required>
+  'session', 'arrangement', or 'both' (default)
+</ParamField>
+<ParamField path="scene_index" type="String" required>
+  Scene number (1-based) to limit to one session clip; requires scope='session'
 </ParamField>

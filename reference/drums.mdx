@@ -1,0 +1,156 @@
+---
+title: "Drum maps & retargeting"
+description: "Persistent drum part→pitch overrides and kit-swap note retargeting."
+---
+
+{/* GENERATED — do not edit by hand. Regenerate with `npm run generate:reference`. */}
+
+Persistent drum part→pitch overrides and kit-swap note retargeting.
+
+## Command line
+
+### `drums map show`
+
+Show the project drum map (part-type → pitch overrides)
+
+```bash
+vibrai drums map show --project <PATH>
+```
+
+<ParamField path="--project">
+  Path to the .vibrai file (defaults to Untitled.vibrai in CWD)
+</ParamField>
+
+### `drums map set`
+
+Set drum map entries (merged), e.g. snare=40 hi_hat=42
+
+```bash
+vibrai drums map set <entries> --project <PATH>
+```
+
+<ParamField path="entries" required>
+  Drum map entries like snare=40 hi_hat=42 (keys: bd, snare, hi_hat, hi_hat_plus, percussion, crash, fill, roll, drums)
+</ParamField>
+<ParamField path="--project">
+  Path to the .vibrai file (defaults to Untitled.vibrai in CWD)
+</ParamField>
+
+### `drums map clear`
+
+Clear the drum map, or only the named part keys
+
+```bash
+vibrai drums map clear [parts] --project <PATH>
+```
+
+<ParamField path="parts">
+  Drum part keys to remove; omit to clear the whole map
+</ParamField>
+<ParamField path="--project">
+  Path to the .vibrai file (defaults to Untitled.vibrai in CWD)
+</ParamField>
+
+### `drums retarget`
+
+Re-resolve drum pitches against current kits and remap written notes (kit-swap fixer)
+
+```bash
+vibrai drums retarget --track <N> --dry-run --project <PATH>
+```
+
+<ParamField path="--track">
+  Live track number (1-based); repeatable to limit the retarget
+</ParamField>
+<ParamField path="--dry-run">
+  Preview without remapping or saving
+</ParamField>
+<ParamField path="--project">
+  Path to the .vibrai file (defaults to Untitled.vibrai in CWD)
+</ParamField>
+
+## MCP tools
+
+### `get_drum_map`
+
+Show the project's drum map: explicit drum-part→pitch overrides used as the first rung of drum-pitch resolution. Empty map = fully automatic (pad names, then GM).
+
+```json
+{
+  "tool": "get_drum_map",
+  "arguments": {
+    "project_path": "<String>"
+  }
+}
+```
+
+<ParamField path="project_path" type="String" required>
+  Path to the .vibrai file (defaults to Untitled.vibrai in CWD when omitted)
+</ParamField>
+
+### `set_drum_map`
+
+Set drum map entries (merged into the existing map) like ["snare=40","hi_hat=42"]. Keys are drum part types (bd, snare, hi_hat, hi_hat_plus, percussion, crash, fill, roll, drums); pitches 0-127. Mapped pitches win over pad-name matching at generate time; run retarget_drums to move already-written notes.
+
+```json
+{
+  "tool": "set_drum_map",
+  "arguments": {
+    "entries": "<String[]>",
+    "project_path": "<String>"
+  }
+}
+```
+
+<ParamField path="entries" type="String[]" required>
+  Entries like "snare=40"
+</ParamField>
+<ParamField path="project_path" type="String" required>
+  Path to the .vibrai file (defaults to Untitled.vibrai in CWD when omitted)
+</ParamField>
+
+### `clear_drum_map`
+
+Clear the project drum map entirely, or only the named drum part keys (e.g. ["snare"]).
+
+```json
+{
+  "tool": "clear_drum_map",
+  "arguments": {
+    "parts": "<String[]>",
+    "project_path": "<String>"
+  }
+}
+```
+
+<ParamField path="parts" type="String[]" required>
+  Drum part keys to remove; omit/empty to clear the whole map
+</ParamField>
+<ParamField path="project_path" type="String" required>
+  Path to the .vibrai file (defaults to Untitled.vibrai in CWD when omitted)
+</ParamField>
+
+### `retarget_drums`
+
+Re-resolve every drum part's pitch against the CURRENT kits (drum map → pad names → GM → snap) and remap already-written notes from the last-generated pitch to the new one — session and arrangement clips, server-side. Run after swapping a kit. dry_run previews without writing. Tracks with no recorded pitch (never generated with this feature) are skipped with a warning; use remap_pitch for those.
+
+```json
+{
+  "tool": "retarget_drums",
+  "arguments": {
+    "project_path": "<String>",
+    "tracks": "<String[]>",
+    "dry_run": "<Boolean>"
+  }
+}
+```
+
+<ParamField path="project_path" type="String" required>
+  Path to the .vibrai file (defaults to Untitled.vibrai in CWD when omitted)
+</ParamField>
+<ParamField path="tracks" type="String[]" required>
+  Optional live track numbers (1-based, as in list_tracks) to limit the retarget
+</ParamField>
+<ParamField path="dry_run" type="Boolean" required>
+  Preview the plan without remapping or saving
+</ParamField>

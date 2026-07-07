@@ -33,6 +33,7 @@
           "reference/transport",
           "reference/track",
           "reference/device",
+          "reference/drums",
           "reference/instrument",
           "reference/clip",
           "reference/note",
@@ -49,7 +50,8 @@
           "reference/capture",
           "reference/license",
           "reference/version",
-          "reference/update"
+          "reference/update",
+          "reference/session"
         ]
       },
       {
