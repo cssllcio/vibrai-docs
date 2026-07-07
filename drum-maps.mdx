@@ -1,0 +1,147 @@
+---
+title: "Drum maps & kit swaps"
+description: "Pin drum parts to specific pads, and remap already-written notes when you swap a drum kit — from the CLI or MCP."
+keywords: ["drum map", "drum rack", "retarget", "kit swap", "pad", "remap pitch", "set_drum_map", "retarget_drums"]
+---
+
+Every drum part Vibrai generates — kick, snare, hi-hat, percussion — has to land on a MIDI pitch that triggers the right pad in your drum rack. Vibrai resolves that pitch automatically, but two things let you take control: a per-project **drum map** to override the resolution, and **retarget** to move notes you already wrote when you change kits. Both work on either surface.
+
+## How drum-pitch resolution works
+
+When Vibrai writes a drum note, it resolves the part's pitch down a ladder, stopping at the first rung that answers:
+
+1. **Project drum map** — an explicit `part → pitch` override you set (below).
+2. **Pad name** — if the loaded rack has a pad named like the part (e.g. a `Snare` pad), use it.
+3. **General MIDI** — the GM percussion pitch for the part, if that pad is populated.
+4. **Snap** — the nearest populated pad (ties resolve downward).
+5. **GM floor** — a last-resort default (36 for drums, 39 for percussion).
+
+An empty drum map means fully automatic (rungs 2–5). You only reach for a map when a kit lays its pads out unusually, or you want a specific sound.
+
+## Pin a part to a pad
+
+<Steps>
+  <Step title="Inspect the current map">
+    A fresh project has an empty map — everything is automatic.
+
+    <CodeGroup>
+
+    ```bash CLI
+    vibrai drums map show --project song.vibrai
+    ```
+
+    ```json MCP
+    {
+      "tool": "get_drum_map",
+      "arguments": { "project_path": "song.vibrai" }
+    }
+    ```
+
+    </CodeGroup>
+  </Step>
+
+  <Step title="Set one or more overrides">
+    Entries are `part=pitch`, merged into any existing map. Valid part keys: `bd`, `snare`, `hi_hat`, `hi_hat_plus`, `percussion`, `crash`, `fill`, `roll`, `drums`. Pitches are `0–127`.
+
+    <CodeGroup>
+
+    ```bash CLI
+    vibrai drums map set snare=40 hi_hat=42 --project song.vibrai
+    ```
+
+    ```json MCP
+    {
+      "tool": "set_drum_map",
+      "arguments": {
+        "entries": ["snare=40", "hi_hat=42"],
+        "project_path": "song.vibrai"
+      }
+    }
+    ```
+
+    </CodeGroup>
+
+    Mapped pitches win over pad-name matching the next time you generate. To move notes you have **already** written, retarget them (below).
+  </Step>
+
+  <Step title="Clear overrides you no longer want">
+    Pass part keys to remove just those; omit them to clear the whole map.
+
+    <CodeGroup>
+
+    ```bash CLI
+    vibrai drums map clear snare --project song.vibrai
+    ```
+
+    ```json MCP
+    {
+      "tool": "clear_drum_map",
+      "arguments": { "parts": ["snare"], "project_path": "song.vibrai" }
+    }
+    ```
+
+    </CodeGroup>
+  </Step>
+</Steps>
+
+## Swap a kit without re-generating
+
+Loading a different drum rack usually moves the pads around, so notes you already wrote trigger the wrong sounds. **Retarget** re-resolves every drum part against the *current* kit and moves the already-written notes — in both session and arrangement clips — from their last-generated pitch to the new one, server-side.
+
+<Steps>
+  <Step title="Preview the change (dry run)">
+    A dry run reports how many notes would move, per track, without writing anything. Always look first.
+
+    <CodeGroup>
+
+    ```bash CLI
+    vibrai drums retarget --track 2 --dry-run --project song.vibrai
+    ```
+
+    ```json MCP
+    {
+      "tool": "retarget_drums",
+      "arguments": {
+        "project_path": "song.vibrai",
+        "tracks": ["2"],
+        "dry_run": true
+      }
+    }
+    ```
+
+    </CodeGroup>
+
+    Omit `--track` / `tracks` to retarget every drum track in the project.
+  </Step>
+
+  <Step title="Apply it">
+    Re-run with the dry-run flag off to remap and save.
+
+    <CodeGroup>
+
+    ```bash CLI
+    vibrai drums retarget --track 2 --project song.vibrai
+    ```
+
+    ```json MCP
+    {
+      "tool": "retarget_drums",
+      "arguments": {
+        "project_path": "song.vibrai",
+        "tracks": ["2"],
+        "dry_run": false
+      }
+    }
+    ```
+
+    </CodeGroup>
+  </Step>
+</Steps>
+
+## Notes & limits
+
+- **Retarget only moves notes Vibrai generated with this feature.** A track with no recorded per-part pitch (hand-authored notes, or notes from before pad-resolution shipped) is skipped with a warning. Move those with `vibrai note remap` / `remap_pitch`, which rewrites a specific pitch to another and preserves every other note field.
+- **The map is per project.** It lives in the `.vibrai` file, keyed by project, not by wire position — reopening the set keeps your overrides.
+- **Map, then generate; or generate, then retarget.** Setting a map changes *future* generation; retarget fixes *existing* notes. They compose — set an override and retarget to apply it to what's already there.
+
+See the [Drum maps reference](/reference/drums) for every flag and parameter, and [Notes](/reference/note) for `note remap`.
