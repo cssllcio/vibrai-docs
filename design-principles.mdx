@@ -53,3 +53,7 @@ What matters for design is that output is **deterministic**: the same `.vibrai` 
 Vibrai ships as two equal surfaces over one engine. Anything you can do by talking to an AI assistant over [MCP](/mcp/overview), you can do by hand from the [CLI](/cli/overview), and the reverse. Feature parity is a hard rule: a build fails if a capability lands on one surface without its sibling on the other.
 
 Both surfaces read and write the same human-readable [`.vibrai` file](/concepts) that sits next to your `.als`. You, the CLI, and the assistant all edit one source of truth. "AI-optional" is structural: the assistant is one door into the engine, not a requirement for using it.
+
+<Note>
+  Curious how these principles held up in practice? [Building Vibrai](/blog/building-vibrai) is the engineering story — the seams between an AI client, a DAW, and the bridges between them, and the bugs that lived there.
+</Note>
