@@ -12,16 +12,32 @@ This is the lifecycle: brainstorm, design, implement, test, release, operate.
 ## The architecture, in one breath
 
 ```mermaid
-flowchart LR
-  claude["AI agent<br/>(Claude Desktop / Cursor / Claude Code)"] -- "MCP stdio" --> mcp["Vibrai.Mcp"]
-  user["Musician (terminal)"] --> cli["vibrai CLI"]
-  mcp --> engine["Vibrai.Engine<br/>song form · generators · arrangement"]
-  cli --> engine
-  engine --> bridge["CompositeAbletonBridge"]
-  bridge -- "HTTP :3333" --> m4l["M4L device<br/>Node-for-Max · session view"]
-  bridge -- "HTTP :3334" --> py["Python remote script<br/>arrangement envelopes"]
-  m4l -- "LOM (main thread)" --> live["Ableton Live 12"]
-  py -- "LOM (main thread)" --> live
+C4Container
+    title Container diagram — Vibrai
+
+    Person(musician, "Musician", "Composes from a terminal")
+    System_Ext(agent, "AI agent", "Claude Desktop / Cursor / Claude Code")
+
+    Container_Boundary(vibrai, "Vibrai") {
+        Container(mcp, "Vibrai.Mcp", ".NET", "MCP server surface")
+        Container(cli, "vibrai CLI", ".NET", "Command-line surface")
+        Container(engine, "Vibrai.Engine", ".NET", "Song form, generators, arrangement")
+        Container(bridge, "CompositeAbletonBridge", ".NET", "Routes each op to the surface that can serve it")
+        Container(m4l, "M4L device", "Node-for-Max", "Session view over HTTP")
+        Container(py, "Python remote script", "Python", "Arrangement envelopes over HTTP")
+    }
+
+    System_Ext(live, "Ableton Live 12", "DAW plus Live Object Model")
+
+    Rel(agent, mcp, "drives", "MCP stdio")
+    Rel(musician, cli, "runs commands")
+    Rel(mcp, engine, "calls")
+    Rel(cli, engine, "calls")
+    Rel(engine, bridge, "sends operations")
+    Rel(bridge, m4l, "session ops", "HTTP :3333")
+    Rel(bridge, py, "arrangement envelopes", "HTTP :3334")
+    Rel(m4l, live, "reads/writes", "LOM (main thread)")
+    Rel(py, live, "reads/writes", "LOM (main thread)")
 ```
 
 Five .NET projects: `Vibrai.Engine` (the brain — song form, generators, arrangement), `Vibrai.Bridge` (talks to Live over HTTP), `Vibrai.Mcp` and `Vibrai` (the two surfaces), and a licensing project. Below the waterline: a Max for Live device (`vibrai.amxd`) running an Express server in Node-for-Max, and a Python remote script that wraps Live's LOM on a second port. The engine's design borrows song-form vocabulary from Song Sketch 2 and a per-part generator-network model from Wotja.
@@ -39,6 +55,10 @@ This sounds like overhead. It paid for itself constantly, because the CLI became
 **2. Every architecture diagram is Mermaid + C4.** No ASCII boxes, no PlantUML, no exported PNGs that drift from reality. C4 gives a consistent context→container→component→dynamic vocabulary across every spec, and Mermaid renders natively on GitHub and in the docs site, so diagrams stay diffable in review. A validation gate parse-checks every diagram block in CI, so a misspelled directive fails the build rather than shipping a broken picture.
 
 Neither rule is about elegance for its own sake. Both are about **not letting a two-surface, many-document project drift out of sync** — which, at 1,500+ commits and 80-odd tools, it absolutely would have.
+
+<Note>
+  This post is the engineering story. For the non-technical version — why Vibrai is AI-optional, non-destructive, and deterministic, written for musicians rather than builders — see [Design principles](/design-principles).
+</Note>
 
 Design happened as written specs before code: `spec` → `implementation plan` → PR. The stock-sounds feature, the unified automation surface, the follow-action *removal* — each got a design doc and a plan committed before a line of implementation. The history reads like a research log instead of a pile of "fix stuff" commits.
 
