@@ -60,6 +60,12 @@
         "pages": [
           "troubleshooting"
         ]
+      },
+      {
+        "group": "Blog",
+        "pages": [
+          "blog/building-vibrai"
+        ]
       }
     ]
   },
