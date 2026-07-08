@@ -40,7 +40,7 @@ C4Container
     Rel(py, live, "reads/writes", "LOM (main thread)")
 ```
 
-Five .NET projects: `Vibrai.Engine` (the brain — song form, generators, arrangement), `Vibrai.Bridge` (talks to Live over HTTP), `Vibrai.Mcp` and `Vibrai` (the two surfaces), and a licensing project. Below the waterline: a Max for Live device (`vibrai.amxd`) running an Express server in Node-for-Max, and a Python remote script that wraps Live's LOM on a second port. The engine's design borrows song-form vocabulary from Song Sketch 2 and a per-part generator-network model from Wotja.
+Five .NET projects: `Vibrai.Engine` (the brain — song form, generators, arrangement), `Vibrai.Bridge` (talks to Live over HTTP), `Vibrai.Mcp` and `Vibrai` (the two surfaces), and a licensing project. Below the waterline: a Max for Live device (`vibrai.amxd`) running an Express server in Node-for-Max, and a Python remote script that wraps Live's LOM on a second port. The engine pairs a song-form vocabulary — part types, section categories, tension blocks, arrangement templates — with a per-part generator-network model, where each part is driven by its own configurable generator.
 
 The rest of this article is about what that clean diagram hides.
 
