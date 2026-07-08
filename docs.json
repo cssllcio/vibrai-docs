@@ -24,6 +24,7 @@
           "cli/overview",
           "mcp/overview",
           "concepts",
+          "design-principles",
           "plugins",
           "drum-maps",
           "sessions"
