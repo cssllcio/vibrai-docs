@@ -1,0 +1,59 @@
+---
+title: "Design principles"
+description: "Why Vibrai works the way it does: AI-optional, non-destructive, deterministic, and equal across surfaces."
+---
+
+Vibrai is an arrangement engine that you can drive from an AI assistant, from the CLI, or both. That flexibility rests on a few principles that are enforced in the engine, not just described here. Understanding them tells you what Vibrai will and will not do to your session.
+
+<CardGroup cols={2}>
+  <Card title="You commit, not the AI" icon="hand">
+    Every generative action can be previewed before it touches Live. Consequential actions require explicit confirmation.
+  </Card>
+  <Card title="Non-destructive by default" icon="shield-check">
+    Vibrai never silently empties a clip or overwrites your work. It refuses and reports instead of clobbering.
+  </Card>
+  <Card title="Deterministic output" icon="dice">
+    The same project and seed produce byte-identical results — on any machine. Re-roll a seed for a new but reproducible idea.
+  </Card>
+  <Card title="Surfaces are equal" icon="scale-balanced">
+    Anything the AI can do, you can do from the CLI, and vice versa. Both read and write the same `.vibrai` file.
+  </Card>
+</CardGroup>
+
+## The AI proposes; you commit
+
+Generation is a two-step loop. First you `plan` — Vibrai reports exactly what it would write (tracks, notes, sections) without changing your Live set. Then you `generate` to apply it. This preview-before-commit split lets an AI assistant move quickly without acting irreversibly. See [Generation](/reference/generation) for both surfaces.
+
+Consequential operations require an explicit yes. Applying a genre template over a project needs `confirm=true` (MCP) or `--yes` (CLI) — see [Genre](/reference/genre). Some actions are deliberately human-only: license activation is [CLI-only](/reference/license), because it binds a paid seat to a machine and must be human-initiated. An AI assistant cannot trigger it.
+
+## Vibrai refuses to destroy your work
+
+`generate` is non-destructive by default. It will not overwrite existing material unless you pass `--force` (CLI) or the equivalent flag (MCP). When the arrangement engine finds your content where it intended to write, it fails with an overlap error rather than clobbering the clip.
+
+The rule inside the composition engine is literal:
+
+```
+// never empty a non-empty clip
+```
+
+The style engine that applies swing and humanization honors it, and empty clips are suppressed by default rather than added to your session (opt back in with `keep_empty_clips`). The result: you can hand the session to an assistant and trust that your existing takes survive.
+
+<Note>
+  Vibrai-generated arrangement automation is not readable back through Live's API, so `capture` is one-way for that slice. This limit is documented rather than hidden — see [Capture](/reference/capture).
+</Note>
+
+## Same inputs, same song
+
+Vibrai does not roll dice on random notes. Each part type is driven by a music-theory-literate generator — Euclidean drums, chord-bank pads, scale-aware melodic lines — and the whole arrangement is built as a theme with per-section variation. The [Concepts](/concepts) page covers generators and theme-and-variation in full.
+
+What matters for design is that output is **deterministic**: the same `.vibrai` project and seed produce byte-identical MIDI, even across machines. Change the seed and you get a different idea that is itself fully reproducible — so you can re-roll a pattern until you like it, then rely on it staying put. Seeds and scale live in the `generation` block of the [project file](/concepts).
+
+## The CLI and MCP are equal
+
+Vibrai ships as two equal surfaces over one engine. Anything you can do by talking to an AI assistant over [MCP](/mcp/overview), you can do by hand from the [CLI](/cli/overview), and the reverse. Feature parity is a hard rule: a build fails if a capability lands on one surface without its sibling on the other.
+
+Both surfaces read and write the same human-readable [`.vibrai` file](/concepts) that sits next to your `.als`. You, the CLI, and the assistant all edit one source of truth. "AI-optional" is structural: the assistant is one door into the engine, not a requirement for using it.
+
+<Note>
+  Curious how these principles held up in practice? [Building Vibrai](/blog/building-vibrai) is the engineering story — the seams between an AI client, a DAW, and the bridges between them, and the bugs that lived there.
+</Note>
