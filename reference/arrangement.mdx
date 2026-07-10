@@ -128,7 +128,7 @@ Copy the session-view clip at (track_id, source_scene_index) into the arrangemen
   Start position in arrangement: bar.beat notation (e.g. '2.3' = bar 2, beat 3) or raw beats (e.g. '8' or '8.0')
 </ParamField>
 <ParamField path="carry_envelopes" type="Boolean">
-  Carry every session-clip envelope into the arrangement via a single transactional bounce. Returns carried_envelopes:N only after all N envelopes are committed; on any failure the placed clip is removed and the arrangement is left unchanged. Verify writes via get_arrangement_envelopes_ledger — the LOM read-back path returns empty for arrangement clips written this way. See recipe `write_arrangement_automation` and recipe `verify_arrangement_writes`.
+  Carry every session-clip envelope into the arrangement via a single transactional bounce. Returns carried_envelopes:N only after all N envelopes are committed; on any failure the placed clip is removed and the arrangement is left unchanged. Verify writes via get_automation — the LOM read-back path returns empty for arrangement clips written this way. See recipe `write_arrangement_automation` and recipe `verify_arrangement_writes`.
 </ParamField>
 <ParamField path="force" type="Boolean">
   Allow envelope carry even when existing track-lane automation would be clobbered (default: false).

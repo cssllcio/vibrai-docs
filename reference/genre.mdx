@@ -1,11 +1,11 @@
 ---
 title: "Genre"
-description: "List, apply, and import genre libraries and presets."
+description: "List, apply, and import genre libraries and presets. The import step (genre import-songsketch) is CLI-only by design — a hidden, internal command not exposed to end users. It is a content-authoring step that converts a proprietary Song Sketch lib JSON into a .vibraigenre file on disk (how the shipped genre catalog is minted), not a runtime operation an agent drives against Live. The MCP surface (GenreTools) exposes the runtime half: discover libraries and presets (list_genres, list_genre_presets) and apply them (apply_genre)."
 ---
 
 {/* GENERATED — do not edit by hand. Regenerate with `npm run generate:reference`. */}
 
-List, apply, and import genre libraries and presets.
+List, apply, and import genre libraries and presets. The import step (genre import-songsketch) is CLI-only by design — a hidden, internal command not exposed to end users. It is a content-authoring step that converts a proprietary Song Sketch lib JSON into a .vibraigenre file on disk (how the shipped genre catalog is minted), not a runtime operation an agent drives against Live. The MCP surface (GenreTools) exposes the runtime half: discover libraries and presets (list_genres, list_genre_presets) and apply them (apply_genre).
 
 ## Command line
 
@@ -58,7 +58,7 @@ vibrai genre apply [genre] [preset] [project-path] --genre <NAME> --preset <ID> 
   Genre id or display name (run 'vibrai genre list').
 </ParamField>
 <ParamField path="preset">
-  Preset id or display name within the genre (from `vibrai genre presets &lt;genre>`).
+  Preset id or display name within the genre (from 'vibrai genre presets &lt;genre>').
 </ParamField>
 <ParamField path="project-path">
   Path to .vibrai (default: ./project.vibrai)

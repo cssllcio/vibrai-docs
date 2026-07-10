@@ -11,7 +11,7 @@ Generate or plan a composition from a .vibrai project file.
 
 ### `generate`
 
-Generate clips and arrangement from an .vibrai project file
+Generate clips and arrangement from a .vibrai project file
 
 ```bash
 vibrai generate --project <PATH> --force --dry-run --seed <VALUE> --allow-skip --with-instruments --on-existing-tracks <MODE> --keep-empty-clips --swing <PCT> --humanize <PCT> --ornaments <PCT> --dropout <PCT>
@@ -56,7 +56,7 @@ vibrai generate --project <PATH> --force --dry-run --seed <VALUE> --allow-skip -
 
 ### `plan`
 
-Plan a composition from an .vibrai project file without writing to Live
+Plan a composition from a .vibrai project file without writing to Live
 
 ```bash
 vibrai plan --project <PATH> --seed <VALUE> --keep-empty-clips --swing <PCT> --humanize <PCT> --ornaments <PCT> --dropout <PCT>
@@ -88,7 +88,7 @@ vibrai plan --project <PATH> --seed <VALUE> --keep-empty-clips --swing <PCT> --h
 
 ### `plan`
 
-Plan a composition from an .vibrai file without writing to Live. Returns a slim summary. Track ids in the summary (session_clips, arrangement_placements, instruments, current_tracks) are 1-based, matching list_tracks and load_device.
+Plan a composition from a .vibrai file without writing to Live. Returns a slim summary. Track ids in the summary (session_clips, arrangement_placements, instruments, current_tracks) are 1-based, matching list_tracks and load_device.
 
 ```json
 {
