@@ -1,6 +1,6 @@
 {
   "engineVersion": "1.0.0.0",
-  "generatedAt": "2026-07-07T07:32:43Z",
+  "generatedAt": "2026-07-10T00:48:51Z",
   "features": [
     {
       "id": "transport",
@@ -84,13 +84,13 @@
           },
           {
             "name": "seek",
-            "description": "Move the transport playhead to the given beat position (0 = song start). Use before \u0060play\u0060 to start from a specific bar, or while playing to jump to a new position; the playhead moves at the next audio buffer.",
+            "description": "Move the transport playhead to the given position (0 = song start). Accepts bar.beat notation (e.g. \u00222.1\u0022 = bar 2, beat 1) or raw beats (e.g. \u002216\u0022 or \u002216.0\u0022). Use before \u0060play\u0060 to start from a specific bar, or while playing to jump to a new position; the playhead moves at the next audio buffer.",
             "parameters": [
               {
                 "name": "beats",
-                "type": "Double",
+                "type": "String",
                 "required": true,
-                "description": "Beat position from 0. One bar = 4 beats in 4/4."
+                "description": "Transport position: bar.beat notation (e.g. \u00222.1\u0022 = bar 2, beat 1) or raw beats (e.g. \u002216\u0022 or \u002216.0\u0022)"
               }
             ]
           }
@@ -112,7 +112,7 @@
           },
           {
             "name": "track get",
-            "description": "Get track by ID",
+            "description": "Get a track by its 1-based number",
             "arguments": [
               {
                 "name": "track",
@@ -143,7 +143,7 @@
           },
           {
             "name": "track delete",
-            "description": "Delete a track by its ID",
+            "description": "Delete a track by its 1-based number",
             "arguments": [
               {
                 "name": "track",
@@ -156,13 +156,13 @@
                 "name": "--liveset-id",
                 "valueName": "ID",
                 "default": null,
-                "description": "Stable liveset_id from \u0060vibrai track list --json\u0060; preferred over the positional track number when available (survives reorders)."
+                "description": "Stable liveset_id from \u0027vibrai track list --json\u0027; preferred over the positional track number when available (survives reorders)."
               }
             ]
           },
           {
             "name": "track rename",
-            "description": "Rename a track by its ID",
+            "description": "Rename a track by its 1-based number",
             "arguments": [
               {
                 "name": "track",
@@ -180,7 +180,7 @@
                 "name": "--liveset-id",
                 "valueName": "ID",
                 "default": null,
-                "description": "Stable liveset_id from \u0060vibrai track list --json\u0060; preferred over the positional track number when available (survives reorders)."
+                "description": "Stable liveset_id from \u0027vibrai track list --json\u0027; preferred over the positional track number when available (survives reorders)."
               }
             ]
           }
@@ -463,7 +463,7 @@
           },
           {
             "name": "list_devices",
-            "description": "List devices currently loaded on a track in chain order. Returns each device\u0027s index, id, name, and class info \u2014 pass deviceId to list_automation_params / get_automation / write_automation.",
+            "description": "List devices currently loaded on a track in chain order. Returns each device\u0027s index, id, name, and class info \u2014 pass device_id to list_automation_params / get_automation / write_automation.",
             "parameters": [
               {
                 "name": "track_id",
@@ -514,6 +514,230 @@
                 "description": "Path to the .vibrai file (defaults to Untitled.vibrai in CWD when omitted)"
               }
             ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "stock",
+      "title": "Stock Sounds",
+      "description": "Discover and load Ableton Live 12 Suite\u0027s factory Core Library content \u2014 instruments, drum kits, and audio/MIDI effect presets \u2014 by scanning it offline on disk, independent of Live running. list/browse/show/refresh/locate are all Live-independent (they read a cached on-disk index, falling back to a fresh scan then an embedded seed); only load needs a running Ableton. All six user-facing tools ship on both surfaces (StockTools MCP / the stock CLI branch). \u0060stock seed\u0060 is CLI-only by design \u2014 a maintainer-only, hidden command that re-scans a Live-Suite machine\u0027s Core Library and cross-checks the derived URIs against a live LOM scan (instrument-browser.json) before regenerating the embedded seed resource; it is release/build tooling that writes into the repo tree, not a runtime operation an agent drives against Live, so it has no MCP counterpart.",
+      "cli": {
+        "branch": "stock",
+        "commands": [
+          {
+            "name": "stock list",
+            "description": "List/filter factory Core Library content (offline, no Live)",
+            "arguments": [],
+            "options": [
+              {
+                "name": "--category",
+                "valueName": "CATEGORY",
+                "default": null,
+                "description": "Filter by category: instrument, drum_kit, audio_effect, midi_effect, unknown. Case-insensitive. Omit = all."
+              },
+              {
+                "name": "--kind",
+                "valueName": "KIND",
+                "default": null,
+                "description": "Filter by on-disk shape: device, rack, preset. Case-insensitive. Omit = all."
+              },
+              {
+                "name": "--search",
+                "valueName": "TEXT",
+                "default": null,
+                "description": "Case-insensitive substring matched against name or relative path. Omit = no text filter."
+              },
+              {
+                "name": "--limit",
+                "valueName": "N",
+                "default": null,
+                "description": "Maximum number of items to return. Omit or \u003C= 0 = no cap."
+              }
+            ]
+          },
+          {
+            "name": "stock browse",
+            "description": "Depth-1 browse of the Core Library folder tree (offline)",
+            "arguments": [
+              {
+                "name": "path",
+                "required": false,
+                "description": "Relative Core Library folder path (forward-slash separated). Omit = top level."
+              }
+            ],
+            "options": []
+          },
+          {
+            "name": "stock show",
+            "description": "Show one stock item: category, kind, device class, load URI",
+            "arguments": [
+              {
+                "name": "path",
+                "required": true,
+                "description": "Exact relative path of the item (from stock list / stock browse)."
+              }
+            ],
+            "options": []
+          },
+          {
+            "name": "stock refresh",
+            "description": "Re-walk the on-disk Core Library and rebuild the cache",
+            "arguments": [],
+            "options": []
+          },
+          {
+            "name": "stock load",
+            "description": "Load a stock item onto a track (needs Live)",
+            "arguments": [
+              {
+                "name": "track",
+                "required": true,
+                "description": "Track number (1-based: 1, 2, \u2026 or first, second, \u2026)"
+              },
+              {
+                "name": "path",
+                "required": true,
+                "description": "Exact relative path of the item to load (from stock list / stock browse / stock show)."
+              }
+            ],
+            "options": [
+              {
+                "name": "--position",
+                "valueName": "N",
+                "default": null,
+                "description": "Insert position in device chain (1-based: 1 = first slot; omit to append)"
+              }
+            ]
+          },
+          {
+            "name": "stock locate",
+            "description": "Show stock-library diagnostics (resolved path, per-category counts, cache freshness, source)",
+            "arguments": [],
+            "options": []
+          },
+          {
+            "name": "stock seed",
+            "description": "Maintainer-only: regenerate the embedded Core Library seed",
+            "arguments": [],
+            "options": [
+              {
+                "name": "--check",
+                "valueName": null,
+                "default": null,
+                "description": "Run the cross-check only; never writes. Exits non-zero when the derivation rate is below --baseline."
+              },
+              {
+                "name": "--snapshot",
+                "valueName": "PATH",
+                "default": null,
+                "description": "Path to the LOM snapshot (instrument-browser.json) to cross-check against (default: the app-support snapshot Vibrai\u0027s remote script writes)"
+              },
+              {
+                "name": "--output",
+                "valueName": "PATH",
+                "default": null,
+                "description": "Where to write the seed JSON (default: Vibrai.Engine/Resources/StockLibrary/core-library-suite.json, repo-relative \u2014 run from the repo root)"
+              },
+              {
+                "name": "--baseline",
+                "valueName": "RATE",
+                "default": "1",
+                "description": "Minimum derivation rate (0..1) the cross-check must meet to pass (default: 1.0)"
+              }
+            ]
+          }
+        ]
+      },
+      "mcp": {
+        "tools": [
+          {
+            "name": "list_stock_sounds",
+            "description": "List (and filter) Ableton Live 12 Suite factory Core Library content \u2014 instruments, drum kits, and audio/MIDI effect presets \u2014 discovered by scanning the library on disk. Fully offline and Live-independent: reads Vibrai\u0027s cached Core Library index (falling back to a fresh scan, then the embedded seed), no running Ableton required. Filters are ANDed: category, kind, a case-insensitive search substring over the item name or relative path, and a max-result limit. Omit a filter to leave it unconstrained. Returns each item\u0027s name, relative path (the address load_stock_sound / show_stock_sound take), category, kind, device class, and derived load URI.",
+            "parameters": [
+              {
+                "name": "category",
+                "type": "Nullable\u00601",
+                "required": false,
+                "description": "Only items in this category: instrument, drum_kit, audio_effect, midi_effect, unknown. Omit = all categories."
+              },
+              {
+                "name": "kind",
+                "type": "Nullable\u00601",
+                "required": false,
+                "description": "Only items of this on-disk shape: device, rack, preset. Omit = all kinds."
+              },
+              {
+                "name": "search",
+                "type": "String",
+                "required": false,
+                "description": "Case-insensitive substring matched against the item name or relative path. Omit = no text filter."
+              },
+              {
+                "name": "limit",
+                "type": "Nullable\u00601",
+                "required": false,
+                "description": "Maximum number of items to return. Omit or \u003C= 0 = no cap."
+              }
+            ]
+          },
+          {
+            "name": "browse_stock_sounds",
+            "description": "Depth-1 browse of the offline Core Library folder tree, like a file browser one level at a time. Live-independent (same cached index as list_stock_sounds). Pass a relative folder path (forward-slash separated) to list its immediate sub-folders and leaf items; omit path (or pass empty) for the top level. Each entry is either a folder (is_folder=true \u2014 drill in by passing its path) or an item (is_folder=false, with the full stock item for loading). Returns an empty list for an unknown or leaf path.",
+            "parameters": [
+              {
+                "name": "path",
+                "type": "String",
+                "required": false,
+                "description": "Relative Core Library folder path (forward-slash separated). Omit/empty = top level."
+              }
+            ]
+          },
+          {
+            "name": "show_stock_sound",
+            "description": "Show one Core Library item by its exact relative path (as returned by list_stock_sounds / browse_stock_sounds): name, category, kind, device class, and the derived load URI. Offline and Live-independent. Errors (STOCK_ITEM_NOT_FOUND) when no item matches the path exactly.",
+            "parameters": [
+              {
+                "name": "path",
+                "type": "String",
+                "required": true,
+                "description": "Exact relative path of the item, e.g. \u0027Devices/Instruments/Operator/Bass/Analog Bass.adv\u0027."
+              }
+            ]
+          },
+          {
+            "name": "refresh_stock_library",
+            "description": "Force a fresh on-disk re-scan of the Ableton Live 12 Suite Core Library, rebuilding Vibrai\u0027s cached index (bypassing both the cache and the embedded seed). Offline \u2014 it reads the library files, not a running Ableton \u2014 but it does need the Core Library installed locally; errors (STOCK_LIBRARY_NOT_FOUND) when no Core Library root can be located. Returns a small summary: the source (always \u0027Scan\u0027 on success), the item count, and the resolved root.",
+            "parameters": []
+          },
+          {
+            "name": "load_stock_sound",
+            "description": "Load a Core Library item onto a track by its relative path. Unlike the discovery tools, THIS needs a running Ableton \u2014 it resolves the item offline (via the same cached index), then loads it by its trusted derived URI through the Vibrai bridge. Returns the same result shape as load_device (track, device id, name, chain position, optional M4L health warning). Errors STOCK_ITEM_NOT_FOUND if the path doesn\u0027t match, or STOCK_LOAD_NEEDS_SNAPSHOT for the rare item with no offline-derivable URI.",
+            "parameters": [
+              {
+                "name": "track_id",
+                "type": "String",
+                "required": true,
+                "description": "Track number (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
+              },
+              {
+                "name": "path",
+                "type": "String",
+                "required": true,
+                "description": "Exact relative path of the item to load (from list_stock_sounds / browse_stock_sounds / show_stock_sound)."
+              },
+              {
+                "name": "position",
+                "type": "String",
+                "required": false,
+                "description": "Insert position in the device chain (1-based: 1 = first slot; omit to append at the end)"
+              }
+            ]
+          },
+          {
+            "name": "locate_stock_library",
+            "description": "Diagnostics for the offline Core Library index: the resolved root path, the source that answered (Cache/Scan/Seed/Empty), the total item count and a per-category breakdown, and whether a local scan cache exists and is still fresh. Live-independent and never errors \u2014 a missing library is reported as data (root=null, source=Empty), so it\u0027s the tool to call when list/load come back empty and you need to know why.",
+            "parameters": []
           }
         ]
       }
@@ -1096,6 +1320,160 @@
               }
             ],
             "options": []
+          },
+          {
+            "name": "clip envelope get",
+            "description": "Read automation envelope(s) on a session-view clip",
+            "arguments": [
+              {
+                "name": "track",
+                "required": true,
+                "description": "Track number (1-based: 1, 2, \u2026 or first, second, \u2026)"
+              },
+              {
+                "name": "scene",
+                "required": true,
+                "description": "Scene number (1-based: 1, 2, \u2026 or first, second, \u2026)"
+              }
+            ],
+            "options": [
+              {
+                "name": "--device",
+                "valueName": "ID",
+                "default": null,
+                "description": "Device ID, 1-based position number, or name substring. Provide together with --param, or omit both for a bulk read of every envelope on the clip."
+              },
+              {
+                "name": "--param",
+                "valueName": "ID",
+                "default": null,
+                "description": "Parameter index (from \u0027vibrai automation params\u0027) or display name. Provide together with --device, or omit both for a bulk read."
+              }
+            ]
+          },
+          {
+            "name": "clip envelope write",
+            "description": "Write an automation envelope onto a session-view clip",
+            "arguments": [
+              {
+                "name": "track",
+                "required": true,
+                "description": "Track number (1-based: 1, 2, \u2026 or first, second, \u2026)"
+              },
+              {
+                "name": "scene",
+                "required": true,
+                "description": "Scene number (1-based: 1, 2, \u2026 or first, second, \u2026)"
+              },
+              {
+                "name": "device",
+                "required": true,
+                "description": "Device ID, 1-based position number, or name substring"
+              },
+              {
+                "name": "param",
+                "required": true,
+                "description": "Parameter index from \u0027vibrai automation params\u0027, or the param name (e.g., \u0022Cutoff\u0022)"
+              }
+            ],
+            "options": [
+              {
+                "name": "--json-data",
+                "valueName": "JSON",
+                "default": null,
+                "description": "Automation points as JSON array (free-form). Mutually exclusive with --curve."
+              },
+              {
+                "name": "--file",
+                "valueName": "PATH",
+                "default": null,
+                "description": "Path to JSON file containing automation points array. Mutually exclusive with --curve."
+              },
+              {
+                "name": "--curve",
+                "valueName": "SHAPE",
+                "default": null,
+                "description": "Curve shape: LinearUp|LinearDown|ExpUp|ExpDown|Sine|Triangle|SawUp|SawDown|Hold|Wander. Mutually exclusive with --json-data/--file."
+              },
+              {
+                "name": "--length",
+                "valueName": "BEATS",
+                "default": null,
+                "description": "Curve length in beats. Required when --curve is given."
+              },
+              {
+                "name": "--from",
+                "valueName": "0-1",
+                "default": null,
+                "description": "Curve start value (for Linear/Exp/Sine/Triangle/Saw/Hold)."
+              },
+              {
+                "name": "--to",
+                "valueName": "0-1",
+                "default": null,
+                "description": "Curve end value (for Linear/Exp/Sine/Triangle/Saw)."
+              },
+              {
+                "name": "--subdivisions",
+                "valueName": "N",
+                "default": null,
+                "description": "Number of teeth (for SawUp/SawDown only). Default 4."
+              },
+              {
+                "name": "--center",
+                "valueName": "0-1",
+                "default": null,
+                "description": "Wander center value."
+              },
+              {
+                "name": "--range",
+                "valueName": "0-1",
+                "default": null,
+                "description": "Wander deviation amplitude."
+              },
+              {
+                "name": "--smoothness",
+                "valueName": "0-1",
+                "default": null,
+                "description": "Wander knot density (0=jittery, 1=lazy drift)."
+              },
+              {
+                "name": "--seed",
+                "valueName": "INT",
+                "default": null,
+                "description": "Wander RNG seed. Auto-generated if omitted."
+              }
+            ]
+          },
+          {
+            "name": "clip envelope clear",
+            "description": "Clear automation envelope(s) on a session-view clip",
+            "arguments": [
+              {
+                "name": "track",
+                "required": true,
+                "description": "Track number (1-based: 1, 2, \u2026 or first, second, \u2026)"
+              },
+              {
+                "name": "scene",
+                "required": true,
+                "description": "Scene number (1-based: 1, 2, \u2026 or first, second, \u2026)"
+              }
+            ],
+            "options": [
+              {
+                "name": "--device",
+                "valueName": "ID",
+                "default": null,
+                "description": "Device ID, 1-based position number, or name substring. Provide together with --param, or omit both to clear every envelope on the clip."
+              },
+              {
+                "name": "--param",
+                "valueName": "ID",
+                "default": null,
+                "description": "Parameter index or display name. Provide together with --device, or omit both to clear every envelope on the clip."
+              }
+            ]
           }
         ]
       },
@@ -1212,6 +1590,108 @@
                 "type": "String",
                 "required": true,
                 "description": "New clip name"
+              }
+            ]
+          },
+          {
+            "name": "get_clip_envelopes",
+            "description": "Read automation envelope(s) on a session-view clip. Omit both deviceId and paramId for a bulk read of every envelope on the clip; supply BOTH to read one specific (device, param) envelope. Supplying exactly one is an error.",
+            "parameters": [
+              {
+                "name": "track_id",
+                "type": "String",
+                "required": true,
+                "description": "Track number (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
+              },
+              {
+                "name": "scene_index",
+                "type": "String",
+                "required": true,
+                "description": "Scene number of the clip carrying the envelope(s) (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
+              },
+              {
+                "name": "device_id",
+                "type": "String",
+                "required": false,
+                "description": "Device ID or 1-based position number or name substring. Provide together with paramId, or omit both for a bulk read of every envelope on the clip."
+              },
+              {
+                "name": "param_id",
+                "type": "String",
+                "required": false,
+                "description": "Parameter index (from list_automation_params .param_id column) OR the parameter\u0027s display name. Provide together with deviceId, or omit both for a bulk read."
+              }
+            ]
+          },
+          {
+            "name": "write_clip_envelope",
+            "description": "Write an automation envelope onto a session-view clip (replaces existing points). Provide EITHER points (free-form) OR curve_spec (compact shape \u2014 Sine, Wander, etc \u2014 expanded server-side). Returns the readback so you can verify what landed.",
+            "parameters": [
+              {
+                "name": "track_id",
+                "type": "String",
+                "required": true,
+                "description": "Track number (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
+              },
+              {
+                "name": "scene_index",
+                "type": "String",
+                "required": true,
+                "description": "Scene number of the clip that should carry the envelope (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
+              },
+              {
+                "name": "device_id",
+                "type": "String",
+                "required": true,
+                "description": "Device ID or 1-based position number or name substring"
+              },
+              {
+                "name": "param_id",
+                "type": "String",
+                "required": true,
+                "description": "Parameter index (from list_automation_params .param_id column) OR the parameter\u0027s display name (.param_name column)"
+              },
+              {
+                "name": "points",
+                "type": "AutomationPoint[]",
+                "required": false,
+                "description": "Automation points (time \u002B value). Mutually exclusive with curve_spec."
+              },
+              {
+                "name": "curve_spec",
+                "type": "CurveSpec",
+                "required": false,
+                "description": "Compact curve specification. Mutually exclusive with points. Shape can be LinearUp/LinearDown/ExpUp/ExpDown/Sine/Triangle/SawUp/SawDown/Hold/Wander."
+              }
+            ]
+          },
+          {
+            "name": "clear_clip_envelopes",
+            "description": "Clear automation envelope(s) on a session-view clip. Supply BOTH deviceId and paramId to remove one specific envelope; omit BOTH to remove every envelope on the clip. Supplying exactly one is an error.",
+            "parameters": [
+              {
+                "name": "track_id",
+                "type": "String",
+                "required": true,
+                "description": "Track number (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
+              },
+              {
+                "name": "scene_index",
+                "type": "String",
+                "required": true,
+                "description": "Scene number of the clip (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
+              },
+              {
+                "name": "device_id",
+                "type": "String",
+                "required": false,
+                "description": "Device ID or 1-based position number or name substring. Provide together with paramId, or omit both to clear every envelope on the clip."
+              },
+              {
+                "name": "param_id",
+                "type": "String",
+                "required": false,
+                "description": "Parameter index or display name. Provide together with deviceId, or omit both to clear every envelope on the clip."
               }
             ]
           }
@@ -1434,13 +1914,13 @@
               {
                 "name": "scope",
                 "type": "String",
-                "required": true,
+                "required": false,
                 "description": "\u0027session\u0027, \u0027arrangement\u0027, or \u0027both\u0027 (default)"
               },
               {
                 "name": "scene_index",
                 "type": "String",
-                "required": true,
+                "required": false,
                 "description": "Scene number (1-based) to limit to one session clip; requires scope=\u0027session\u0027"
               }
             ]
@@ -1486,80 +1966,79 @@
           },
           {
             "name": "automation get",
-            "description": "Get automation envelope",
+            "description": "Read arrangement automation for a track (merged ledger \u002B live, provenance-tagged)",
             "arguments": [
               {
                 "name": "track",
                 "required": true,
                 "description": "Track number (1-based: 1, 2, \u2026 or first, second, \u2026)"
-              },
-              {
-                "name": "scene",
-                "required": true,
-                "description": "Scene number (1-based: 1, 2, \u2026 or first, second, \u2026)"
-              },
-              {
-                "name": "device",
-                "required": true,
-                "description": "Device ID, 1-based position number, or name substring"
-              },
-              {
-                "name": "param",
-                "required": true,
-                "description": "Parameter index from \u0060vibrai automation params\u0060, or the param name (e.g., \u0022Cutoff\u0022)"
-              }
-            ],
-            "options": []
-          },
-          {
-            "name": "automation write",
-            "description": "Write automation points",
-            "arguments": [
-              {
-                "name": "track",
-                "required": true,
-                "description": "Track number (1-based: 1, 2, \u2026 or first, second, \u2026)"
-              },
-              {
-                "name": "scene",
-                "required": true,
-                "description": "Scene number (1-based: 1, 2, \u2026 or first, second, \u2026)"
-              },
-              {
-                "name": "device",
-                "required": true,
-                "description": "Device ID, 1-based position number, or name substring"
-              },
-              {
-                "name": "param",
-                "required": true,
-                "description": "Parameter index from \u0060vibrai automation params\u0060, or the param name (e.g., \u0022Cutoff\u0022)"
               }
             ],
             "options": [
               {
-                "name": "--json-data",
-                "valueName": "JSON",
+                "name": "--from",
+                "valueName": "BAR.BEAT|BEATS",
                 "default": null,
-                "description": "Automation points as JSON array (free-form). Mutually exclusive with --curve."
-              },
-              {
-                "name": "--file",
-                "valueName": "PATH",
-                "default": null,
-                "description": "Path to JSON file containing automation points array. Mutually exclusive with --curve."
-              },
-              {
-                "name": "--curve",
-                "valueName": "SHAPE",
-                "default": null,
-                "description": "Curve shape: LinearUp|LinearDown|ExpUp|ExpDown|Sine|Triangle|SawUp|SawDown|Hold|Wander. Mutually exclusive with --json-data/--file."
+                "description": "Optional window start: bar.beat (e.g. \u002717.1\u0027) or raw beats. Provide together with --length, or omit both."
               },
               {
                 "name": "--length",
                 "valueName": "BEATS",
                 "default": null,
-                "description": "Curve length in beats. Required when --curve is given."
+                "description": "Optional window length in beats. Provide together with --from, or omit both."
+              },
+              {
+                "name": "--device",
+                "valueName": "ID",
+                "default": null,
+                "description": "Optional device filter (id / 1-based position / name substring)"
+              },
+              {
+                "name": "--param",
+                "valueName": "ID",
+                "default": null,
+                "description": "Optional parameter filter: parameter id as authored (index or display name \u2014 match what you wrote; \u0027vibrai automation params\u0027 shows both)"
+              }
+            ]
+          },
+          {
+            "name": "automation write",
+            "description": "Write automation onto the arrangement timeline (chunked per clip, ledger-backed)",
+            "arguments": [
+              {
+                "name": "track",
+                "required": true,
+                "description": "Track number (1-based: 1, 2, \u2026 or first, second, \u2026)"
+              },
+              {
+                "name": "start",
+                "required": true,
+                "description": "Arrangement start: bar.beat (e.g. \u002717.1\u0027) or raw beats"
+              },
+              {
+                "name": "length",
+                "required": true,
+                "description": "Window length in beats"
+              }
+            ],
+            "options": [
+              {
+                "name": "--device",
+                "valueName": "ID",
+                "default": null,
+                "description": "Device ID, 1-based position number, or name substring. Required for the single-envelope form (--curve or --json-data/--file); unused with --envelopes."
+              },
+              {
+                "name": "--param",
+                "valueName": "ID",
+                "default": null,
+                "description": "Parameter index from \u0027vibrai automation params\u0027, or the param name (e.g., \u0022Cutoff\u0022). Required for the single-envelope form; unused with --envelopes."
+              },
+              {
+                "name": "--curve",
+                "valueName": "SHAPE",
+                "default": null,
+                "description": "Curve shape: LinearUp|LinearDown|ExpUp|ExpDown|Sine|Triangle|SawUp|SawDown|Hold|Wander. Curve length is the \u003Clength\u003E argument. Mutually exclusive with --json-data/--file/--envelopes."
               },
               {
                 "name": "--from",
@@ -1602,52 +2081,81 @@
                 "valueName": "INT",
                 "default": null,
                 "description": "Wander RNG seed. Auto-generated if omitted."
+              },
+              {
+                "name": "--json-data",
+                "valueName": "JSON",
+                "default": null,
+                "description": "Automation points as a JSON array (free-form). Mutually exclusive with --curve/--envelopes."
+              },
+              {
+                "name": "--file",
+                "valueName": "PATH",
+                "default": null,
+                "description": "Path to a JSON file containing an automation points array. Mutually exclusive with --curve/--envelopes."
+              },
+              {
+                "name": "--envelopes",
+                "valueName": "PATH",
+                "default": null,
+                "description": "Path to a JSON file containing an array of AutomationEnvelopeSpec entries (multi-envelope write; each entry carries its own device_param/macro target \u2014 supports macro targets, unlike the single-envelope form). Mutually exclusive with --curve/--json-data/--file."
+              },
+              {
+                "name": "--replace",
+                "valueName": null,
+                "default": null,
+                "description": "Deliver exactly this set, dropping ledger-known envelopes in the window."
+              },
+              {
+                "name": "--no-create-clip",
+                "valueName": null,
+                "default": null,
+                "description": "Skip clip-less gaps instead of filling them with envelope-bearing curve-slice clips (default: fill \u2014 a skipped gap is an audible reset to the dial value; the lane does not interpolate)."
+              },
+              {
+                "name": "--force",
+                "valueName": null,
+                "default": null,
+                "description": "Allow a window whose edge lands mid-clip (rewrites the whole clip). Without this, a mid-clip window is refused."
               }
             ]
           },
           {
             "name": "automation clear",
-            "description": "Clear a single automation envelope on a session-view clip",
+            "description": "Clear arrangement automation by track, optionally narrowed by device/param/window",
             "arguments": [
               {
                 "name": "track",
                 "required": true,
                 "description": "Track number (1-based: 1, 2, \u2026 or first, second, \u2026)"
-              },
-              {
-                "name": "scene",
-                "required": true,
-                "description": "Scene number (1-based: 1, 2, \u2026 or first, second, \u2026)"
-              },
-              {
-                "name": "device",
-                "required": true,
-                "description": "Device ID, 1-based position number, or name substring"
-              },
-              {
-                "name": "param",
-                "required": true,
-                "description": "Parameter index from \u0060vibrai automation params\u0060, or the param name (e.g., \u0022Cutoff\u0022)"
               }
             ],
-            "options": []
-          },
-          {
-            "name": "automation clear-all",
-            "description": "Clear all automation envelopes on a session-view clip",
-            "arguments": [
+            "options": [
               {
-                "name": "track",
-                "required": true,
-                "description": "Track number (1-based: 1, 2, \u2026 or first, second, \u2026)"
+                "name": "--device",
+                "valueName": "ID",
+                "default": null,
+                "description": "Optional device filter (id / 1-based position / name substring)"
               },
               {
-                "name": "scene",
-                "required": true,
-                "description": "Scene number (1-based: 1, 2, \u2026 or first, second, \u2026)"
+                "name": "--param",
+                "valueName": "ID",
+                "default": null,
+                "description": "Optional parameter filter: parameter id as authored (index or display name \u2014 match what you wrote; \u0027vibrai automation params\u0027 shows both)"
+              },
+              {
+                "name": "--from",
+                "valueName": "BAR.BEAT|BEATS",
+                "default": null,
+                "description": "Optional window start: bar.beat or raw beats. Provide together with --length, or omit both."
+              },
+              {
+                "name": "--length",
+                "valueName": "BEATS",
+                "default": null,
+                "description": "Optional window length in beats. Provide together with --from, or omit both."
               }
-            ],
-            "options": []
+            ]
           },
           {
             "name": "automation apply",
@@ -1658,19 +2166,19 @@
                 "name": "--part",
                 "valueName": "ID",
                 "default": null,
-                "description": "Part id from project.Parts[].Id"
+                "description": "Part id (the Id of an entry in the project\u0027s Parts list)"
               },
               {
                 "name": "--slot",
                 "valueName": "KEY",
                 "default": null,
-                "description": "Symbolic slot key (e.g. \u0022cutoff\u0022, \u0022resonance\u0022, \u0022macro_3\u0022, \u0022synth_cutoff\u0022). Use \u0060vibrai automation slots \u003Cpart-type\u003E\u0060 to list supported keys."
+                "description": "Symbolic slot key (e.g. \u0022cutoff\u0022, \u0022resonance\u0022, \u0022macro_3\u0022, \u0022synth_cutoff\u0022). Use \u0027vibrai automation slots \u003Cpart-type\u003E\u0027 to list supported keys."
               },
               {
                 "name": "--curve",
                 "valueName": "CURVE",
                 "default": "LinearUp",
-                "description": "LinearUp | LinearDown | ExpUp | ExpDown"
+                "description": "LinearUp | LinearDown | ExpUp | ExpDown | Sine | Triangle | SawUp | SawDown | Hold | Wander"
               },
               {
                 "name": "--sections",
@@ -1739,65 +2247,6 @@
                 "description": "Also push the applied slots into the running Live set via the safe bouncer. Requires an existing populated arrangement; slots without a clip at the section are skipped."
               }
             ]
-          },
-          {
-            "name": "automation get-arrangement-envelopes",
-            "description": "Read all envelopes on an arrangement-view clip (clip-relative beats)",
-            "arguments": [
-              {
-                "name": "track",
-                "required": true,
-                "description": "Track number (1-based: 1, 2, \u2026 or first, second, \u2026)"
-              },
-              {
-                "name": "clip",
-                "required": true,
-                "description": "Arrangement-clip number on the track (1-based: 1, 2, \u2026 or first, second, \u2026; from \u0060vibrai arrangement get-clips\u0060)"
-              }
-            ],
-            "options": []
-          },
-          {
-            "name": "automation bounce",
-            "description": "Bounce one or more automation envelopes into the arrangement view",
-            "arguments": [
-              {
-                "name": "track",
-                "required": true,
-                "description": "Track number (1-based, or \u0027first\u0027, \u0027second\u0027, \u2026)"
-              },
-              {
-                "name": "start-beat",
-                "required": true,
-                "description": "Start position (e.g. \u00270\u0027 or \u00272.3\u0027 for bar 2 beat 3)"
-              },
-              {
-                "name": "length-beats",
-                "required": true,
-                "description": "Bounce window length in beats"
-              }
-            ],
-            "options": [
-              {
-                "name": "--envelopes",
-                "valueName": "PATH",
-                "default": null,
-                "description": "Path to a JSON file containing an array of AutomationEnvelopeSpec (see MCP tool description for shape)"
-              }
-            ]
-          },
-          {
-            "name": "automation ledger",
-            "description": "Read the in-process ledger of arrangement envelopes committed by bounce/place.",
-            "arguments": [],
-            "options": [
-              {
-                "name": "--track",
-                "valueName": "T",
-                "default": null,
-                "description": "Optional track number (1-based). Omit for all tracks."
-              }
-            ]
           }
         ]
       },
@@ -1822,8 +2271,8 @@
             ]
           },
           {
-            "name": "get_automation",
-            "description": "Read the automation envelope for a parameter on a session-view clip.",
+            "name": "write_automation",
+            "description": "Write automation onto the ARRANGEMENT timeline (Live\u0027s primary automation home). One logical write may span several arrangement clips: the curve is sliced per clip (chunked delivery \u2014 clip names/colors/boundaries preserved; no coalescing). Gaps are FILLED with envelope-bearing curve-slice clips by default (create_clip:false skips them instead \u2014 a skipped gap is an audible reset to the dial value; the lane does not interpolate). A window starting/ending mid-clip refuses without force:true. Sequential writes to the same window are safe: ledger-known envelopes re-deliver automatically (replace:true opts out). Session-view clips use write_clip_envelope instead.",
             "parameters": [
               {
                 "name": "track_id",
@@ -1832,136 +2281,118 @@
                 "description": "Track number (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
               },
               {
-                "name": "scene_index",
+                "name": "start",
                 "type": "String",
                 "required": true,
-                "description": "Scene number of the clip carrying the envelope (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
+                "description": "Arrangement start: bar.beat (e.g. \u002717.1\u0027) or raw beats"
               },
               {
-                "name": "device_id",
+                "name": "length_beats",
                 "type": "String",
                 "required": true,
-                "description": "Device ID or 1-based position number or name substring"
+                "description": "Window length in beats"
               },
               {
-                "name": "param_id",
-                "type": "String",
+                "name": "envelopes",
+                "type": "AutomationEnvelopeSpec[]",
                 "required": true,
-                "description": "Parameter index (from list_automation_params .param_id column) OR the parameter\u0027s display name (.param_name column)"
+                "description": "Envelope specs. Each: discriminated target (kind=\u0022device_param\u0022|\u0022macro\u0022) \u002B points OR curve_spec."
+              },
+              {
+                "name": "replace",
+                "type": "Boolean",
+                "required": false,
+                "description": "true = deliver exactly this set, dropping ledger-known envelopes in the window"
+              },
+              {
+                "name": "create_clip",
+                "type": "Boolean",
+                "required": false,
+                "description": "Default true: fill clip-less gaps with envelope-bearing curve-slice clips. false = skip gaps (audible reset to dial value while crossing them)."
+              },
+              {
+                "name": "force",
+                "type": "Boolean",
+                "required": false,
+                "description": "Overrides the mid-clip refusal (the whole clip is rewritten; unledgered automation on it is replaced)"
               }
             ]
           },
           {
-            "name": "write_automation",
-            "description": "Write an automation envelope onto a session-view clip (replaces existing points). Provide EITHER points (free-form) OR curveSpec (compact shape \u2014 Sine, Wander, etc \u2014 expanded server-side). Returns the readback so you can verify what landed.",
+            "name": "get_automation",
+            "description": "Read ARRANGEMENT automation for a track \u2014 one merged, honest answer. Each envelope is provenance-tagged: source=\u0022ledger\u0022 (authored by Vibrai; exact points; survives restarts for SAVED Live sets, process-lifetime only for unsaved ones) or source=\u0022live\u0022 (visible to the LOM; 0.25-beat sampled). Optional window/target filters.",
             "parameters": [
               {
                 "name": "track_id",
                 "type": "String",
                 "required": true,
-                "description": "Track number (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
+                "description": "Track number (1-based)"
               },
               {
-                "name": "scene_index",
+                "name": "start",
                 "type": "String",
-                "required": true,
-                "description": "Scene number of the clip that should carry the envelope (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
+                "required": false,
+                "description": "Optional window start: bar.beat or raw beats"
+              },
+              {
+                "name": "length_beats",
+                "type": "String",
+                "required": false,
+                "description": "Optional window length in beats"
               },
               {
                 "name": "device_id",
                 "type": "String",
-                "required": true,
-                "description": "Device ID or 1-based position number or name substring"
+                "required": false,
+                "description": "Optional device filter (id / 1-based position / name substring)"
               },
               {
                 "name": "param_id",
                 "type": "String",
-                "required": true,
-                "description": "Parameter index (from list_automation_params .param_id column) OR the parameter\u0027s display name (.param_name column)"
-              },
-              {
-                "name": "points",
-                "type": "AutomationPoint[]",
-                "required": true,
-                "description": "Automation points (time \u002B value). Mutually exclusive with curveSpec."
-              },
-              {
-                "name": "curve_spec",
-                "type": "CurveSpec",
-                "required": true,
-                "description": "Compact curve specification. Mutually exclusive with points. Shape can be LinearUp/LinearDown/ExpUp/ExpDown/Sine/Triangle/SawUp/SawDown/Hold/Wander."
+                "required": false,
+                "description": "Optional parameter filter: parameter id as authored (index or display name \u2014 match what you wrote; list_automation_params shows both)"
               }
             ]
           },
           {
             "name": "clear_automation",
-            "description": "Remove a single automation envelope (one (device, param) pair) from a session-view clip.",
+            "description": "Clear ARRANGEMENT automation by track, optionally narrowed by device\u002Bparam and/or window. Always clears by unconditional baseline-overwrite: each ledger-known (Vibrai-authored) entry in scope is overwritten with a flat envelope at its final authored value, then forgotten. Native LOM deletion is never used as the effect mechanism \u2014 its supported:true is not proof of an effect on Vibrai-delivered clips. Automation the ledger doesn\u0027t know about (hand-drawn in Live, or written before the ledger existed) cannot be targeted this way; the result reports that honestly instead of pretending to have cleared it.",
             "parameters": [
               {
                 "name": "track_id",
                 "type": "String",
                 "required": true,
-                "description": "Track number (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
-              },
-              {
-                "name": "scene_index",
-                "type": "String",
-                "required": true,
-                "description": "Scene number of the clip (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
+                "description": "Track number (1-based)"
               },
               {
                 "name": "device_id",
                 "type": "String",
-                "required": true,
-                "description": "Device ID or 1-based position number or name substring"
+                "required": false,
+                "description": "Optional device filter (id / 1-based position / name substring)"
               },
               {
                 "name": "param_id",
                 "type": "String",
-                "required": true,
-                "description": "Parameter index (from list_automation_params .param_id column) OR the parameter\u0027s display name (.param_name column)"
-              }
-            ]
-          },
-          {
-            "name": "clear_all_automation",
-            "description": "Remove every automation envelope on a session-view clip.",
-            "parameters": [
-              {
-                "name": "track_id",
-                "type": "String",
-                "required": true,
-                "description": "Track number (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
+                "required": false,
+                "description": "Optional parameter filter: parameter id as authored (index or display name \u2014 match what you wrote; list_automation_params shows both)"
               },
               {
-                "name": "scene_index",
+                "name": "start",
                 "type": "String",
-                "required": true,
-                "description": "Scene number of the clip (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
-              }
-            ]
-          },
-          {
-            "name": "get_arrangement_clip_envelopes",
-            "description": "Read the clip-level envelopes attached to an arrangement clip. KNOWN ISSUE: returns empty for clips that arrived via duplicate-to-arrangement (which is how bounce_arrangement_automation and place_arrangement_clip both write). For verification of writes, use get_arrangement_envelopes_ledger instead.",
-            "parameters": [
-              {
-                "name": "track_id",
-                "type": "String",
-                "required": true,
-                "description": "Track number (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
+                "required": false,
+                "description": "Optional window start: bar.beat or raw beats"
               },
               {
-                "name": "clip_index",
+                "name": "length_beats",
                 "type": "String",
-                "required": true,
-                "description": "Arrangement-clip number on the track (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026; from get_arrangement_clips)"
+                "required": false,
+                "description": "Optional window length in beats"
               }
             ]
           },
           {
             "name": "apply_automation_template",
-            "description": "Author a composition-level automation slot on the .vibrai project\u0027s arrangement template. The slot is a symbolic key resolved through AutomationTargetMap (see list_automation_slots for the vocabulary per PartType). Slots fall into two families: bare-synth slots (synth_cutoff, synth_resonance, synth_volume) target a parameter on device 0 by LOM name; rack-macro slots (cutoff, resonance, macro_1..macro_16) target a macro on the first Instrument Rack on the chain, resolved at bounce-time. The project is loaded, mutated, validated, and saved. Idempotent on (sectionId, partId, slot). Use \u0022all\u0022 in sections to apply to every section. Sparse captured projects are supported: a targeted section where the part has no clip source (literal-clip-only part, no clip for that section) is skipped and listed in skipped_no_clip_source rather than failing \u2014 \u0022all\u0022 means everywhere the part plays. Set apply_to_live: true to also push the just-applied slots into the running Live set via the safe bouncer (Spec A\u0027s atomic-rollback contract applies per slot). The .vibrai file is updated first, then each applied (section, part, slot) tuple is resolved to a bouncer-shaped envelope and bounced onto the existing arrangement clip at the section\u0027s position. Slots whose section has no arrangement clip are skipped with status SkippedNoArrangementClip \u2014 Spec B is an iteration tool, not bootstrapping. Verify what landed via get_arrangement_envelopes_ledger. Default false preserves the file-only flow that callers depend on today.",
+            "description": "Author a composition-level automation slot on the .vibrai project\u0027s arrangement template. The slot is a symbolic key resolved through AutomationTargetMap (see list_automation_slots for the vocabulary per PartType). Slots fall into two families: bare-synth slots (synth_cutoff, synth_resonance, synth_volume) target a parameter on device 0 by LOM name; rack-macro slots (cutoff, resonance, macro_1..macro_16) target a macro on the first Instrument Rack on the chain, resolved at bounce-time. The project is loaded, mutated, validated, and saved. Idempotent on (sectionId, partId, slot). Use \u0022all\u0022 in sections to apply to every section. Sparse captured projects are supported: a targeted section where the part has no clip source (literal-clip-only part, no clip for that section) is skipped and listed in skipped_no_clip_source rather than failing \u2014 \u0022all\u0022 means everywhere the part plays. Set apply_to_live: true to also push the just-applied slots into the running Live set via the safe bouncer (Spec A\u0027s atomic-rollback contract applies per slot). The .vibrai file is updated first, then each applied (section, part, slot) tuple is resolved to a bouncer-shaped envelope and bounced onto the existing arrangement clip at the section\u0027s position. Slots whose section has no arrangement clip are skipped with status skipped_no_arrangement_clip \u2014 Spec B is an iteration tool, not bootstrapping. Verify what landed via get_automation (arrangement-scoped read). Default false preserves the file-only flow that callers depend on today.",
             "parameters": [
               {
                 "name": "path",
@@ -1985,7 +2416,7 @@
                 "name": "curve",
                 "type": "AutomationCurve",
                 "required": true,
-                "description": "AutomationCurve enum: LinearUp | LinearDown | ExpUp | ExpDown"
+                "description": "AutomationCurve enum: LinearUp | LinearDown | ExpUp | ExpDown | Sine | Triangle | SawUp | SawDown | Hold | Wander"
               },
               {
                 "name": "sections",
@@ -2010,48 +2441,6 @@
                 "type": "PartType",
                 "required": true,
                 "description": "Any PartType enum value. Melodic/textural types (Pad, Lead, Bass, Arp, Ambience, Chords, Riff, Melody, Solo, Hook, Loop, Other) and FX types (FxRiser, FxRelease) have slots; drum types return an empty list."
-              }
-            ]
-          },
-          {
-            "name": "bounce_arrangement_automation",
-            "description": "ADVANCED PRIMITIVE \u2014 for routine \u0027write automation into the arrangement,\u0027 prefer place_arrangement_clip with carry_envelopes:true. Bounces one or more envelopes into Live\u0027s arrangement view by snapshotting overlapping clips, deleting them, writing a merged scratch clip, then duplicating it back into place. The operation is atomic: on any failure the original clips are restored to their pre-call state. On rollback failure the call throws BounceRollbackPartialException with per-clip restore status. Note: success rewrites every overlapping clip, losing clip name/color metadata in the process. See recipe \u0060write_arrangement_automation\u0060 for the canonical safe path.",
-            "parameters": [
-              {
-                "name": "track_id",
-                "type": "String",
-                "required": true,
-                "description": "Track number (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
-              },
-              {
-                "name": "start_beat",
-                "type": "String",
-                "required": true,
-                "description": "Start position in arrangement: bar.beat notation (e.g. \u00272.3\u0027 = bar 2, beat 3) or raw beats (e.g. \u00278\u0027 or \u00278.0\u0027)"
-              },
-              {
-                "name": "length_beats",
-                "type": "String",
-                "required": true,
-                "description": "Length of the bounce window in beats"
-              },
-              {
-                "name": "envelopes",
-                "type": "AutomationEnvelopeSpec[]",
-                "required": true,
-                "description": "Array of envelope specs. Each entry has a discriminated Target (kind=\u0022device_param\u0022 or \u0022macro\u0022) and EITHER points or curveSpec."
-              }
-            ]
-          },
-          {
-            "name": "get_arrangement_envelopes_ledger",
-            "description": "Read back the in-process ledger of envelopes committed to Live\u0027s arrangement view by bounce_arrangement_automation or place_arrangement_clip (carry_envelopes:true). Use this for programmatic verification \u2014 the LOM read-back path (get_arrangement_clip_envelopes) returns empty for clips that arrived via duplicate-to-arrangement. The ledger is in-process, bounded LRU (256 per track), and resets on MCP server restart. See recipe \u0060verify_arrangement_writes\u0060 for the full verification flow.",
-            "parameters": [
-              {
-                "name": "track_id",
-                "type": "Nullable\u00601",
-                "required": true,
-                "description": "Optional track number (1-based). Omit for all tracks."
               }
             ]
           }
@@ -2171,7 +2560,7 @@
           },
           {
             "name": "load_project",
-            "description": "Load an .vibrai YAML file from the given absolute path. Returns the VibraiProject. Returns null if the file is missing.",
+            "description": "Load a .vibrai YAML file from the given absolute path. Returns the VibraiProject. Returns null if the file is missing.",
             "parameters": [
               {
                 "name": "path",
@@ -2183,7 +2572,7 @@
           },
           {
             "name": "save_project",
-            "description": "Save an VibraiProject (same shape as load_project\u0027s return value) to the given absolute path, overwriting any existing file. Validates the project first; rejects invalid input (e.g. section modifier \u003C= 0) without writing the file.",
+            "description": "Save a VibraiProject (same shape as load_project\u0027s return value) to the given absolute path, overwriting any existing file. Validates the project first; rejects invalid input (e.g. section modifier \u003C= 0) without writing the file.",
             "parameters": [
               {
                 "name": "path",
@@ -2539,7 +2928,7 @@
                 "name": "carry_envelopes",
                 "type": "Boolean",
                 "required": false,
-                "description": "Carry every session-clip envelope into the arrangement via a single transactional bounce. Returns carried_envelopes:N only after all N envelopes are committed; on any failure the placed clip is removed and the arrangement is left unchanged. Verify writes via get_arrangement_envelopes_ledger \u2014 the LOM read-back path returns empty for arrangement clips written this way. See recipe \u0060write_arrangement_automation\u0060 and recipe \u0060verify_arrangement_writes\u0060."
+                "description": "Carry every session-clip envelope into the arrangement via a single transactional bounce. Returns carried_envelopes:N only after all N envelopes are committed; on any failure the placed clip is removed and the arrangement is left unchanged. Verify writes via get_automation \u2014 the LOM read-back path returns empty for arrangement clips written this way. See recipe \u0060write_arrangement_automation\u0060 and recipe \u0060verify_arrangement_writes\u0060."
               },
               {
                 "name": "force",
@@ -2590,7 +2979,7 @@
     {
       "id": "genre",
       "title": "Genre",
-      "description": "List, apply, and import genre libraries and presets.",
+      "description": "List, apply, and import genre libraries and presets. The import step (genre import-songsketch) is CLI-only by design \u2014 a hidden, internal command not exposed to end users. It is a content-authoring step that converts a proprietary Song Sketch lib JSON into a .vibraigenre file on disk (how the shipped genre catalog is minted), not a runtime operation an agent drives against Live. The MCP surface (GenreTools) exposes the runtime half: discover libraries and presets (list_genres, list_genre_presets) and apply them (apply_genre).",
       "cli": {
         "branch": "genre",
         "commands": [
@@ -2643,7 +3032,7 @@
               {
                 "name": "preset",
                 "required": false,
-                "description": "Preset id or display name within the genre (from \u0060vibrai genre presets \u003Cgenre\u003E\u0060)."
+                "description": "Preset id or display name within the genre (from \u0027vibrai genre presets \u003Cgenre\u003E\u0027)."
               },
               {
                 "name": "project-path",
@@ -2797,7 +3186,7 @@
           },
           {
             "name": "install all",
-            "description": "Run both \u0060install device\u0060 and \u0060install remote-script\u0060",
+            "description": "Install both the M4L device and the Python remote script",
             "arguments": [],
             "options": [
               {
@@ -2878,7 +3267,7 @@
         "commands": [
           {
             "name": "generate",
-            "description": "Generate clips and arrangement from an .vibrai project file",
+            "description": "Generate clips and arrangement from a .vibrai project file",
             "arguments": [],
             "options": [
               {
@@ -2957,7 +3346,7 @@
           },
           {
             "name": "plan",
-            "description": "Plan a composition from an .vibrai project file without writing to Live",
+            "description": "Plan a composition from a .vibrai project file without writing to Live",
             "arguments": [],
             "options": [
               {
@@ -3010,7 +3399,7 @@
         "tools": [
           {
             "name": "plan",
-            "description": "Plan a composition from an .vibrai file without writing to Live. Returns a slim summary. Track ids in the summary (session_clips, arrangement_placements, instruments, current_tracks) are 1-based, matching list_tracks and load_device.",
+            "description": "Plan a composition from a .vibrai file without writing to Live. Returns a slim summary. Track ids in the summary (session_clips, arrangement_placements, instruments, current_tracks) are 1-based, matching list_tracks and load_device.",
             "parameters": [
               {
                 "name": "project_path",
@@ -3134,13 +3523,13 @@
     {
       "id": "capture",
       "title": "Capture",
-      "description": "Capture the current Live set as a .vibrai YAML file.",
+      "description": "Capture the current Live set as a .vibrai YAML file",
       "cli": {
         "branch": "capture",
         "commands": [
           {
             "name": "capture",
-            "description": "Capture the current Live set as a .vibrai YAML file.",
+            "description": "Capture the current Live set as a .vibrai YAML file",
             "arguments": [],
             "options": [
               {
@@ -3165,7 +3554,7 @@
                 "name": "--merge-with",
                 "valueName": "PATH",
                 "default": null,
-                "description": "Overlay section metadata (category, tension, modifier, variation, scale overrides) AND Templates[0].Automation from this prior .vibrai onto the captured project. Sections matched by id, falling back to position. Scene names always come from the captured set."
+                "description": "Overlay section metadata (category, tension, modifier, variation, scale overrides) AND the first template\u0027s Automation from this prior .vibrai onto the captured project. Sections matched by id, falling back to position. Scene names always come from the captured set."
               },
               {
                 "name": "--no-warn-lossy-automation",
@@ -3281,7 +3670,7 @@
         "commands": [
           {
             "name": "version",
-            "description": "Show Vibrai CLI, M4L bridge, and Python bridge versions.",
+            "description": "Show Vibrai CLI, M4L bridge, and Python bridge versions",
             "arguments": [],
             "options": []
           }

@@ -123,17 +123,17 @@ Stop transport playback.
 
 ### `seek`
 
-Move the transport playhead to the given beat position (0 = song start). Use before `play` to start from a specific bar, or while playing to jump to a new position; the playhead moves at the next audio buffer.
+Move the transport playhead to the given position (0 = song start). Accepts bar.beat notation (e.g. "2.1" = bar 2, beat 1) or raw beats (e.g. "16" or "16.0"). Use before `play` to start from a specific bar, or while playing to jump to a new position; the playhead moves at the next audio buffer.
 
 ```json
 {
   "tool": "seek",
   "arguments": {
-    "beats": "<Double>"
+    "beats": "<String>"
   }
 }
 ```
 
-<ParamField path="beats" type="Double" required>
-  Beat position from 0. One bar = 4 beats in 4/4.
+<ParamField path="beats" type="String" required>
+  Transport position: bar.beat notation (e.g. "2.1" = bar 2, beat 1) or raw beats (e.g. "16" or "16.0")
 </ParamField>

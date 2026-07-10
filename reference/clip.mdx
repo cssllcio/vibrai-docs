@@ -102,6 +102,102 @@ vibrai clip rename <track> <scene> <name>
   New clip name
 </ParamField>
 
+### `clip envelope get`
+
+Read automation envelope(s) on a session-view clip
+
+```bash
+vibrai clip envelope get <track> <scene> --device <ID> --param <ID>
+```
+
+<ParamField path="track" required>
+  Track number (1-based: 1, 2, … or first, second, …)
+</ParamField>
+<ParamField path="scene" required>
+  Scene number (1-based: 1, 2, … or first, second, …)
+</ParamField>
+<ParamField path="--device">
+  Device ID, 1-based position number, or name substring. Provide together with --param, or omit both for a bulk read of every envelope on the clip.
+</ParamField>
+<ParamField path="--param">
+  Parameter index (from 'vibrai automation params') or display name. Provide together with --device, or omit both for a bulk read.
+</ParamField>
+
+### `clip envelope write`
+
+Write an automation envelope onto a session-view clip
+
+```bash
+vibrai clip envelope write <track> <scene> <device> <param> --json-data <JSON> --file <PATH> --curve <SHAPE> --length <BEATS> --from <0-1> --to <0-1> --subdivisions <N> --center <0-1> --range <0-1> --smoothness <0-1> --seed <INT>
+```
+
+<ParamField path="track" required>
+  Track number (1-based: 1, 2, … or first, second, …)
+</ParamField>
+<ParamField path="scene" required>
+  Scene number (1-based: 1, 2, … or first, second, …)
+</ParamField>
+<ParamField path="device" required>
+  Device ID, 1-based position number, or name substring
+</ParamField>
+<ParamField path="param" required>
+  Parameter index from 'vibrai automation params', or the param name (e.g., "Cutoff")
+</ParamField>
+<ParamField path="--json-data">
+  Automation points as JSON array (free-form). Mutually exclusive with --curve.
+</ParamField>
+<ParamField path="--file">
+  Path to JSON file containing automation points array. Mutually exclusive with --curve.
+</ParamField>
+<ParamField path="--curve">
+  Curve shape: LinearUp|LinearDown|ExpUp|ExpDown|Sine|Triangle|SawUp|SawDown|Hold|Wander. Mutually exclusive with --json-data/--file.
+</ParamField>
+<ParamField path="--length">
+  Curve length in beats. Required when --curve is given.
+</ParamField>
+<ParamField path="--from">
+  Curve start value (for Linear/Exp/Sine/Triangle/Saw/Hold).
+</ParamField>
+<ParamField path="--to">
+  Curve end value (for Linear/Exp/Sine/Triangle/Saw).
+</ParamField>
+<ParamField path="--subdivisions">
+  Number of teeth (for SawUp/SawDown only). Default 4.
+</ParamField>
+<ParamField path="--center">
+  Wander center value.
+</ParamField>
+<ParamField path="--range">
+  Wander deviation amplitude.
+</ParamField>
+<ParamField path="--smoothness">
+  Wander knot density (0=jittery, 1=lazy drift).
+</ParamField>
+<ParamField path="--seed">
+  Wander RNG seed. Auto-generated if omitted.
+</ParamField>
+
+### `clip envelope clear`
+
+Clear automation envelope(s) on a session-view clip
+
+```bash
+vibrai clip envelope clear <track> <scene> --device <ID> --param <ID>
+```
+
+<ParamField path="track" required>
+  Track number (1-based: 1, 2, … or first, second, …)
+</ParamField>
+<ParamField path="scene" required>
+  Scene number (1-based: 1, 2, … or first, second, …)
+</ParamField>
+<ParamField path="--device">
+  Device ID, 1-based position number, or name substring. Provide together with --param, or omit both to clear every envelope on the clip.
+</ParamField>
+<ParamField path="--param">
+  Parameter index or display name. Provide together with --device, or omit both to clear every envelope on the clip.
+</ParamField>
+
 ## MCP tools
 
 ### `list_clips`
@@ -232,4 +328,99 @@ Rename the clip at the given track and scene.
 </ParamField>
 <ParamField path="name" type="String" required>
   New clip name
+</ParamField>
+
+### `get_clip_envelopes`
+
+Read automation envelope(s) on a session-view clip. Omit both deviceId and paramId for a bulk read of every envelope on the clip; supply BOTH to read one specific (device, param) envelope. Supplying exactly one is an error.
+
+```json
+{
+  "tool": "get_clip_envelopes",
+  "arguments": {
+    "track_id": "<String>",
+    "scene_index": "<String>",
+    "device_id": "<String>",
+    "param_id": "<String>"
+  }
+}
+```
+
+<ParamField path="track_id" type="String" required>
+  Track number (1-based: 1, 2, … or 'first', 'second', …)
+</ParamField>
+<ParamField path="scene_index" type="String" required>
+  Scene number of the clip carrying the envelope(s) (1-based: 1, 2, … or 'first', 'second', …)
+</ParamField>
+<ParamField path="device_id" type="String">
+  Device ID or 1-based position number or name substring. Provide together with paramId, or omit both for a bulk read of every envelope on the clip.
+</ParamField>
+<ParamField path="param_id" type="String">
+  Parameter index (from list_automation_params .param_id column) OR the parameter's display name. Provide together with deviceId, or omit both for a bulk read.
+</ParamField>
+
+### `write_clip_envelope`
+
+Write an automation envelope onto a session-view clip (replaces existing points). Provide EITHER points (free-form) OR curve_spec (compact shape — Sine, Wander, etc — expanded server-side). Returns the readback so you can verify what landed.
+
+```json
+{
+  "tool": "write_clip_envelope",
+  "arguments": {
+    "track_id": "<String>",
+    "scene_index": "<String>",
+    "device_id": "<String>",
+    "param_id": "<String>",
+    "points": "<AutomationPoint[]>",
+    "curve_spec": "<CurveSpec>"
+  }
+}
+```
+
+<ParamField path="track_id" type="String" required>
+  Track number (1-based: 1, 2, … or 'first', 'second', …)
+</ParamField>
+<ParamField path="scene_index" type="String" required>
+  Scene number of the clip that should carry the envelope (1-based: 1, 2, … or 'first', 'second', …)
+</ParamField>
+<ParamField path="device_id" type="String" required>
+  Device ID or 1-based position number or name substring
+</ParamField>
+<ParamField path="param_id" type="String" required>
+  Parameter index (from list_automation_params .param_id column) OR the parameter's display name (.param_name column)
+</ParamField>
+<ParamField path="points" type="AutomationPoint[]">
+  Automation points (time + value). Mutually exclusive with curve_spec.
+</ParamField>
+<ParamField path="curve_spec" type="CurveSpec">
+  Compact curve specification. Mutually exclusive with points. Shape can be LinearUp/LinearDown/ExpUp/ExpDown/Sine/Triangle/SawUp/SawDown/Hold/Wander.
+</ParamField>
+
+### `clear_clip_envelopes`
+
+Clear automation envelope(s) on a session-view clip. Supply BOTH deviceId and paramId to remove one specific envelope; omit BOTH to remove every envelope on the clip. Supplying exactly one is an error.
+
+```json
+{
+  "tool": "clear_clip_envelopes",
+  "arguments": {
+    "track_id": "<String>",
+    "scene_index": "<String>",
+    "device_id": "<String>",
+    "param_id": "<String>"
+  }
+}
+```
+
+<ParamField path="track_id" type="String" required>
+  Track number (1-based: 1, 2, … or 'first', 'second', …)
+</ParamField>
+<ParamField path="scene_index" type="String" required>
+  Scene number of the clip (1-based: 1, 2, … or 'first', 'second', …)
+</ParamField>
+<ParamField path="device_id" type="String">
+  Device ID or 1-based position number or name substring. Provide together with paramId, or omit both to clear every envelope on the clip.
+</ParamField>
+<ParamField path="param_id" type="String">
+  Parameter index or display name. Provide together with deviceId, or omit both to clear every envelope on the clip.
 </ParamField>

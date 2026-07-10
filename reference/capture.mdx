@@ -1,17 +1,17 @@
 ---
 title: "Capture"
-description: "Capture the current Live set as a .vibrai YAML file."
+description: "Capture the current Live set as a .vibrai YAML file"
 ---
 
 {/* GENERATED — do not edit by hand. Regenerate with `npm run generate:reference`. */}
 
-Capture the current Live set as a .vibrai YAML file.
+Capture the current Live set as a .vibrai YAML file
 
 ## Command line
 
 ### `capture`
 
-Capture the current Live set as a .vibrai YAML file.
+Capture the current Live set as a .vibrai YAML file
 
 ```bash
 vibrai capture --out <PATH> --force --dry-run --merge-with <PATH> --no-warn-lossy-automation
@@ -27,7 +27,7 @@ vibrai capture --out <PATH> --force --dry-run --merge-with <PATH> --no-warn-loss
   Emit the YAML to stdout, do not write a file.
 </ParamField>
 <ParamField path="--merge-with">
-  Overlay section metadata (category, tension, modifier, variation, scale overrides) AND Templates[0].Automation from this prior .vibrai onto the captured project. Sections matched by id, falling back to position. Scene names always come from the captured set.
+  Overlay section metadata (category, tension, modifier, variation, scale overrides) AND the first template's Automation from this prior .vibrai onto the captured project. Sections matched by id, falling back to position. Scene names always come from the captured set.
 </ParamField>
 <ParamField path="--no-warn-lossy-automation">
   Suppress the lossy_arrangement_automation warning that capture emits when no --merge-with is provided and the captured arrangement_automation array is empty (the LOM-blind-spot for bouncer-produced envelopes).

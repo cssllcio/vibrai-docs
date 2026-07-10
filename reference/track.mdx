@@ -21,7 +21,7 @@ vibrai track list
 
 ### `track get`
 
-Get track by ID
+Get a track by its 1-based number
 
 ```bash
 vibrai track get <track>
@@ -48,7 +48,7 @@ vibrai track create <name> --type <PARTTYPE>
 
 ### `track delete`
 
-Delete a track by its ID
+Delete a track by its 1-based number
 
 ```bash
 vibrai track delete [track] --liveset-id <ID>
@@ -58,12 +58,12 @@ vibrai track delete [track] --liveset-id <ID>
   Positional track number (1-based: 1, 2, … or first, second, …). Omit if using --liveset-id.
 </ParamField>
 <ParamField path="--liveset-id">
-  Stable liveset_id from `vibrai track list --json`; preferred over the positional track number when available (survives reorders).
+  Stable liveset_id from 'vibrai track list --json'; preferred over the positional track number when available (survives reorders).
 </ParamField>
 
 ### `track rename`
 
-Rename a track by its ID
+Rename a track by its 1-based number
 
 ```bash
 vibrai track rename [track] [name] --liveset-id <ID>
@@ -76,7 +76,7 @@ vibrai track rename [track] [name] --liveset-id <ID>
   New track name. Required (validated at runtime; declared optional only so Spectre permits the --liveset-id &lt;name> shape).
 </ParamField>
 <ParamField path="--liveset-id">
-  Stable liveset_id from `vibrai track list --json`; preferred over the positional track number when available (survives reorders).
+  Stable liveset_id from 'vibrai track list --json'; preferred over the positional track number when available (survives reorders).
 </ParamField>
 
 ## MCP tools

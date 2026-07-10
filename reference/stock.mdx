@@ -1,0 +1,230 @@
+---
+title: "Stock Sounds"
+description: "Discover and load Ableton Live 12 Suite's factory Core Library content — instruments, drum kits, and audio/MIDI effect presets — by scanning it offline on disk, independent of Live running. list/browse/show/refresh/locate are all Live-independent (they read a cached on-disk index, falling back to a fresh scan then an embedded seed); only load needs a running Ableton. All six user-facing tools ship on both surfaces (StockTools MCP / the stock CLI branch). `stock seed` is CLI-only by design — a maintainer-only, hidden command that re-scans a Live-Suite machine's Core Library and cross-checks the derived URIs against a live LOM scan (instrument-browser.json) before regenerating the embedded seed resource; it is release/build tooling that writes into the repo tree, not a runtime operation an agent drives against Live, so it has no MCP counterpart."
+---
+
+{/* GENERATED — do not edit by hand. Regenerate with `npm run generate:reference`. */}
+
+Discover and load Ableton Live 12 Suite's factory Core Library content — instruments, drum kits, and audio/MIDI effect presets — by scanning it offline on disk, independent of Live running. list/browse/show/refresh/locate are all Live-independent (they read a cached on-disk index, falling back to a fresh scan then an embedded seed); only load needs a running Ableton. All six user-facing tools ship on both surfaces (StockTools MCP / the stock CLI branch). `stock seed` is CLI-only by design — a maintainer-only, hidden command that re-scans a Live-Suite machine's Core Library and cross-checks the derived URIs against a live LOM scan (instrument-browser.json) before regenerating the embedded seed resource; it is release/build tooling that writes into the repo tree, not a runtime operation an agent drives against Live, so it has no MCP counterpart.
+
+## Command line
+
+### `stock list`
+
+List/filter factory Core Library content (offline, no Live)
+
+```bash
+vibrai stock list --category <CATEGORY> --kind <KIND> --search <TEXT> --limit <N>
+```
+
+<ParamField path="--category">
+  Filter by category: instrument, drum_kit, audio_effect, midi_effect, unknown. Case-insensitive. Omit = all.
+</ParamField>
+<ParamField path="--kind">
+  Filter by on-disk shape: device, rack, preset. Case-insensitive. Omit = all.
+</ParamField>
+<ParamField path="--search">
+  Case-insensitive substring matched against name or relative path. Omit = no text filter.
+</ParamField>
+<ParamField path="--limit">
+  Maximum number of items to return. Omit or &lt;= 0 = no cap.
+</ParamField>
+
+### `stock browse`
+
+Depth-1 browse of the Core Library folder tree (offline)
+
+```bash
+vibrai stock browse [path]
+```
+
+<ParamField path="path">
+  Relative Core Library folder path (forward-slash separated). Omit = top level.
+</ParamField>
+
+### `stock show`
+
+Show one stock item: category, kind, device class, load URI
+
+```bash
+vibrai stock show <path>
+```
+
+<ParamField path="path" required>
+  Exact relative path of the item (from stock list / stock browse).
+</ParamField>
+
+### `stock refresh`
+
+Re-walk the on-disk Core Library and rebuild the cache
+
+```bash
+vibrai stock refresh
+```
+
+
+
+### `stock load`
+
+Load a stock item onto a track (needs Live)
+
+```bash
+vibrai stock load <track> <path> --position <N>
+```
+
+<ParamField path="track" required>
+  Track number (1-based: 1, 2, … or first, second, …)
+</ParamField>
+<ParamField path="path" required>
+  Exact relative path of the item to load (from stock list / stock browse / stock show).
+</ParamField>
+<ParamField path="--position">
+  Insert position in device chain (1-based: 1 = first slot; omit to append)
+</ParamField>
+
+### `stock locate`
+
+Show stock-library diagnostics (resolved path, per-category counts, cache freshness, source)
+
+```bash
+vibrai stock locate
+```
+
+
+
+### `stock seed`
+
+Maintainer-only: regenerate the embedded Core Library seed
+
+```bash
+vibrai stock seed --check --snapshot <PATH> --output <PATH> --baseline <RATE>
+```
+
+<ParamField path="--check">
+  Run the cross-check only; never writes. Exits non-zero when the derivation rate is below --baseline.
+</ParamField>
+<ParamField path="--snapshot">
+  Path to the LOM snapshot (instrument-browser.json) to cross-check against (default: the app-support snapshot Vibrai's remote script writes)
+</ParamField>
+<ParamField path="--output">
+  Where to write the seed JSON (default: Vibrai.Engine/Resources/StockLibrary/core-library-suite.json, repo-relative — run from the repo root)
+</ParamField>
+<ParamField path="--baseline" default="1">
+  Minimum derivation rate (0..1) the cross-check must meet to pass (default: 1.0)
+</ParamField>
+
+## MCP tools
+
+### `list_stock_sounds`
+
+List (and filter) Ableton Live 12 Suite factory Core Library content — instruments, drum kits, and audio/MIDI effect presets — discovered by scanning the library on disk. Fully offline and Live-independent: reads Vibrai's cached Core Library index (falling back to a fresh scan, then the embedded seed), no running Ableton required. Filters are ANDed: category, kind, a case-insensitive search substring over the item name or relative path, and a max-result limit. Omit a filter to leave it unconstrained. Returns each item's name, relative path (the address load_stock_sound / show_stock_sound take), category, kind, device class, and derived load URI.
+
+```json
+{
+  "tool": "list_stock_sounds",
+  "arguments": {
+    "category": "<Nullable`1>",
+    "kind": "<Nullable`1>",
+    "search": "<String>",
+    "limit": "<Nullable`1>"
+  }
+}
+```
+
+<ParamField path="category" type="Nullable`1">
+  Only items in this category: instrument, drum_kit, audio_effect, midi_effect, unknown. Omit = all categories.
+</ParamField>
+<ParamField path="kind" type="Nullable`1">
+  Only items of this on-disk shape: device, rack, preset. Omit = all kinds.
+</ParamField>
+<ParamField path="search" type="String">
+  Case-insensitive substring matched against the item name or relative path. Omit = no text filter.
+</ParamField>
+<ParamField path="limit" type="Nullable`1">
+  Maximum number of items to return. Omit or &lt;= 0 = no cap.
+</ParamField>
+
+### `browse_stock_sounds`
+
+Depth-1 browse of the offline Core Library folder tree, like a file browser one level at a time. Live-independent (same cached index as list_stock_sounds). Pass a relative folder path (forward-slash separated) to list its immediate sub-folders and leaf items; omit path (or pass empty) for the top level. Each entry is either a folder (is_folder=true — drill in by passing its path) or an item (is_folder=false, with the full stock item for loading). Returns an empty list for an unknown or leaf path.
+
+```json
+{
+  "tool": "browse_stock_sounds",
+  "arguments": {
+    "path": "<String>"
+  }
+}
+```
+
+<ParamField path="path" type="String">
+  Relative Core Library folder path (forward-slash separated). Omit/empty = top level.
+</ParamField>
+
+### `show_stock_sound`
+
+Show one Core Library item by its exact relative path (as returned by list_stock_sounds / browse_stock_sounds): name, category, kind, device class, and the derived load URI. Offline and Live-independent. Errors (STOCK_ITEM_NOT_FOUND) when no item matches the path exactly.
+
+```json
+{
+  "tool": "show_stock_sound",
+  "arguments": {
+    "path": "<String>"
+  }
+}
+```
+
+<ParamField path="path" type="String" required>
+  Exact relative path of the item, e.g. 'Devices/Instruments/Operator/Bass/Analog Bass.adv'.
+</ParamField>
+
+### `refresh_stock_library`
+
+Force a fresh on-disk re-scan of the Ableton Live 12 Suite Core Library, rebuilding Vibrai's cached index (bypassing both the cache and the embedded seed). Offline — it reads the library files, not a running Ableton — but it does need the Core Library installed locally; errors (STOCK_LIBRARY_NOT_FOUND) when no Core Library root can be located. Returns a small summary: the source (always 'Scan' on success), the item count, and the resolved root.
+
+```json
+{
+  "tool": "refresh_stock_library",
+  "arguments": {}
+}
+```
+
+
+
+### `load_stock_sound`
+
+Load a Core Library item onto a track by its relative path. Unlike the discovery tools, THIS needs a running Ableton — it resolves the item offline (via the same cached index), then loads it by its trusted derived URI through the Vibrai bridge. Returns the same result shape as load_device (track, device id, name, chain position, optional M4L health warning). Errors STOCK_ITEM_NOT_FOUND if the path doesn't match, or STOCK_LOAD_NEEDS_SNAPSHOT for the rare item with no offline-derivable URI.
+
+```json
+{
+  "tool": "load_stock_sound",
+  "arguments": {
+    "track_id": "<String>",
+    "path": "<String>",
+    "position": "<String>"
+  }
+}
+```
+
+<ParamField path="track_id" type="String" required>
+  Track number (1-based: 1, 2, … or 'first', 'second', …)
+</ParamField>
+<ParamField path="path" type="String" required>
+  Exact relative path of the item to load (from list_stock_sounds / browse_stock_sounds / show_stock_sound).
+</ParamField>
+<ParamField path="position" type="String">
+  Insert position in the device chain (1-based: 1 = first slot; omit to append at the end)
+</ParamField>
+
+### `locate_stock_library`
+
+Diagnostics for the offline Core Library index: the resolved root path, the source that answered (Cache/Scan/Seed/Empty), the total item count and a per-category breakdown, and whether a local scan cache exists and is still fresh. Live-independent and never errors — a missing library is reported as data (root=null, source=Empty), so it's the tool to call when list/load come back empty and you need to know why.
+
+```json
+{
+  "tool": "locate_stock_library",
+  "arguments": {}
+}
+```
+
+

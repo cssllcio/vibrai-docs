@@ -38,56 +38,53 @@ vibrai automation slots <part-type>
 
 ### `automation get`
 
-Get automation envelope
+Read arrangement automation for a track (merged ledger + live, provenance-tagged)
 
 ```bash
-vibrai automation get <track> <scene> <device> <param>
+vibrai automation get <track> --from <BAR.BEAT|BEATS> --length <BEATS> --device <ID> --param <ID>
 ```
 
 <ParamField path="track" required>
   Track number (1-based: 1, 2, … or first, second, …)
 </ParamField>
-<ParamField path="scene" required>
-  Scene number (1-based: 1, 2, … or first, second, …)
+<ParamField path="--from">
+  Optional window start: bar.beat (e.g. '17.1') or raw beats. Provide together with --length, or omit both.
 </ParamField>
-<ParamField path="device" required>
-  Device ID, 1-based position number, or name substring
+<ParamField path="--length">
+  Optional window length in beats. Provide together with --from, or omit both.
 </ParamField>
-<ParamField path="param" required>
-  Parameter index from `vibrai automation params`, or the param name (e.g., "Cutoff")
+<ParamField path="--device">
+  Optional device filter (id / 1-based position / name substring)
+</ParamField>
+<ParamField path="--param">
+  Optional parameter filter: parameter id as authored (index or display name — match what you wrote; 'vibrai automation params' shows both)
 </ParamField>
 
 ### `automation write`
 
-Write automation points
+Write automation onto the arrangement timeline (chunked per clip, ledger-backed)
 
 ```bash
-vibrai automation write <track> <scene> <device> <param> --json-data <JSON> --file <PATH> --curve <SHAPE> --length <BEATS> --from <0-1> --to <0-1> --subdivisions <N> --center <0-1> --range <0-1> --smoothness <0-1> --seed <INT>
+vibrai automation write <track> <start> <length> --device <ID> --param <ID> --curve <SHAPE> --from <0-1> --to <0-1> --subdivisions <N> --center <0-1> --range <0-1> --smoothness <0-1> --seed <INT> --json-data <JSON> --file <PATH> --envelopes <PATH> --replace --no-create-clip --force
 ```
 
 <ParamField path="track" required>
   Track number (1-based: 1, 2, … or first, second, …)
 </ParamField>
-<ParamField path="scene" required>
-  Scene number (1-based: 1, 2, … or first, second, …)
+<ParamField path="start" required>
+  Arrangement start: bar.beat (e.g. '17.1') or raw beats
 </ParamField>
-<ParamField path="device" required>
-  Device ID, 1-based position number, or name substring
+<ParamField path="length" required>
+  Window length in beats
 </ParamField>
-<ParamField path="param" required>
-  Parameter index from `vibrai automation params`, or the param name (e.g., "Cutoff")
+<ParamField path="--device">
+  Device ID, 1-based position number, or name substring. Required for the single-envelope form (--curve or --json-data/--file); unused with --envelopes.
 </ParamField>
-<ParamField path="--json-data">
-  Automation points as JSON array (free-form). Mutually exclusive with --curve.
-</ParamField>
-<ParamField path="--file">
-  Path to JSON file containing automation points array. Mutually exclusive with --curve.
+<ParamField path="--param">
+  Parameter index from 'vibrai automation params', or the param name (e.g., "Cutoff"). Required for the single-envelope form; unused with --envelopes.
 </ParamField>
 <ParamField path="--curve">
-  Curve shape: LinearUp|LinearDown|ExpUp|ExpDown|Sine|Triangle|SawUp|SawDown|Hold|Wander. Mutually exclusive with --json-data/--file.
-</ParamField>
-<ParamField path="--length">
-  Curve length in beats. Required when --curve is given.
+  Curve shape: LinearUp|LinearDown|ExpUp|ExpDown|Sine|Triangle|SawUp|SawDown|Hold|Wander. Curve length is the &lt;length> argument. Mutually exclusive with --json-data/--file/--envelopes.
 </ParamField>
 <ParamField path="--from">
   Curve start value (for Linear/Exp/Sine/Triangle/Saw/Hold).
@@ -110,41 +107,47 @@ vibrai automation write <track> <scene> <device> <param> --json-data <JSON> --fi
 <ParamField path="--seed">
   Wander RNG seed. Auto-generated if omitted.
 </ParamField>
+<ParamField path="--json-data">
+  Automation points as a JSON array (free-form). Mutually exclusive with --curve/--envelopes.
+</ParamField>
+<ParamField path="--file">
+  Path to a JSON file containing an automation points array. Mutually exclusive with --curve/--envelopes.
+</ParamField>
+<ParamField path="--envelopes">
+  Path to a JSON file containing an array of AutomationEnvelopeSpec entries (multi-envelope write; each entry carries its own device_param/macro target — supports macro targets, unlike the single-envelope form). Mutually exclusive with --curve/--json-data/--file.
+</ParamField>
+<ParamField path="--replace">
+  Deliver exactly this set, dropping ledger-known envelopes in the window.
+</ParamField>
+<ParamField path="--no-create-clip">
+  Skip clip-less gaps instead of filling them with envelope-bearing curve-slice clips (default: fill — a skipped gap is an audible reset to the dial value; the lane does not interpolate).
+</ParamField>
+<ParamField path="--force">
+  Allow a window whose edge lands mid-clip (rewrites the whole clip). Without this, a mid-clip window is refused.
+</ParamField>
 
 ### `automation clear`
 
-Clear a single automation envelope on a session-view clip
+Clear arrangement automation by track, optionally narrowed by device/param/window
 
 ```bash
-vibrai automation clear <track> <scene> <device> <param>
+vibrai automation clear <track> --device <ID> --param <ID> --from <BAR.BEAT|BEATS> --length <BEATS>
 ```
 
 <ParamField path="track" required>
   Track number (1-based: 1, 2, … or first, second, …)
 </ParamField>
-<ParamField path="scene" required>
-  Scene number (1-based: 1, 2, … or first, second, …)
+<ParamField path="--device">
+  Optional device filter (id / 1-based position / name substring)
 </ParamField>
-<ParamField path="device" required>
-  Device ID, 1-based position number, or name substring
+<ParamField path="--param">
+  Optional parameter filter: parameter id as authored (index or display name — match what you wrote; 'vibrai automation params' shows both)
 </ParamField>
-<ParamField path="param" required>
-  Parameter index from `vibrai automation params`, or the param name (e.g., "Cutoff")
+<ParamField path="--from">
+  Optional window start: bar.beat or raw beats. Provide together with --length, or omit both.
 </ParamField>
-
-### `automation clear-all`
-
-Clear all automation envelopes on a session-view clip
-
-```bash
-vibrai automation clear-all <track> <scene>
-```
-
-<ParamField path="track" required>
-  Track number (1-based: 1, 2, … or first, second, …)
-</ParamField>
-<ParamField path="scene" required>
-  Scene number (1-based: 1, 2, … or first, second, …)
+<ParamField path="--length">
+  Optional window length in beats. Provide together with --from, or omit both.
 </ParamField>
 
 ### `automation apply`
@@ -156,13 +159,13 @@ vibrai automation apply --part <ID> --slot <KEY> --curve <CURVE> --sections <CSV
 ```
 
 <ParamField path="--part">
-  Part id from project.Parts[].Id
+  Part id (the Id of an entry in the project's Parts list)
 </ParamField>
 <ParamField path="--slot">
-  Symbolic slot key (e.g. "cutoff", "resonance", "macro_3", "synth_cutoff"). Use `vibrai automation slots &lt;part-type>` to list supported keys.
+  Symbolic slot key (e.g. "cutoff", "resonance", "macro_3", "synth_cutoff"). Use 'vibrai automation slots &lt;part-type>' to list supported keys.
 </ParamField>
 <ParamField path="--curve" default="LinearUp">
-  LinearUp | LinearDown | ExpUp | ExpDown
+  LinearUp | LinearDown | ExpUp | ExpDown | Sine | Triangle | SawUp | SawDown | Hold | Wander
 </ParamField>
 <ParamField path="--sections">
   Comma-separated section ids, or 'all' for every section
@@ -198,54 +201,6 @@ vibrai automation apply --part <ID> --slot <KEY> --curve <CURVE> --sections <CSV
   Also push the applied slots into the running Live set via the safe bouncer. Requires an existing populated arrangement; slots without a clip at the section are skipped.
 </ParamField>
 
-### `automation get-arrangement-envelopes`
-
-Read all envelopes on an arrangement-view clip (clip-relative beats)
-
-```bash
-vibrai automation get-arrangement-envelopes <track> <clip>
-```
-
-<ParamField path="track" required>
-  Track number (1-based: 1, 2, … or first, second, …)
-</ParamField>
-<ParamField path="clip" required>
-  Arrangement-clip number on the track (1-based: 1, 2, … or first, second, …; from `vibrai arrangement get-clips`)
-</ParamField>
-
-### `automation bounce`
-
-Bounce one or more automation envelopes into the arrangement view
-
-```bash
-vibrai automation bounce <track> <start-beat> <length-beats> --envelopes <PATH>
-```
-
-<ParamField path="track" required>
-  Track number (1-based, or 'first', 'second', …)
-</ParamField>
-<ParamField path="start-beat" required>
-  Start position (e.g. '0' or '2.3' for bar 2 beat 3)
-</ParamField>
-<ParamField path="length-beats" required>
-  Bounce window length in beats
-</ParamField>
-<ParamField path="--envelopes">
-  Path to a JSON file containing an array of AutomationEnvelopeSpec (see MCP tool description for shape)
-</ParamField>
-
-### `automation ledger`
-
-Read the in-process ledger of arrangement envelopes committed by bounce/place.
-
-```bash
-vibrai automation ledger --track <T>
-```
-
-<ParamField path="--track">
-  Optional track number (1-based). Omit for all tracks.
-</ParamField>
-
 ## MCP tools
 
 ### `list_automation_params`
@@ -269,49 +224,21 @@ List the automatable parameters of a device on a track.
   Device ID or 1-based position number or name substring
 </ParamField>
 
-### `get_automation`
-
-Read the automation envelope for a parameter on a session-view clip.
-
-```json
-{
-  "tool": "get_automation",
-  "arguments": {
-    "track_id": "<String>",
-    "scene_index": "<String>",
-    "device_id": "<String>",
-    "param_id": "<String>"
-  }
-}
-```
-
-<ParamField path="track_id" type="String" required>
-  Track number (1-based: 1, 2, … or 'first', 'second', …)
-</ParamField>
-<ParamField path="scene_index" type="String" required>
-  Scene number of the clip carrying the envelope (1-based: 1, 2, … or 'first', 'second', …)
-</ParamField>
-<ParamField path="device_id" type="String" required>
-  Device ID or 1-based position number or name substring
-</ParamField>
-<ParamField path="param_id" type="String" required>
-  Parameter index (from list_automation_params .param_id column) OR the parameter's display name (.param_name column)
-</ParamField>
-
 ### `write_automation`
 
-Write an automation envelope onto a session-view clip (replaces existing points). Provide EITHER points (free-form) OR curveSpec (compact shape — Sine, Wander, etc — expanded server-side). Returns the readback so you can verify what landed.
+Write automation onto the ARRANGEMENT timeline (Live's primary automation home). One logical write may span several arrangement clips: the curve is sliced per clip (chunked delivery — clip names/colors/boundaries preserved; no coalescing). Gaps are FILLED with envelope-bearing curve-slice clips by default (create_clip:false skips them instead — a skipped gap is an audible reset to the dial value; the lane does not interpolate). A window starting/ending mid-clip refuses without force:true. Sequential writes to the same window are safe: ledger-known envelopes re-deliver automatically (replace:true opts out). Session-view clips use write_clip_envelope instead.
 
 ```json
 {
   "tool": "write_automation",
   "arguments": {
     "track_id": "<String>",
-    "scene_index": "<String>",
-    "device_id": "<String>",
-    "param_id": "<String>",
-    "points": "<AutomationPoint[]>",
-    "curve_spec": "<CurveSpec>"
+    "start": "<String>",
+    "length_beats": "<String>",
+    "envelopes": "<AutomationEnvelopeSpec[]>",
+    "replace": "<Boolean>",
+    "create_clip": "<Boolean>",
+    "force": "<Boolean>"
   }
 }
 ```
@@ -319,32 +246,36 @@ Write an automation envelope onto a session-view clip (replaces existing points)
 <ParamField path="track_id" type="String" required>
   Track number (1-based: 1, 2, … or 'first', 'second', …)
 </ParamField>
-<ParamField path="scene_index" type="String" required>
-  Scene number of the clip that should carry the envelope (1-based: 1, 2, … or 'first', 'second', …)
+<ParamField path="start" type="String" required>
+  Arrangement start: bar.beat (e.g. '17.1') or raw beats
 </ParamField>
-<ParamField path="device_id" type="String" required>
-  Device ID or 1-based position number or name substring
+<ParamField path="length_beats" type="String" required>
+  Window length in beats
 </ParamField>
-<ParamField path="param_id" type="String" required>
-  Parameter index (from list_automation_params .param_id column) OR the parameter's display name (.param_name column)
+<ParamField path="envelopes" type="AutomationEnvelopeSpec[]" required>
+  Envelope specs. Each: discriminated target (kind="device_param"|"macro") + points OR curve_spec.
 </ParamField>
-<ParamField path="points" type="AutomationPoint[]" required>
-  Automation points (time + value). Mutually exclusive with curveSpec.
+<ParamField path="replace" type="Boolean">
+  true = deliver exactly this set, dropping ledger-known envelopes in the window
 </ParamField>
-<ParamField path="curve_spec" type="CurveSpec" required>
-  Compact curve specification. Mutually exclusive with points. Shape can be LinearUp/LinearDown/ExpUp/ExpDown/Sine/Triangle/SawUp/SawDown/Hold/Wander.
+<ParamField path="create_clip" type="Boolean">
+  Default true: fill clip-less gaps with envelope-bearing curve-slice clips. false = skip gaps (audible reset to dial value while crossing them).
+</ParamField>
+<ParamField path="force" type="Boolean">
+  Overrides the mid-clip refusal (the whole clip is rewritten; unledgered automation on it is replaced)
 </ParamField>
 
-### `clear_automation`
+### `get_automation`
 
-Remove a single automation envelope (one (device, param) pair) from a session-view clip.
+Read ARRANGEMENT automation for a track — one merged, honest answer. Each envelope is provenance-tagged: source="ledger" (authored by Vibrai; exact points; survives restarts for SAVED Live sets, process-lifetime only for unsaved ones) or source="live" (visible to the LOM; 0.25-beat sampled). Optional window/target filters.
 
 ```json
 {
-  "tool": "clear_automation",
+  "tool": "get_automation",
   "arguments": {
     "track_id": "<String>",
-    "scene_index": "<String>",
+    "start": "<String>",
+    "length_beats": "<String>",
     "device_id": "<String>",
     "param_id": "<String>"
   }
@@ -352,63 +283,57 @@ Remove a single automation envelope (one (device, param) pair) from a session-vi
 ```
 
 <ParamField path="track_id" type="String" required>
-  Track number (1-based: 1, 2, … or 'first', 'second', …)
+  Track number (1-based)
 </ParamField>
-<ParamField path="scene_index" type="String" required>
-  Scene number of the clip (1-based: 1, 2, … or 'first', 'second', …)
+<ParamField path="start" type="String">
+  Optional window start: bar.beat or raw beats
 </ParamField>
-<ParamField path="device_id" type="String" required>
-  Device ID or 1-based position number or name substring
+<ParamField path="length_beats" type="String">
+  Optional window length in beats
 </ParamField>
-<ParamField path="param_id" type="String" required>
-  Parameter index (from list_automation_params .param_id column) OR the parameter's display name (.param_name column)
+<ParamField path="device_id" type="String">
+  Optional device filter (id / 1-based position / name substring)
+</ParamField>
+<ParamField path="param_id" type="String">
+  Optional parameter filter: parameter id as authored (index or display name — match what you wrote; list_automation_params shows both)
 </ParamField>
 
-### `clear_all_automation`
+### `clear_automation`
 
-Remove every automation envelope on a session-view clip.
+Clear ARRANGEMENT automation by track, optionally narrowed by device+param and/or window. Always clears by unconditional baseline-overwrite: each ledger-known (Vibrai-authored) entry in scope is overwritten with a flat envelope at its final authored value, then forgotten. Native LOM deletion is never used as the effect mechanism — its supported:true is not proof of an effect on Vibrai-delivered clips. Automation the ledger doesn't know about (hand-drawn in Live, or written before the ledger existed) cannot be targeted this way; the result reports that honestly instead of pretending to have cleared it.
 
 ```json
 {
-  "tool": "clear_all_automation",
+  "tool": "clear_automation",
   "arguments": {
     "track_id": "<String>",
-    "scene_index": "<String>"
+    "device_id": "<String>",
+    "param_id": "<String>",
+    "start": "<String>",
+    "length_beats": "<String>"
   }
 }
 ```
 
 <ParamField path="track_id" type="String" required>
-  Track number (1-based: 1, 2, … or 'first', 'second', …)
+  Track number (1-based)
 </ParamField>
-<ParamField path="scene_index" type="String" required>
-  Scene number of the clip (1-based: 1, 2, … or 'first', 'second', …)
+<ParamField path="device_id" type="String">
+  Optional device filter (id / 1-based position / name substring)
 </ParamField>
-
-### `get_arrangement_clip_envelopes`
-
-Read the clip-level envelopes attached to an arrangement clip. KNOWN ISSUE: returns empty for clips that arrived via duplicate-to-arrangement (which is how bounce_arrangement_automation and place_arrangement_clip both write). For verification of writes, use get_arrangement_envelopes_ledger instead.
-
-```json
-{
-  "tool": "get_arrangement_clip_envelopes",
-  "arguments": {
-    "track_id": "<String>",
-    "clip_index": "<String>"
-  }
-}
-```
-
-<ParamField path="track_id" type="String" required>
-  Track number (1-based: 1, 2, … or 'first', 'second', …)
+<ParamField path="param_id" type="String">
+  Optional parameter filter: parameter id as authored (index or display name — match what you wrote; list_automation_params shows both)
 </ParamField>
-<ParamField path="clip_index" type="String" required>
-  Arrangement-clip number on the track (1-based: 1, 2, … or 'first', 'second', …; from get_arrangement_clips)
+<ParamField path="start" type="String">
+  Optional window start: bar.beat or raw beats
+</ParamField>
+<ParamField path="length_beats" type="String">
+  Optional window length in beats
 </ParamField>
 
 ### `apply_automation_template`
 
-Author a composition-level automation slot on the .vibrai project's arrangement template. The slot is a symbolic key resolved through AutomationTargetMap (see list_automation_slots for the vocabulary per PartType). Slots fall into two families: bare-synth slots (synth_cutoff, synth_resonance, synth_volume) target a parameter on device 0 by LOM name; rack-macro slots (cutoff, resonance, macro_1..macro_16) target a macro on the first Instrument Rack on the chain, resolved at bounce-time. The project is loaded, mutated, validated, and saved. Idempotent on (sectionId, partId, slot). Use "all" in sections to apply to every section. Sparse captured projects are supported: a targeted section where the part has no clip source (literal-clip-only part, no clip for that section) is skipped and listed in skipped_no_clip_source rather than failing — "all" means everywhere the part plays. Set apply_to_live: true to also push the just-applied slots into the running Live set via the safe bouncer (Spec A's atomic-rollback contract applies per slot). The .vibrai file is updated first, then each applied (section, part, slot) tuple is resolved to a bouncer-shaped envelope and bounced onto the existing arrangement clip at the section's position. Slots whose section has no arrangement clip are skipped with status SkippedNoArrangementClip — Spec B is an iteration tool, not bootstrapping. Verify what landed via get_arrangement_envelopes_ledger. Default false preserves the file-only flow that callers depend on today.
+Author a composition-level automation slot on the .vibrai project's arrangement template. The slot is a symbolic key resolved through AutomationTargetMap (see list_automation_slots for the vocabulary per PartType). Slots fall into two families: bare-synth slots (synth_cutoff, synth_resonance, synth_volume) target a parameter on device 0 by LOM name; rack-macro slots (cutoff, resonance, macro_1..macro_16) target a macro on the first Instrument Rack on the chain, resolved at bounce-time. The project is loaded, mutated, validated, and saved. Idempotent on (sectionId, partId, slot). Use "all" in sections to apply to every section. Sparse captured projects are supported: a targeted section where the part has no clip source (literal-clip-only part, no clip for that section) is skipped and listed in skipped_no_clip_source rather than failing — "all" means everywhere the part plays. Set apply_to_live: true to also push the just-applied slots into the running Live set via the safe bouncer (Spec A's atomic-rollback contract applies per slot). The .vibrai file is updated first, then each applied (section, part, slot) tuple is resolved to a bouncer-shaped envelope and bounced onto the existing arrangement clip at the section's position. Slots whose section has no arrangement clip are skipped with status skipped_no_arrangement_clip — Spec B is an iteration tool, not bootstrapping. Verify what landed via get_automation (arrangement-scoped read). Default false preserves the file-only flow that callers depend on today.
 
 ```json
 {
@@ -434,7 +359,7 @@ Author a composition-level automation slot on the .vibrai project's arrangement 
   Symbolic slot key (e.g. "cutoff", "resonance", "macro_3", "synth_cutoff"). Use list_automation_slots to enumerate keys for a PartType.
 </ParamField>
 <ParamField path="curve" type="AutomationCurve" required>
-  AutomationCurve enum: LinearUp | LinearDown | ExpUp | ExpDown
+  AutomationCurve enum: LinearUp | LinearDown | ExpUp | ExpDown | Sine | Triangle | SawUp | SawDown | Hold | Wander
 </ParamField>
 <ParamField path="sections" type="String[]" required>
   Section ids to apply to, or the single literal "all" to apply to every section in project.Sections. Sections where the part has no clip source are skipped and reported in skipped_no_clip_source.
@@ -458,50 +383,4 @@ Enumerate the symbolic automation slots supported for a PartType. Returns a list
 
 <ParamField path="part_type" type="PartType" required>
   Any PartType enum value. Melodic/textural types (Pad, Lead, Bass, Arp, Ambience, Chords, Riff, Melody, Solo, Hook, Loop, Other) and FX types (FxRiser, FxRelease) have slots; drum types return an empty list.
-</ParamField>
-
-### `bounce_arrangement_automation`
-
-ADVANCED PRIMITIVE — for routine 'write automation into the arrangement,' prefer place_arrangement_clip with carry_envelopes:true. Bounces one or more envelopes into Live's arrangement view by snapshotting overlapping clips, deleting them, writing a merged scratch clip, then duplicating it back into place. The operation is atomic: on any failure the original clips are restored to their pre-call state. On rollback failure the call throws BounceRollbackPartialException with per-clip restore status. Note: success rewrites every overlapping clip, losing clip name/color metadata in the process. See recipe `write_arrangement_automation` for the canonical safe path.
-
-```json
-{
-  "tool": "bounce_arrangement_automation",
-  "arguments": {
-    "track_id": "<String>",
-    "start_beat": "<String>",
-    "length_beats": "<String>",
-    "envelopes": "<AutomationEnvelopeSpec[]>"
-  }
-}
-```
-
-<ParamField path="track_id" type="String" required>
-  Track number (1-based: 1, 2, … or 'first', 'second', …)
-</ParamField>
-<ParamField path="start_beat" type="String" required>
-  Start position in arrangement: bar.beat notation (e.g. '2.3' = bar 2, beat 3) or raw beats (e.g. '8' or '8.0')
-</ParamField>
-<ParamField path="length_beats" type="String" required>
-  Length of the bounce window in beats
-</ParamField>
-<ParamField path="envelopes" type="AutomationEnvelopeSpec[]" required>
-  Array of envelope specs. Each entry has a discriminated Target (kind="device_param" or "macro") and EITHER points or curveSpec.
-</ParamField>
-
-### `get_arrangement_envelopes_ledger`
-
-Read back the in-process ledger of envelopes committed to Live's arrangement view by bounce_arrangement_automation or place_arrangement_clip (carry_envelopes:true). Use this for programmatic verification — the LOM read-back path (get_arrangement_clip_envelopes) returns empty for clips that arrived via duplicate-to-arrangement. The ledger is in-process, bounded LRU (256 per track), and resets on MCP server restart. See recipe `verify_arrangement_writes` for the full verification flow.
-
-```json
-{
-  "tool": "get_arrangement_envelopes_ledger",
-  "arguments": {
-    "track_id": "<Nullable`1>"
-  }
-}
-```
-
-<ParamField path="track_id" type="Nullable`1" required>
-  Optional track number (1-based). Omit for all tracks.
 </ParamField>

@@ -189,9 +189,9 @@ Move every note at from_pitch to to_pitch on one track, server-side — no note 
 <ParamField path="to_pitch" type="Int32" required>
   Target MIDI pitch 0-127
 </ParamField>
-<ParamField path="scope" type="String" required>
+<ParamField path="scope" type="String">
   'session', 'arrangement', or 'both' (default)
 </ParamField>
-<ParamField path="scene_index" type="String" required>
+<ParamField path="scene_index" type="String">
   Scene number (1-based) to limit to one session clip; requires scope='session'
 </ParamField>
