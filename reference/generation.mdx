@@ -14,7 +14,7 @@ Generate or plan a composition from a .vibrai project file.
 Generate clips and arrangement from a .vibrai project file
 
 ```bash
-vibrai generate --project <PATH> --force --dry-run --seed <VALUE> --allow-skip --with-instruments --on-existing-tracks <MODE> --keep-empty-clips --swing <PCT> --humanize <PCT> --ornaments <PCT> --dropout <PCT>
+vibrai generate --project <PATH> --force --dry-run --seed <VALUE> --allow-skip --with-instruments --stock-only --on-existing-tracks <MODE> --keep-empty-clips --swing <PCT> --humanize <PCT> --ornaments <PCT> --dropout <PCT>
 ```
 
 <ParamField path="--project">
@@ -34,6 +34,9 @@ vibrai generate --project <PATH> --force --dry-run --seed <VALUE> --allow-skip -
 </ParamField>
 <ParamField path="--with-instruments">
   After rendering, load each part's default instrument (drum kits for drum parts) so the song is audible.
+</ParamField>
+<ParamField path="--stock-only">
+  Resolve instruments from stock content only: skips explicit defaults.instruments overrides AND tagged instruments, using genre stock defaults + built-in generic. For demos/testing without third-party packs.
 </ParamField>
 <ParamField path="--on-existing-tracks">
   How to treat existing MIDI tracks: replace (delete them) or append (keep, add after last MIDI track). Default: append. Audio/return tracks are always left in place.
@@ -105,10 +108,10 @@ Plan a composition from a .vibrai file without writing to Live. Returns a slim s
 }
 ```
 
-<ParamField path="project_path" type="String" required>
+<ParamField path="project_path" type="String">
   Path to the .vibrai file (defaults to Untitled.vibrai in CWD when omitted)
 </ParamField>
-<ParamField path="seed" type="Nullable`1" required>
+<ParamField path="seed" type="Nullable`1">
   Optional seed override
 </ParamField>
 <ParamField path="keep_empty_clips" type="Boolean">
@@ -139,6 +142,7 @@ Plan + render a composition into Live's session view and arrangement view. force
     "force": "<Boolean>",
     "allow_skip": "<Boolean>",
     "with_instruments": "<Boolean>",
+    "stock_only": "<Boolean>",
     "on_existing_tracks": "<String>",
     "seed": "<Nullable`1>",
     "keep_empty_clips": "<Boolean>",
@@ -150,22 +154,25 @@ Plan + render a composition into Live's session view and arrangement view. force
 }
 ```
 
-<ParamField path="project_path" type="String" required>
+<ParamField path="project_path" type="String">
   Path to the .vibrai file (defaults to Untitled.vibrai in CWD when omitted)
 </ParamField>
-<ParamField path="force" type="Boolean" required>
+<ParamField path="force" type="Boolean">
   Overwrite existing session clips and arrangement content
 </ParamField>
-<ParamField path="allow_skip" type="Boolean" required>
+<ParamField path="allow_skip" type="Boolean">
   Continue when arrangement-automation entries cannot be resolved; default fails fast.
 </ParamField>
-<ParamField path="with_instruments" type="Boolean" required>
+<ParamField path="with_instruments" type="Boolean">
   After rendering, load each part's default instrument (drum kits for drum parts) so the song is audible.
 </ParamField>
-<ParamField path="on_existing_tracks" type="String" required>
+<ParamField path="stock_only" type="Boolean">
+  Resolve instruments from stock content only: skips explicit defaults.instruments overrides AND tagged instruments, using genre stock defaults + built-in generic. For demos/testing on installs without third-party packs.
+</ParamField>
+<ParamField path="on_existing_tracks" type="String">
   How to treat MIDI tracks already in the Live set: "replace" (delete existing MIDI tracks, audio/return untouched) or "append" (keep them, add new tracks after the last MIDI track). Omit to receive a needs_decision result listing the current tracks.
 </ParamField>
-<ParamField path="seed" type="Nullable`1" required>
+<ParamField path="seed" type="Nullable`1">
   Optional seed override
 </ParamField>
 <ParamField path="keep_empty_clips" type="Boolean">

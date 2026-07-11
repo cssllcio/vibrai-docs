@@ -74,11 +74,17 @@ vibrai device browse [path]
 Show the resolved default device for a part-type
 
 ```bash
-vibrai device default <partType>
+vibrai device default <partType> --project <PATH> --stock-only
 ```
 
 <ParamField path="partType" required>
   PartType to resolve
+</ParamField>
+<ParamField path="--project">
+  Resolve genre-aware defaults against this .vibrai file (defaults to Untitled.vibrai in CWD)
+</ParamField>
+<ParamField path="--stock-only">
+  Report the stock-only view: skips explicit defaults.instruments overrides AND tagged instruments.
 </ParamField>
 
 ### `device delete`
@@ -98,14 +104,17 @@ vibrai device delete <track> <device-index>
 
 ### `device load-defaults`
 
-Load default instruments for all parts in a .vibrai project
+Load each part's default instrument from a .vibrai project onto its track
 
 ```bash
-vibrai device load-defaults --project <PATH>
+vibrai device load-defaults --project <PATH> --stock-only
 ```
 
 <ParamField path="--project">
   Path to the .vibrai file whose parts get their default instruments
+</ParamField>
+<ParamField path="--stock-only">
+  Resolve instruments from stock content only: skips explicit defaults.instruments overrides AND tagged instruments. For demos/testing without third-party packs.
 </ParamField>
 
 ## MCP tools
@@ -129,13 +138,13 @@ Load a stock device, User Library preset, or plug-in (VST3/AU) onto a track. Spe
 <ParamField path="track_id" type="String" required>
   Track number (1-based: 1, 2, … or 'first', 'second', …)
 </ParamField>
-<ParamField path="path" type="String" required>
+<ParamField path="path" type="String">
   Browser path or URI. Accepts (a) classic stock-device paths like 'Instruments/Operator', (b) preset '.adg' browser paths like 'Drums/F9 TK Menu_ Hat Closed V2.adg' (auto-resolved to their query: URI), or (c) query: URIs from find_instruments_by_tag/show_instrument, including plug-in URIs from the Plug-Ins browser section.
 </ParamField>
-<ParamField path="part_type" type="Nullable`1" required>
+<ParamField path="part_type" type="Nullable`1">
   PartType shorthand; resolves through defaults.instruments
 </ParamField>
-<ParamField path="position" type="String" required>
+<ParamField path="position" type="String">
   Insert position in device chain (1-based: 1 = first slot; omit to append at the end)
 </ParamField>
 
@@ -152,7 +161,7 @@ List immediate children of a Live browser path. Reads the Vibrai instrument-brow
 }
 ```
 
-<ParamField path="path" type="String" required>
+<ParamField path="path" type="String">
   Browser path string; empty = top-level snapshot folders.
 </ParamField>
 
@@ -211,25 +220,33 @@ List the pads of a Drum Rack on a track: each pad's index, name, and the MIDI no
 <ParamField path="track_id" type="String" required>
   Track number (1-based: 1, 2, … or 'first', 'second', …)
 </ParamField>
-<ParamField path="device_index" type="Nullable`1" required>
+<ParamField path="device_index" type="Nullable`1">
   Index of the Drum Rack device in the track's chain (default 0 = first device)
 </ParamField>
 
 ### `get_default_instrument`
 
-Return the resolved browser path for a part-type (defaults.instruments override or built-in).
+Report the resolved instrument for a part-type without loading it: precedence is explicit defaults.instruments → tagged → genre stock default → built-in generic. Pass project_path to resolve against a project's genre; stock_only reports the stock-only view (skips explicit + tagged).
 
 ```json
 {
   "tool": "get_default_instrument",
   "arguments": {
-    "part_type": "<PartType>"
+    "part_type": "<PartType>",
+    "project_path": "<String>",
+    "stock_only": "<Boolean>"
   }
 }
 ```
 
 <ParamField path="part_type" type="PartType" required>
   PartType to resolve
+</ParamField>
+<ParamField path="project_path" type="String">
+  Path to a .vibrai file to resolve genre-aware defaults against (defaults to Untitled.vibrai in CWD)
+</ParamField>
+<ParamField path="stock_only" type="Boolean">
+  Report the stock-only view: skips explicit defaults.instruments overrides AND tagged instruments.
 </ParamField>
 
 ### `load_default_instruments`
@@ -240,11 +257,15 @@ Load each MIDI part's default instrument from a .vibrai project onto its track, 
 {
   "tool": "load_default_instruments",
   "arguments": {
-    "project_path": "<String>"
+    "project_path": "<String>",
+    "stock_only": "<Boolean>"
   }
 }
 ```
 
-<ParamField path="project_path" type="String" required>
+<ParamField path="project_path" type="String">
   Path to the .vibrai file (defaults to Untitled.vibrai in CWD when omitted)
+</ParamField>
+<ParamField path="stock_only" type="Boolean">
+  Resolve instruments from stock content only: skips explicit defaults.instruments overrides AND tagged instruments. For demos/testing without third-party packs.
 </ParamField>

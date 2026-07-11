@@ -108,10 +108,10 @@ Get a single track. Pass either track_id (positional, 1-based) or liveset_id (st
 }
 ```
 
-<ParamField path="track_id" type="String" required>
+<ParamField path="track_id" type="String">
   Positional track number (1-based: 1, 2, … or 'first', 'second', …)
 </ParamField>
-<ParamField path="liveset_id" type="String" required>
+<ParamField path="liveset_id" type="String">
   Stable liveset_id from list_tracks; preferred over track_id when available.
 </ParamField>
 
@@ -150,10 +150,10 @@ Delete a track. Pass either track_id (positional, 1-based) or liveset_id (stable
 }
 ```
 
-<ParamField path="track_id" type="String" required>
+<ParamField path="track_id" type="String">
   Positional track number (1-based: 1, 2, … or 'first', 'second', …)
 </ParamField>
-<ParamField path="liveset_id" type="String" required>
+<ParamField path="liveset_id" type="String">
   Stable liveset_id from list_tracks; preferred over track_id when available.
 </ParamField>
 
@@ -165,19 +165,19 @@ Rename a track. Pass either track_id (positional, 1-based, may shift on reorder)
 {
   "tool": "set_track_name",
   "arguments": {
+    "name": "<String>",
     "track_id": "<String>",
-    "liveset_id": "<String>",
-    "name": "<String>"
+    "liveset_id": "<String>"
   }
 }
 ```
 
-<ParamField path="track_id" type="String" required>
-  Positional track number (1-based: 1, 2, … or 'first', 'second', …)
-</ParamField>
-<ParamField path="liveset_id" type="String" required>
-  Stable liveset_id from list_tracks; preferred over track_id when available.
-</ParamField>
 <ParamField path="name" type="String" required>
   New track name
+</ParamField>
+<ParamField path="track_id" type="String">
+  Positional track number (1-based: 1, 2, … or 'first', 'second', …)
+</ParamField>
+<ParamField path="liveset_id" type="String">
+  Stable liveset_id from list_tracks; preferred over track_id when available.
 </ParamField>

@@ -84,7 +84,7 @@ Show the project's drum map: explicit drum-part→pitch overrides used as the fi
 }
 ```
 
-<ParamField path="project_path" type="String" required>
+<ParamField path="project_path" type="String">
   Path to the .vibrai file (defaults to Untitled.vibrai in CWD when omitted)
 </ParamField>
 
@@ -105,7 +105,7 @@ Set drum map entries (merged into the existing map) like ["snare=40","hi_hat=42"
 <ParamField path="entries" type="String[]" required>
   Entries like "snare=40"
 </ParamField>
-<ParamField path="project_path" type="String" required>
+<ParamField path="project_path" type="String">
   Path to the .vibrai file (defaults to Untitled.vibrai in CWD when omitted)
 </ParamField>
 
@@ -123,10 +123,10 @@ Clear the project drum map entirely, or only the named drum part keys (e.g. ["sn
 }
 ```
 
-<ParamField path="parts" type="String[]" required>
+<ParamField path="parts" type="String[]">
   Drum part keys to remove; omit/empty to clear the whole map
 </ParamField>
-<ParamField path="project_path" type="String" required>
+<ParamField path="project_path" type="String">
   Path to the .vibrai file (defaults to Untitled.vibrai in CWD when omitted)
 </ParamField>
 
@@ -145,12 +145,12 @@ Re-resolve every drum part's pitch against the CURRENT kits (drum map → pad na
 }
 ```
 
-<ParamField path="project_path" type="String" required>
+<ParamField path="project_path" type="String">
   Path to the .vibrai file (defaults to Untitled.vibrai in CWD when omitted)
 </ParamField>
-<ParamField path="tracks" type="String[]" required>
+<ParamField path="tracks" type="String[]">
   Optional live track numbers (1-based, as in list_tracks) to limit the retarget
 </ParamField>
-<ParamField path="dry_run" type="Boolean" required>
+<ParamField path="dry_run" type="Boolean">
   Preview the plan without remapping or saving
 </ParamField>
