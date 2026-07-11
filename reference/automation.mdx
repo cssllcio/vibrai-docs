@@ -364,7 +364,7 @@ Author a composition-level automation slot on the .vibrai project's arrangement 
 <ParamField path="sections" type="String[]" required>
   Section ids to apply to, or the single literal "all" to apply to every section in project.Sections. Sections where the part has no clip source are skipped and reported in skipped_no_clip_source.
 </ParamField>
-<ParamField path="apply_to_live" type="Boolean" required>
+<ParamField path="apply_to_live" type="Boolean">
   If true, also push the applied slots into the running Live set via the safe bouncer. Default false — file-only authoring. Requires an existing populated arrangement; slots whose section has no arrangement clip are skipped with a status. See recipe `apply_automation_template_live` for the iteration flow.
 </ParamField>
 

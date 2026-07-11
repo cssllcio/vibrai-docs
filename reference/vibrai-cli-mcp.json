@@ -1,6 +1,6 @@
 {
   "engineVersion": "1.0.0.0",
-  "generatedAt": "2026-07-10T00:48:51Z",
+  "generatedAt": "2026-07-11T21:31:38Z",
   "features": [
     {
       "id": "transport",
@@ -200,13 +200,13 @@
               {
                 "name": "track_id",
                 "type": "String",
-                "required": true,
+                "required": false,
                 "description": "Positional track number (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
               },
               {
                 "name": "liveset_id",
                 "type": "String",
-                "required": true,
+                "required": false,
                 "description": "Stable liveset_id from list_tracks; preferred over track_id when available."
               }
             ]
@@ -236,13 +236,13 @@
               {
                 "name": "track_id",
                 "type": "String",
-                "required": true,
+                "required": false,
                 "description": "Positional track number (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
               },
               {
                 "name": "liveset_id",
                 "type": "String",
-                "required": true,
+                "required": false,
                 "description": "Stable liveset_id from list_tracks; preferred over track_id when available."
               }
             ]
@@ -252,22 +252,22 @@
             "description": "Rename a track. Pass either track_id (positional, 1-based, may shift on reorder) or liveset_id (stable across reorders within one Live session \u2014 get it from list_tracks). liveset_id wins if both are supplied. Use liveset_id when you plan to issue multiple ops on the same track over time, especially across track insertions.",
             "parameters": [
               {
-                "name": "track_id",
+                "name": "name",
                 "type": "String",
                 "required": true,
+                "description": "New track name"
+              },
+              {
+                "name": "track_id",
+                "type": "String",
+                "required": false,
                 "description": "Positional track number (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
               },
               {
                 "name": "liveset_id",
                 "type": "String",
-                "required": true,
+                "required": false,
                 "description": "Stable liveset_id from list_tracks; preferred over track_id when available."
-              },
-              {
-                "name": "name",
-                "type": "String",
-                "required": true,
-                "description": "New track name"
               }
             ]
           }
@@ -365,7 +365,20 @@
                 "description": "PartType to resolve"
               }
             ],
-            "options": []
+            "options": [
+              {
+                "name": "--project",
+                "valueName": "PATH",
+                "default": null,
+                "description": "Resolve genre-aware defaults against this .vibrai file (defaults to Untitled.vibrai in CWD)"
+              },
+              {
+                "name": "--stock-only",
+                "valueName": null,
+                "default": null,
+                "description": "Report the stock-only view: skips explicit defaults.instruments overrides AND tagged instruments."
+              }
+            ]
           },
           {
             "name": "device delete",
@@ -386,7 +399,7 @@
           },
           {
             "name": "device load-defaults",
-            "description": "Load default instruments for all parts in a .vibrai project",
+            "description": "Load each part\u0027s default instrument from a .vibrai project onto its track",
             "arguments": [],
             "options": [
               {
@@ -394,6 +407,12 @@
                 "valueName": "PATH",
                 "default": null,
                 "description": "Path to the .vibrai file whose parts get their default instruments"
+              },
+              {
+                "name": "--stock-only",
+                "valueName": null,
+                "default": null,
+                "description": "Resolve instruments from stock content only: skips explicit defaults.instruments overrides AND tagged instruments. For demos/testing without third-party packs."
               }
             ]
           }
@@ -414,19 +433,19 @@
               {
                 "name": "path",
                 "type": "String",
-                "required": true,
+                "required": false,
                 "description": "Browser path or URI. Accepts (a) classic stock-device paths like \u0027Instruments/Operator\u0027, (b) preset \u0027.adg\u0027 browser paths like \u0027Drums/F9 TK Menu_ Hat Closed V2.adg\u0027 (auto-resolved to their query: URI), or (c) query: URIs from find_instruments_by_tag/show_instrument, including plug-in URIs from the Plug-Ins browser section."
               },
               {
                 "name": "part_type",
                 "type": "Nullable\u00601",
-                "required": true,
+                "required": false,
                 "description": "PartType shorthand; resolves through defaults.instruments"
               },
               {
                 "name": "position",
                 "type": "String",
-                "required": true,
+                "required": false,
                 "description": "Insert position in device chain (1-based: 1 = first slot; omit to append at the end)"
               }
             ]
@@ -438,7 +457,7 @@
               {
                 "name": "path",
                 "type": "String",
-                "required": true,
+                "required": false,
                 "description": "Browser path string; empty = top-level snapshot folders."
               }
             ]
@@ -486,20 +505,32 @@
               {
                 "name": "device_index",
                 "type": "Nullable\u00601",
-                "required": true,
+                "required": false,
                 "description": "Index of the Drum Rack device in the track\u0027s chain (default 0 = first device)"
               }
             ]
           },
           {
             "name": "get_default_instrument",
-            "description": "Return the resolved browser path for a part-type (defaults.instruments override or built-in).",
+            "description": "Report the resolved instrument for a part-type without loading it: precedence is explicit defaults.instruments \u2192 tagged \u2192 genre stock default \u2192 built-in generic. Pass project_path to resolve against a project\u0027s genre; stock_only reports the stock-only view (skips explicit \u002B tagged).",
             "parameters": [
               {
                 "name": "part_type",
                 "type": "PartType",
                 "required": true,
                 "description": "PartType to resolve"
+              },
+              {
+                "name": "project_path",
+                "type": "String",
+                "required": false,
+                "description": "Path to a .vibrai file to resolve genre-aware defaults against (defaults to Untitled.vibrai in CWD)"
+              },
+              {
+                "name": "stock_only",
+                "type": "Boolean",
+                "required": false,
+                "description": "Report the stock-only view: skips explicit defaults.instruments overrides AND tagged instruments."
               }
             ]
           },
@@ -510,8 +541,14 @@
               {
                 "name": "project_path",
                 "type": "String",
-                "required": true,
+                "required": false,
                 "description": "Path to the .vibrai file (defaults to Untitled.vibrai in CWD when omitted)"
+              },
+              {
+                "name": "stock_only",
+                "type": "Boolean",
+                "required": false,
+                "description": "Resolve instruments from stock content only: skips explicit defaults.instruments overrides AND tagged instruments. For demos/testing without third-party packs."
               }
             ]
           }
@@ -836,7 +873,7 @@
               {
                 "name": "project_path",
                 "type": "String",
-                "required": true,
+                "required": false,
                 "description": "Path to the .vibrai file (defaults to Untitled.vibrai in CWD when omitted)"
               }
             ]
@@ -854,7 +891,7 @@
               {
                 "name": "project_path",
                 "type": "String",
-                "required": true,
+                "required": false,
                 "description": "Path to the .vibrai file (defaults to Untitled.vibrai in CWD when omitted)"
               }
             ]
@@ -866,13 +903,13 @@
               {
                 "name": "parts",
                 "type": "String[]",
-                "required": true,
+                "required": false,
                 "description": "Drum part keys to remove; omit/empty to clear the whole map"
               },
               {
                 "name": "project_path",
                 "type": "String",
-                "required": true,
+                "required": false,
                 "description": "Path to the .vibrai file (defaults to Untitled.vibrai in CWD when omitted)"
               }
             ]
@@ -884,19 +921,19 @@
               {
                 "name": "project_path",
                 "type": "String",
-                "required": true,
+                "required": false,
                 "description": "Path to the .vibrai file (defaults to Untitled.vibrai in CWD when omitted)"
               },
               {
                 "name": "tracks",
                 "type": "String[]",
-                "required": true,
+                "required": false,
                 "description": "Optional live track numbers (1-based, as in list_tracks) to limit the retarget"
               },
               {
                 "name": "dry_run",
                 "type": "Boolean",
-                "required": true,
+                "required": false,
                 "description": "Preview the plan without remapping or saving"
               }
             ]
@@ -1072,7 +1109,7 @@
               {
                 "name": "include_extra",
                 "type": "Boolean",
-                "required": true,
+                "required": false,
                 "description": "If true, also matches unrecognized \u0027extra\u0027 tag suffixes. Default false."
               }
             ]
@@ -2427,7 +2464,7 @@
               {
                 "name": "apply_to_live",
                 "type": "Boolean",
-                "required": true,
+                "required": false,
                 "description": "If true, also push the applied slots into the running Live set via the safe bouncer. Default false \u2014 file-only authoring. Requires an existing populated arrangement; slots whose section has no arrangement clip are skipped with a status. See recipe \u0060apply_automation_template_live\u0060 for the iteration flow."
               }
             ]
@@ -2547,13 +2584,13 @@
               {
                 "name": "name",
                 "type": "String",
-                "required": true,
+                "required": false,
                 "description": "Project display name. Defaults to the basename of \u0060path\u0060 (e.g. \u0022my-song\u0022 for \u0060\u2026/my-song.vibrai\u0060)."
               },
               {
                 "name": "demo",
                 "type": "Boolean",
-                "required": true,
+                "required": false,
                 "description": "If true, write the demo content instead of the boilerplate."
               }
             ]
@@ -2777,7 +2814,7 @@
               {
                 "name": "insert_index",
                 "type": "String",
-                "required": true,
+                "required": false,
                 "description": "Optional scene number to insert at (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026); omit to append at the end."
               }
             ]
@@ -2979,7 +3016,7 @@
     {
       "id": "genre",
       "title": "Genre",
-      "description": "List, apply, and import genre libraries and presets. The import step (genre import-songsketch) is CLI-only by design \u2014 a hidden, internal command not exposed to end users. It is a content-authoring step that converts a proprietary Song Sketch lib JSON into a .vibraigenre file on disk (how the shipped genre catalog is minted), not a runtime operation an agent drives against Live. The MCP surface (GenreTools) exposes the runtime half: discover libraries and presets (list_genres, list_genre_presets) and apply them (apply_genre).",
+      "description": "List, apply, and import genre libraries and presets. The import step (genre import-songsketch) is CLI-only by design \u2014 a hidden, internal command not exposed to end users. It is a content-authoring step that converts a proprietary Song Sketch lib JSON into a .vibraigenre file on disk (how the shipped genre catalog is minted), not a runtime operation an agent drives against Live. The MCP surface (GenreTools) exposes the runtime half: discover libraries and presets (list_genres, list_genre_presets) and apply them (apply_genre). Extraction (genre extract CLI \u2194 extract_genre MCP) reverse-derives a genre from the open Live set.",
       "cli": {
         "branch": "genre",
         "commands": [
@@ -3060,6 +3097,61 @@
                 "description": "Confirm destructive overwrite of sections / parts / templates / arrangement / generation"
               }
             ]
+          },
+          {
+            "name": "genre extract",
+            "description": "Extract a genre from the open Live set into a .vibraigenre",
+            "arguments": [],
+            "options": [
+              {
+                "name": "--name",
+                "valueName": "DISPLAY",
+                "default": null,
+                "description": "Genre display name; the filename slug derives from it. Defaults to the open Live set\u0027s name."
+              },
+              {
+                "name": "--out",
+                "valueName": "DIR",
+                "default": null,
+                "description": "Output directory (defaults to ~/.vibrai/genres so the genre is immediately applicable)"
+              },
+              {
+                "name": "--into",
+                "valueName": "GENRE",
+                "default": null,
+                "description": "Append the set as a new preset to this existing user genre instead of creating a file"
+              },
+              {
+                "name": "--preset-name",
+                "valueName": "N",
+                "default": null,
+                "description": "Name of the preset this set becomes (defaults to the set name)"
+              },
+              {
+                "name": "--faithful",
+                "valueName": null,
+                "default": null,
+                "description": "Also embed literal note phrases (writes format v3 with playback support)"
+              },
+              {
+                "name": "--source",
+                "valueName": "MODE",
+                "default": "auto",
+                "description": "auto|arrangement|session \u2014 auto uses the arrangement when it has clips, else the session"
+              },
+              {
+                "name": "--part",
+                "valueName": "OVERRIDE",
+                "default": null,
+                "description": "Classification override as \u003CtrackId\u003E:\u003CPartType\u003E, repeatable (track ids as shown in the report)"
+              },
+              {
+                "name": "--force",
+                "valueName": null,
+                "default": null,
+                "description": "Overwrite an existing target .vibraigenre"
+              }
+            ]
           }
         ]
       },
@@ -3072,7 +3164,7 @@
           },
           {
             "name": "list_genre_presets",
-            "description": "List presets in a genre library. Each entry has id (use with apply_genre / init_project --preset), display name, sub-genre, and section/part counts.",
+            "description": "List presets in a genre library. Each entry has id (use with apply_genre / init_project --preset), display name, sub-genre, section/part counts, and an instrumentation summary (snake_case PartType -\u003E stock instrument path, resolved for the preset\u0027s own sub-genre) from the genre\u0027s defaults table \u2014 omitted when the genre has none.",
             "parameters": [
               {
                 "name": "genre",
@@ -3109,6 +3201,60 @@
                 "type": "Boolean",
                 "required": false,
                 "description": "Confirm the destructive overwrite (CLI --yes equivalent). Must be true to proceed; confirm with the user first when the project already has content."
+              }
+            ]
+          },
+          {
+            "name": "extract_genre",
+            "description": "Extract a genre from the open Live set into a .vibraigenre file. Reads tempo, scale, tracks, clips, notes, and envelopes; classifies tracks into parts (report shows each decision); detects sections; and writes a generative genre usable by apply_genre. Set faithful=true to also embed literal note phrases (format v3) so regeneration seeds from the source riffs. Set into_genre=\u003Cuser genre\u003E to append this set as a new preset instead of creating a file. Re-run with part_overrides to correct classifications \u2014 extraction never mutates the Live set.",
+            "parameters": [
+              {
+                "name": "name",
+                "type": "String",
+                "required": false,
+                "description": "Genre display name; filename slug derives from it. Defaults to the open set\u0027s name."
+              },
+              {
+                "name": "out_dir",
+                "type": "String",
+                "required": false,
+                "description": "Output directory. Defaults to ~/.vibrai/genres so the genre is immediately applicable."
+              },
+              {
+                "name": "into_genre",
+                "type": "String",
+                "required": false,
+                "description": "Append as a new preset to this existing user genre instead of creating a new file."
+              },
+              {
+                "name": "preset_name",
+                "type": "String",
+                "required": false,
+                "description": "Name of the preset this set becomes. Defaults to the set name."
+              },
+              {
+                "name": "faithful",
+                "type": "Boolean",
+                "required": false,
+                "description": "Also embed literal note phrases (writes format v3 with playback support)."
+              },
+              {
+                "name": "source",
+                "type": "String",
+                "required": false,
+                "description": "auto|arrangement|session \u2014 auto uses the arrangement when it has clips, else the session."
+              },
+              {
+                "name": "part_overrides",
+                "type": "Dictionary\u003CString, String\u003E",
+                "required": false,
+                "description": "Classification overrides: track id (as shown in the report) \u2192 PartType, e.g. {\u00223\u0022: \u0022hi_hat\u0022}."
+              },
+              {
+                "name": "force",
+                "type": "Boolean",
+                "required": false,
+                "description": "Overwrite an existing target file."
               }
             ]
           }
@@ -3307,6 +3453,12 @@
                 "description": "After rendering, load each part\u0027s default instrument (drum kits for drum parts) so the song is audible."
               },
               {
+                "name": "--stock-only",
+                "valueName": null,
+                "default": null,
+                "description": "Resolve instruments from stock content only: skips explicit defaults.instruments overrides AND tagged instruments, using genre stock defaults \u002B built-in generic. For demos/testing without third-party packs."
+              },
+              {
                 "name": "--on-existing-tracks",
                 "valueName": "MODE",
                 "default": null,
@@ -3404,13 +3556,13 @@
               {
                 "name": "project_path",
                 "type": "String",
-                "required": true,
+                "required": false,
                 "description": "Path to the .vibrai file (defaults to Untitled.vibrai in CWD when omitted)"
               },
               {
                 "name": "seed",
                 "type": "Nullable\u00601",
-                "required": true,
+                "required": false,
                 "description": "Optional seed override"
               },
               {
@@ -3452,37 +3604,43 @@
               {
                 "name": "project_path",
                 "type": "String",
-                "required": true,
+                "required": false,
                 "description": "Path to the .vibrai file (defaults to Untitled.vibrai in CWD when omitted)"
               },
               {
                 "name": "force",
                 "type": "Boolean",
-                "required": true,
+                "required": false,
                 "description": "Overwrite existing session clips and arrangement content"
               },
               {
                 "name": "allow_skip",
                 "type": "Boolean",
-                "required": true,
+                "required": false,
                 "description": "Continue when arrangement-automation entries cannot be resolved; default fails fast."
               },
               {
                 "name": "with_instruments",
                 "type": "Boolean",
-                "required": true,
+                "required": false,
                 "description": "After rendering, load each part\u0027s default instrument (drum kits for drum parts) so the song is audible."
+              },
+              {
+                "name": "stock_only",
+                "type": "Boolean",
+                "required": false,
+                "description": "Resolve instruments from stock content only: skips explicit defaults.instruments overrides AND tagged instruments, using genre stock defaults \u002B built-in generic. For demos/testing on installs without third-party packs."
               },
               {
                 "name": "on_existing_tracks",
                 "type": "String",
-                "required": true,
+                "required": false,
                 "description": "How to treat MIDI tracks already in the Live set: \u0022replace\u0022 (delete existing MIDI tracks, audio/return untouched) or \u0022append\u0022 (keep them, add new tracks after the last MIDI track). Omit to receive a needs_decision result listing the current tracks."
               },
               {
                 "name": "seed",
                 "type": "Nullable\u00601",
-                "required": true,
+                "required": false,
                 "description": "Optional seed override"
               },
               {
@@ -3695,7 +3853,7 @@
         "commands": [
           {
             "name": "update",
-            "description": "Check for and optionally apply the latest Vibrai release",
+            "description": "Check for and install the latest Vibrai release (CLI \u002B M4L device \u002B Python remote script)",
             "arguments": [],
             "options": [
               {

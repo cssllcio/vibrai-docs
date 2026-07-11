@@ -1,11 +1,11 @@
 ---
 title: "Genre"
-description: "List, apply, and import genre libraries and presets. The import step (genre import-songsketch) is CLI-only by design — a hidden, internal command not exposed to end users. It is a content-authoring step that converts a proprietary Song Sketch lib JSON into a .vibraigenre file on disk (how the shipped genre catalog is minted), not a runtime operation an agent drives against Live. The MCP surface (GenreTools) exposes the runtime half: discover libraries and presets (list_genres, list_genre_presets) and apply them (apply_genre)."
+description: "List, apply, and import genre libraries and presets. The import step (genre import-songsketch) is CLI-only by design — a hidden, internal command not exposed to end users. It is a content-authoring step that converts a proprietary Song Sketch lib JSON into a .vibraigenre file on disk (how the shipped genre catalog is minted), not a runtime operation an agent drives against Live. The MCP surface (GenreTools) exposes the runtime half: discover libraries and presets (list_genres, list_genre_presets) and apply them (apply_genre). Extraction (genre extract CLI ↔ extract_genre MCP) reverse-derives a genre from the open Live set."
 ---
 
 {/* GENERATED — do not edit by hand. Regenerate with `npm run generate:reference`. */}
 
-List, apply, and import genre libraries and presets. The import step (genre import-songsketch) is CLI-only by design — a hidden, internal command not exposed to end users. It is a content-authoring step that converts a proprietary Song Sketch lib JSON into a .vibraigenre file on disk (how the shipped genre catalog is minted), not a runtime operation an agent drives against Live. The MCP surface (GenreTools) exposes the runtime half: discover libraries and presets (list_genres, list_genre_presets) and apply them (apply_genre).
+List, apply, and import genre libraries and presets. The import step (genre import-songsketch) is CLI-only by design — a hidden, internal command not exposed to end users. It is a content-authoring step that converts a proprietary Song Sketch lib JSON into a .vibraigenre file on disk (how the shipped genre catalog is minted), not a runtime operation an agent drives against Live. The MCP surface (GenreTools) exposes the runtime half: discover libraries and presets (list_genres, list_genre_presets) and apply them (apply_genre). Extraction (genre extract CLI ↔ extract_genre MCP) reverse-derives a genre from the open Live set.
 
 ## Command line
 
@@ -73,6 +73,39 @@ vibrai genre apply [genre] [preset] [project-path] --genre <NAME> --preset <ID> 
   Confirm destructive overwrite of sections / parts / templates / arrangement / generation
 </ParamField>
 
+### `genre extract`
+
+Extract a genre from the open Live set into a .vibraigenre
+
+```bash
+vibrai genre extract --name <DISPLAY> --out <DIR> --into <GENRE> --preset-name <N> --faithful --source <MODE> --part <OVERRIDE> --force
+```
+
+<ParamField path="--name">
+  Genre display name; the filename slug derives from it. Defaults to the open Live set's name.
+</ParamField>
+<ParamField path="--out">
+  Output directory (defaults to ~/.vibrai/genres so the genre is immediately applicable)
+</ParamField>
+<ParamField path="--into">
+  Append the set as a new preset to this existing user genre instead of creating a file
+</ParamField>
+<ParamField path="--preset-name">
+  Name of the preset this set becomes (defaults to the set name)
+</ParamField>
+<ParamField path="--faithful">
+  Also embed literal note phrases (writes format v3 with playback support)
+</ParamField>
+<ParamField path="--source" default="auto">
+  auto|arrangement|session — auto uses the arrangement when it has clips, else the session
+</ParamField>
+<ParamField path="--part">
+  Classification override as &lt;trackId>:&lt;PartType>, repeatable (track ids as shown in the report)
+</ParamField>
+<ParamField path="--force">
+  Overwrite an existing target .vibraigenre
+</ParamField>
+
 ## MCP tools
 
 ### `list_genres`
@@ -90,7 +123,7 @@ List installed genre libraries. Returns each genre's name (slug; other tools acc
 
 ### `list_genre_presets`
 
-List presets in a genre library. Each entry has id (use with apply_genre / init_project --preset), display name, sub-genre, and section/part counts.
+List presets in a genre library. Each entry has id (use with apply_genre / init_project --preset), display name, sub-genre, section/part counts, and an instrumentation summary (snake_case PartType -> stock instrument path, resolved for the preset's own sub-genre) from the genre's defaults table — omitted when the genre has none.
 
 ```json
 {
@@ -132,4 +165,49 @@ Materialize a genre+preset into a .vibrai project at the given path. Destructive
 </ParamField>
 <ParamField path="confirm" type="Boolean">
   Confirm the destructive overwrite (CLI --yes equivalent). Must be true to proceed; confirm with the user first when the project already has content.
+</ParamField>
+
+### `extract_genre`
+
+Extract a genre from the open Live set into a .vibraigenre file. Reads tempo, scale, tracks, clips, notes, and envelopes; classifies tracks into parts (report shows each decision); detects sections; and writes a generative genre usable by apply_genre. Set faithful=true to also embed literal note phrases (format v3) so regeneration seeds from the source riffs. Set into_genre=&lt;user genre> to append this set as a new preset instead of creating a file. Re-run with part_overrides to correct classifications — extraction never mutates the Live set.
+
+```json
+{
+  "tool": "extract_genre",
+  "arguments": {
+    "name": "<String>",
+    "out_dir": "<String>",
+    "into_genre": "<String>",
+    "preset_name": "<String>",
+    "faithful": "<Boolean>",
+    "source": "<String>",
+    "part_overrides": "<Dictionary<String, String>>",
+    "force": "<Boolean>"
+  }
+}
+```
+
+<ParamField path="name" type="String">
+  Genre display name; filename slug derives from it. Defaults to the open set's name.
+</ParamField>
+<ParamField path="out_dir" type="String">
+  Output directory. Defaults to ~/.vibrai/genres so the genre is immediately applicable.
+</ParamField>
+<ParamField path="into_genre" type="String">
+  Append as a new preset to this existing user genre instead of creating a new file.
+</ParamField>
+<ParamField path="preset_name" type="String">
+  Name of the preset this set becomes. Defaults to the set name.
+</ParamField>
+<ParamField path="faithful" type="Boolean">
+  Also embed literal note phrases (writes format v3 with playback support).
+</ParamField>
+<ParamField path="source" type="String">
+  auto|arrangement|session — auto uses the arrangement when it has clips, else the session.
+</ParamField>
+<ParamField path="part_overrides" type="Dictionary<String, String>">
+  Classification overrides: track id (as shown in the report) → PartType, e.g. &#123;"3": "hi_hat"}.
+</ParamField>
+<ParamField path="force" type="Boolean">
+  Overwrite an existing target file.
 </ParamField>
