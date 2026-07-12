@@ -32,15 +32,9 @@ description: "Install the Vibrai CLI and connect the MCP server."
     - installs the Python remote script.
 
     Next: [connect Claude Desktop](#connect-the-mcp-server) and [load the device into your Live set](#load-the-device-into-your-live-set).
-
-    <Note>
-      **Pre-release builds (before 1.0):** copy the raw CLI binary to a directory on your `PATH` and make it executable — `chmod +x /path/to/vibrai && cp /path/to/vibrai /usr/local/bin/vibrai`. The full `.pkg` flow above is the path for 1.0 and later.
-    </Note>
   </Tab>
   <Tab title="Windows">
-    **When Vibrai 1.0 ships (coming soon):** a signed installer will be available at [vibrai.com](https://vibrai.com).
-
-    **Pre-release builds:** copy `vibrai.exe` to a folder that is in your `PATH`, or invoke it by its full path.
+    **Windows is not supported in the 1.0 release — macOS only.** Vibrai 1.0 ships a macOS `.pkg` and a macOS-only Claude Desktop `.mcpb`; there is no Windows installer or Windows MCP binary in this release. Windows support is planned for a future 1.x release — follow [vibrai.com](https://vibrai.com) for updates.
   </Tab>
 </Tabs>
 
@@ -188,3 +182,31 @@ Ask Claude:
 <Note>
   If Ableton Live is open during an update, the device and remote-script changes take effect after you restart Live.
 </Note>
+
+## Uninstalling
+
+<Tabs>
+  <Tab title="macOS">
+    There's no first-class uninstaller yet — remove the files by hand:
+
+    ```bash
+    # CLI, MCP server, and Claude Desktop bundle
+    sudo rm -rf /usr/local/lib/vibrai /usr/local/bin/vibrai
+
+    # Max for Live device
+    rm -rf ~/Music/Ableton/User\ Library/Presets/Audio\ Effects/Max\ Audio\ Effect/vibrai
+
+    # Python remote script
+    rm -rf ~/Music/Ableton/User\ Library/Remote\ Scripts/Vibrai
+    ```
+
+    Then open `~/Library/Application Support/Claude/claude_desktop_config.json` and remove the `"vibrai"` entry under `mcpServers`, so Claude Desktop stops trying to launch a binary that's gone.
+
+    <Note>
+      This removes the program files only. Your license and session history live in `~/Library/Application Support/Vibrai/` and are left in place — delete that directory too if you want a completely clean removal (you'll need to reactivate your license key if you reinstall later).
+    </Note>
+  </Tab>
+  <Tab title="Windows">
+    Not applicable — Windows isn't supported in the 1.0 release. See the [Install Vibrai](#install-vibrai) section above.
+  </Tab>
+</Tabs>
