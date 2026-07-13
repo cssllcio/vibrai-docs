@@ -54,6 +54,7 @@
           "reference/license",
           "reference/version",
           "reference/update",
+          "reference/uninstall",
           "reference/session"
         ]
       },

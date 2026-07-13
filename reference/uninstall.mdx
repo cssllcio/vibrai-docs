@@ -1,0 +1,71 @@
+---
+title: "Uninstall"
+description: "Remove Vibrai's program files, and optionally app data, Ableton integration, and the Claude Desktop MCP registration. Program-files removal is CLI-only — it requires root, which the MCP server has no way to obtain (no TTY, no sudo prompt); the MCP tool covers every other scope with full parity."
+---
+
+{/* GENERATED — do not edit by hand. Regenerate with `npm run generate:reference`. */}
+
+Remove Vibrai's program files, and optionally app data, Ableton integration, and the Claude Desktop MCP registration. Program-files removal is CLI-only — it requires root, which the MCP server has no way to obtain (no TTY, no sudo prompt); the MCP tool covers every other scope with full parity.
+
+## Command line
+
+### `uninstall`
+
+Remove Vibrai's program files, and optionally app data, Ableton integration, and the Claude Desktop registration
+
+```bash
+vibrai uninstall --purge-data --remove-ableton --keep-claude-desktop-entry --yes --dry-run --user <NAME> --program-files-only
+```
+
+<ParamField path="--purge-data">
+  Also remove ~/Library/Application Support/Vibrai (license, sessions, cache).
+</ParamField>
+<ParamField path="--remove-ableton">
+  Also remove the Ableton M4L device and Python remote script.
+</ParamField>
+<ParamField path="--keep-claude-desktop-entry">
+  Skip removing the vibrai entry from Claude Desktop's config.
+</ParamField>
+<ParamField path="--yes">
+  Skip the confirmation prompt (required for non-interactive use).
+</ParamField>
+<ParamField path="--dry-run">
+  Print what would be removed and exit without removing anything.
+</ParamField>
+<ParamField path="--user">
+  Target &lt;name>'s home directory instead of the current user's.
+</ParamField>
+<ParamField path="--program-files-only">
+  [[advanced]] Internal flag used when re-execing under sudo — not for direct use.
+</ParamField>
+
+## MCP tools
+
+### `uninstall`
+
+Remove Vibrai's app data, Ableton integration (M4L device + remote script), and/or its Claude Desktop MCP registration. Does NOT remove the installed CLI/MCP program files (/usr/local/bin/vibrai, /usr/local/lib/vibrai) — that requires root and must be run from a terminal via `vibrai uninstall`. Call with confirm=false first to preview what would be removed; call again with confirm=true to actually remove it.
+
+```json
+{
+  "tool": "uninstall",
+  "arguments": {
+    "confirm": "<Boolean>",
+    "purge_data": "<Boolean>",
+    "remove_ableton": "<Boolean>",
+    "keep_claude_desktop_entry": "<Boolean>"
+  }
+}
+```
+
+<ParamField path="confirm" type="Boolean">
+  Actually perform the removal. Default false returns a preview plan only.
+</ParamField>
+<ParamField path="purge_data" type="Boolean">
+  Also remove ~/Library/Application Support/Vibrai (license, sessions, cache). Default false.
+</ParamField>
+<ParamField path="remove_ableton" type="Boolean">
+  Also remove the Ableton M4L device and Python remote script. Default false.
+</ParamField>
+<ParamField path="keep_claude_desktop_entry" type="Boolean">
+  Skip removing the vibrai entry from Claude Desktop's config. Default false (entry IS removed).
+</ParamField>

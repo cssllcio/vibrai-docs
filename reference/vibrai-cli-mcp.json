@@ -1,6 +1,6 @@
 {
   "engineVersion": "1.0.0.0",
-  "generatedAt": "2026-07-11T21:31:38Z",
+  "generatedAt": "2026-07-13T05:19:57Z",
   "features": [
     {
       "id": "transport",
@@ -422,7 +422,7 @@
         "tools": [
           {
             "name": "load_device",
-            "description": "Load a stock device, User Library preset, or plug-in (VST3/AU) onto a track. Specify either path OR part_type, not both. The \u0060path\u0060 argument accepts (a) classic browser paths like \u0022Instruments/Operator\u0022 for stock devices, (b) \u0060query:\u0060 URIs from find_instruments_by_tag for user-tagged presets, or (c) plug-in URIs from the Plug-Ins browser section. part_type=Bd/Snare/HiHat/Perc/Crash/Fill/Roll/Drums auto-picks a stock kit (.adg) from the browser snapshot, falling back to an empty \u0022Instruments/Drum Rack\u0022 \u002B warning when none is available (use browse_devices \u0022Drums\u0022 and load_device on a specific kit preset to override). Tonal part_types (Bass/Pad/Chord/etc.) load synths that sound by default.",
+            "description": "Load a stock device, User Library preset, or plug-in (VST3/AU) onto a track. Specify either path OR part_type, not both. The \u0060path\u0060 argument accepts (a) classic browser paths like \u0022Instruments/Operator\u0022 for stock devices, (b) \u0060query:\u0060 URIs from find_instruments_by_tag for user-tagged presets, or (c) plug-in URIs from the Plug-Ins browser section. part_type=Bd/Snare/HiHat/Perc/Crash/Fill/Roll/Drums loads the deterministic default kit (the stock 909 Core Kit), falling back to an empty \u0022Instruments/Drum Rack\u0022 \u002B warning when it is unavailable (use browse_devices \u0022Drums\u0022 and load_device on a specific kit preset to override). Tonal part_types (Bass/Pad/Chord/etc.) load synths that sound by default.",
             "parameters": [
               {
                 "name": "track_id",
@@ -536,7 +536,7 @@
           },
           {
             "name": "load_default_instruments",
-            "description": "Load each MIDI part\u0027s default instrument from a .vibrai project onto its track, so the rendered song is audible. Tonal parts get their resolved synth (defaults.instruments override or built-in); drum parts get a stock kit (.adg) auto-picked from the browser snapshot, falling back to an empty Drum Rack \u002B warning when none is available. Idempotent: a track that already has a device is skipped. Run this after \u0060generate\u0060 (or pass with_instruments=true to generate). live_track_id in the result is 1-based, matching list_tracks and load_device.",
+            "description": "Load each MIDI part\u0027s default instrument from a .vibrai project onto its track, so the rendered song is audible. Tonal parts get their resolved synth (defaults.instruments override or built-in); drum parts get the deterministic default kit (the stock 909 Core Kit), falling back to an empty Drum Rack \u002B warning when it is unavailable. Idempotent: a track that already has a device is skipped. Run this after \u0060generate\u0060 (or pass with_instruments=true to generate). live_track_id in the result is 1-based, matching list_tracks and load_device.",
             "parameters": [
               {
                 "name": "project_path",
@@ -3847,13 +3847,13 @@
     {
       "id": "update",
       "title": "Update",
-      "description": "Check for and apply self-updates to the Vibrai CLI, Max-for-Live device, and Python remote script. Scope: CLI binary \u002B M4L device \u002B Python remote script only \u2014 the MCP server binary is managed by Claude Desktop\u0027s extension manager. Supports check-only, interactive/non-interactive apply, force reinstall, and rollback to the previously installed binary.",
+      "description": "Check for and apply self-updates to the Vibrai CLI, MCP server, Max-for-Live device, and Python remote script. Scope: swaps the CLI binary and (when the release ships them) the MCP server binary and Claude Desktop extension bundle, and reinstalls the M4L device \u002B Python remote script. Supports check-only, interactive/non-interactive apply, force reinstall, and rollback to the previously installed CLI \u002B MCP binaries.",
       "cli": {
         "branch": "update",
         "commands": [
           {
             "name": "update",
-            "description": "Check for and install the latest Vibrai release (CLI \u002B M4L device \u002B Python remote script)",
+            "description": "Check for and install the latest Vibrai release (CLI \u002B MCP server \u002B M4L device \u002B Python remote script)",
             "arguments": [],
             "options": [
               {
@@ -3878,7 +3878,7 @@
                 "name": "--rollback",
                 "valueName": null,
                 "default": null,
-                "description": "Restore the previously installed CLI binary from backup."
+                "description": "Restore the previously installed CLI binary (and MCP server binary, if present) from backup."
               }
             ]
           }
@@ -3888,7 +3888,7 @@
         "tools": [
           {
             "name": "update",
-            "description": "Check for and optionally install the latest Vibrai release. By default (apply=false) this only reports whether an update is available. Pass apply=true to download \u002B verify (SHA-256) \u002B swap the vibrai CLI binary and reinstall the Max-for-Live device \u002B Python remote script (via the same installer as install_device / install_vibrai_remote_script). Scope: CLI binary \u002B M4L \u002B Python only \u2014 it does NOT update this MCP server binary, which is managed by Claude Desktop\u0027s extension manager. If Ableton Live is running during an apply, M4L/Python changes take effect after you restart Live. Returns the current/latest version, update_available, per-component status, and (on apply) the actions taken. Applying is destructive (swaps the CLI binary); requires confirm=true (parity with the CLI\u0027s \u0060vibrai update --yes\u0060); refuses without changing anything otherwise.",
+            "description": "Check for and optionally install the latest Vibrai release. By default (apply=false) this only reports whether an update is available. Pass apply=true to download \u002B verify (SHA-256) \u002B swap the vibrai CLI binary, swap the MCP server binary (Vibrai.Mcp) and refresh the Claude Desktop extension bundle (Vibrai.mcpb) when the release ships them, and reinstall the Max-for-Live device \u002B Python remote script (via the same installer as install_device / install_vibrai_remote_script). If Ableton Live is running during an apply, M4L/Python changes take effect after you restart Live; if the MCP server was updated, restart Claude Desktop (or your MCP client) to use the new version. Returns the current/latest version, update_available, per-component status (cli, and mcp on platforms that ship an MCP server), and (on apply) the actions taken. Applying is destructive (swaps binaries); requires confirm=true (parity with the CLI\u0027s \u0060vibrai update --yes\u0060); refuses without changing anything otherwise.",
             "parameters": [
               {
                 "name": "apply",
@@ -3906,13 +3906,106 @@
                 "name": "rollback",
                 "type": "Boolean",
                 "required": false,
-                "description": "Roll back to the previously installed CLI binary (default false)."
+                "description": "Roll back to the previously installed CLI binary and MCP server binary, if present (default false)."
               },
               {
                 "name": "confirm",
                 "type": "Boolean",
                 "required": false,
                 "description": "Confirm the binary swap (CLI --yes equivalent). Must be true when apply=true; confirm with the user first."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "uninstall",
+      "title": "Uninstall",
+      "description": "Remove Vibrai\u0027s program files, and optionally app data, Ableton integration, and the Claude Desktop MCP registration. Program-files removal is CLI-only \u2014 it requires root, which the MCP server has no way to obtain (no TTY, no sudo prompt); the MCP tool covers every other scope with full parity.",
+      "cli": {
+        "branch": "uninstall",
+        "commands": [
+          {
+            "name": "uninstall",
+            "description": "Remove Vibrai\u0027s program files, and optionally app data, Ableton integration, and the Claude Desktop registration",
+            "arguments": [],
+            "options": [
+              {
+                "name": "--purge-data",
+                "valueName": null,
+                "default": null,
+                "description": "Also remove ~/Library/Application Support/Vibrai (license, sessions, cache)."
+              },
+              {
+                "name": "--remove-ableton",
+                "valueName": null,
+                "default": null,
+                "description": "Also remove the Ableton M4L device and Python remote script."
+              },
+              {
+                "name": "--keep-claude-desktop-entry",
+                "valueName": null,
+                "default": null,
+                "description": "Skip removing the vibrai entry from Claude Desktop\u0027s config."
+              },
+              {
+                "name": "--yes",
+                "valueName": null,
+                "default": null,
+                "description": "Skip the confirmation prompt (required for non-interactive use)."
+              },
+              {
+                "name": "--dry-run",
+                "valueName": null,
+                "default": null,
+                "description": "Print what would be removed and exit without removing anything."
+              },
+              {
+                "name": "--user",
+                "valueName": "NAME",
+                "default": null,
+                "description": "Target \u003Cname\u003E\u0027s home directory instead of the current user\u0027s."
+              },
+              {
+                "name": "--program-files-only",
+                "valueName": null,
+                "default": null,
+                "description": "[[advanced]] Internal flag used when re-execing under sudo \u2014 not for direct use."
+              }
+            ]
+          }
+        ]
+      },
+      "mcp": {
+        "tools": [
+          {
+            "name": "uninstall",
+            "description": "Remove Vibrai\u0027s app data, Ableton integration (M4L device \u002B remote script), and/or its Claude Desktop MCP registration. Does NOT remove the installed CLI/MCP program files (/usr/local/bin/vibrai, /usr/local/lib/vibrai) \u2014 that requires root and must be run from a terminal via \u0060vibrai uninstall\u0060. Call with confirm=false first to preview what would be removed; call again with confirm=true to actually remove it.",
+            "parameters": [
+              {
+                "name": "confirm",
+                "type": "Boolean",
+                "required": false,
+                "description": "Actually perform the removal. Default false returns a preview plan only."
+              },
+              {
+                "name": "purge_data",
+                "type": "Boolean",
+                "required": false,
+                "description": "Also remove ~/Library/Application Support/Vibrai (license, sessions, cache). Default false."
+              },
+              {
+                "name": "remove_ableton",
+                "type": "Boolean",
+                "required": false,
+                "description": "Also remove the Ableton M4L device and Python remote script. Default false."
+              },
+              {
+                "name": "keep_claude_desktop_entry",
+                "type": "Boolean",
+                "required": false,
+                "description": "Skip removing the vibrai entry from Claude Desktop\u0027s config. Default false (entry IS removed)."
               }
             ]
           }
