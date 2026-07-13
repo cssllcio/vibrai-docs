@@ -1,17 +1,17 @@
 ---
 title: "Update"
-description: "Check for and apply self-updates to the Vibrai CLI, Max-for-Live device, and Python remote script. Scope: CLI binary + M4L device + Python remote script only — the MCP server binary is managed by Claude Desktop's extension manager. Supports check-only, interactive/non-interactive apply, force reinstall, and rollback to the previously installed binary."
+description: "Check for and apply self-updates to the Vibrai CLI, MCP server, Max-for-Live device, and Python remote script. Scope: swaps the CLI binary and (when the release ships them) the MCP server binary and Claude Desktop extension bundle, and reinstalls the M4L device + Python remote script. Supports check-only, interactive/non-interactive apply, force reinstall, and rollback to the previously installed CLI + MCP binaries."
 ---
 
 {/* GENERATED — do not edit by hand. Regenerate with `npm run generate:reference`. */}
 
-Check for and apply self-updates to the Vibrai CLI, Max-for-Live device, and Python remote script. Scope: CLI binary + M4L device + Python remote script only — the MCP server binary is managed by Claude Desktop's extension manager. Supports check-only, interactive/non-interactive apply, force reinstall, and rollback to the previously installed binary.
+Check for and apply self-updates to the Vibrai CLI, MCP server, Max-for-Live device, and Python remote script. Scope: swaps the CLI binary and (when the release ships them) the MCP server binary and Claude Desktop extension bundle, and reinstalls the M4L device + Python remote script. Supports check-only, interactive/non-interactive apply, force reinstall, and rollback to the previously installed CLI + MCP binaries.
 
 ## Command line
 
 ### `update`
 
-Check for and install the latest Vibrai release (CLI + M4L device + Python remote script)
+Check for and install the latest Vibrai release (CLI + MCP server + M4L device + Python remote script)
 
 ```bash
 vibrai update --check --yes --force --rollback
@@ -27,14 +27,14 @@ vibrai update --check --yes --force --rollback
   Reinstall the latest release even if already up to date.
 </ParamField>
 <ParamField path="--rollback">
-  Restore the previously installed CLI binary from backup.
+  Restore the previously installed CLI binary (and MCP server binary, if present) from backup.
 </ParamField>
 
 ## MCP tools
 
 ### `update`
 
-Check for and optionally install the latest Vibrai release. By default (apply=false) this only reports whether an update is available. Pass apply=true to download + verify (SHA-256) + swap the vibrai CLI binary and reinstall the Max-for-Live device + Python remote script (via the same installer as install_device / install_vibrai_remote_script). Scope: CLI binary + M4L + Python only — it does NOT update this MCP server binary, which is managed by Claude Desktop's extension manager. If Ableton Live is running during an apply, M4L/Python changes take effect after you restart Live. Returns the current/latest version, update_available, per-component status, and (on apply) the actions taken. Applying is destructive (swaps the CLI binary); requires confirm=true (parity with the CLI's `vibrai update --yes`); refuses without changing anything otherwise.
+Check for and optionally install the latest Vibrai release. By default (apply=false) this only reports whether an update is available. Pass apply=true to download + verify (SHA-256) + swap the vibrai CLI binary, swap the MCP server binary (Vibrai.Mcp) and refresh the Claude Desktop extension bundle (Vibrai.mcpb) when the release ships them, and reinstall the Max-for-Live device + Python remote script (via the same installer as install_device / install_vibrai_remote_script). If Ableton Live is running during an apply, M4L/Python changes take effect after you restart Live; if the MCP server was updated, restart Claude Desktop (or your MCP client) to use the new version. Returns the current/latest version, update_available, per-component status (cli, and mcp on platforms that ship an MCP server), and (on apply) the actions taken. Applying is destructive (swaps binaries); requires confirm=true (parity with the CLI's `vibrai update --yes`); refuses without changing anything otherwise.
 
 ```json
 {
@@ -55,7 +55,7 @@ Check for and optionally install the latest Vibrai release. By default (apply=fa
   Reinstall even if already up to date (default false).
 </ParamField>
 <ParamField path="rollback" type="Boolean">
-  Roll back to the previously installed CLI binary (default false).
+  Roll back to the previously installed CLI binary and MCP server binary, if present (default false).
 </ParamField>
 <ParamField path="confirm" type="Boolean">
   Confirm the binary swap (CLI --yes equivalent). Must be true when apply=true; confirm with the user first.

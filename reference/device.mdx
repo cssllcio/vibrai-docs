@@ -121,7 +121,7 @@ vibrai device load-defaults --project <PATH> --stock-only
 
 ### `load_device`
 
-Load a stock device, User Library preset, or plug-in (VST3/AU) onto a track. Specify either path OR part_type, not both. The `path` argument accepts (a) classic browser paths like "Instruments/Operator" for stock devices, (b) `query:` URIs from find_instruments_by_tag for user-tagged presets, or (c) plug-in URIs from the Plug-Ins browser section. part_type=Bd/Snare/HiHat/Perc/Crash/Fill/Roll/Drums auto-picks a stock kit (.adg) from the browser snapshot, falling back to an empty "Instruments/Drum Rack" + warning when none is available (use browse_devices "Drums" and load_device on a specific kit preset to override). Tonal part_types (Bass/Pad/Chord/etc.) load synths that sound by default.
+Load a stock device, User Library preset, or plug-in (VST3/AU) onto a track. Specify either path OR part_type, not both. The `path` argument accepts (a) classic browser paths like "Instruments/Operator" for stock devices, (b) `query:` URIs from find_instruments_by_tag for user-tagged presets, or (c) plug-in URIs from the Plug-Ins browser section. part_type=Bd/Snare/HiHat/Perc/Crash/Fill/Roll/Drums loads the deterministic default kit (the stock 909 Core Kit), falling back to an empty "Instruments/Drum Rack" + warning when it is unavailable (use browse_devices "Drums" and load_device on a specific kit preset to override). Tonal part_types (Bass/Pad/Chord/etc.) load synths that sound by default.
 
 ```json
 {
@@ -251,7 +251,7 @@ Report the resolved instrument for a part-type without loading it: precedence is
 
 ### `load_default_instruments`
 
-Load each MIDI part's default instrument from a .vibrai project onto its track, so the rendered song is audible. Tonal parts get their resolved synth (defaults.instruments override or built-in); drum parts get a stock kit (.adg) auto-picked from the browser snapshot, falling back to an empty Drum Rack + warning when none is available. Idempotent: a track that already has a device is skipped. Run this after `generate` (or pass with_instruments=true to generate). live_track_id in the result is 1-based, matching list_tracks and load_device.
+Load each MIDI part's default instrument from a .vibrai project onto its track, so the rendered song is audible. Tonal parts get their resolved synth (defaults.instruments override or built-in); drum parts get the deterministic default kit (the stock 909 Core Kit), falling back to an empty Drum Rack + warning when it is unavailable. Idempotent: a track that already has a device is skipped. Run this after `generate` (or pass with_instruments=true to generate). live_track_id in the result is 1-based, matching list_tracks and load_device.
 
 ```json
 {
