@@ -1,0 +1,135 @@
+---
+title: "Drive Vibrai from your coding agent"
+sidebarTitle: "Agent Skill"
+description: "Install the Vibrai Agent Skill — a portable SKILL.md that teaches Claude Code, Codex CLI, or Gemini CLI to drive Vibrai."
+keywords: ["agent skill", "SKILL.md", "claude code", "codex cli", "gemini cli", "vibrai skill install", "vibrai://skill"]
+---
+
+The **Agent Skill** is Vibrai's third surface, alongside the [CLI](/cli/overview) and the [MCP server](/mcp/overview). It's a portable `SKILL.md` that self-installs into a coding agent's skills directory and teaches that agent to drive Vibrai — by running the `vibrai` CLI, or by preferring connected Vibrai MCP tools when they're available in the session.
+
+Where the MCP server is something an agent connects to and the CLI is something you run by hand, the skill is *knowledge the agent loads on demand*: your core workflows, the full command surface, and the hard-won gotchas, packaged so an agent can go from a cold session to an audible result without you narrating each step.
+
+## How it fits with the CLI and MCP
+
+The skill is a distribution surface, not a new capability — it orchestrates the same commands and tools you already have. Both the hand-authored `SKILL.md` body and the bundled command reference originate inside the same Vibrai process that hosts the CLI and MCP server, so the skill never drifts from the real command surface.
+
+It works with three coding-agent CLIs:
+
+- **Claude Code**
+- **Codex CLI**
+- **Gemini CLI**
+
+## Install the skill
+
+Run `vibrai skill install` from a machine that has the `vibrai` binary. With no arguments it auto-detects which of the three agents are installed and writes the skill into each one:
+
+```bash
+# Auto-detect installed agents and install into each
+vibrai skill install
+
+# Install for a specific agent
+vibrai skill install --target claude-code    # claude-code | codex | gemini | all
+
+# Install into the current project instead of your home directory
+vibrai skill install --scope project
+
+# Write to an explicit directory (testing / non-standard setups)
+vibrai skill install --to ./tmp/vibrai-skill
+
+# Overwrite an existing install
+vibrai skill install --force
+```
+
+| Flag | Values | Default | Purpose |
+|------|--------|---------|---------|
+| `--target` / `-t` | `claude-code`, `codex`, `gemini`, `all` | auto-detect | Which agent(s) to install into |
+| `--scope` / `-s` | `user`, `project` | `user` | Install into your home dir or the current project |
+| `--to <dir>` | any directory | — | Write directly here, overriding target/scope resolution |
+| `--force` / `-f` | — | off | Overwrite an existing `SKILL.md` |
+
+<Note>
+With no `--target`, install writes into every agent it detects on the machine. If it finds none, it stops and tells you to pass `--target claude-code|codex|gemini` or `--to <dir>`. An existing install is left untouched unless you pass `--force`.
+</Note>
+
+## What gets written
+
+Each install writes a `vibrai/` skill folder containing the skill body plus a freshly-rendered command reference:
+
+```text
+<skills-dir>/vibrai/
+├── SKILL.md                      # onboarding, core workflows, and gotchas
+└── references/
+    └── command-reference.md      # every CLI command + MCP tool, paired
+```
+
+`command-reference.md` is not shipped as a snapshot — it's rendered from your installed binary's command surface at install time (the same source of truth as `vibrai docs export --format md`), so it always matches your version.
+
+The skills directory depends on the agent and the scope:
+
+| Agent | User scope (`--scope user`) | Project scope (`--scope project`) |
+|-------|------------------------------|-----------------------------------|
+| Claude Code | `~/.claude/skills/vibrai/` | `./.claude/skills/vibrai/` |
+| Codex CLI | `~/.codex/skills/vibrai/` | `./.agents/skills/vibrai/` |
+| Gemini CLI | `~/.gemini/skills/vibrai/` | `./.gemini/skills/vibrai/` |
+
+<Note>
+Codex is asymmetric: its **project-scope** skills live under `.agents/skills/`, not `.codex/skills/`. Claude Code and Gemini use the same base directory for both scopes.
+</Note>
+
+## Inspect without installing
+
+Two commands let you see the skill or its destination without touching an agent's config:
+
+```bash
+# Print SKILL.md to stdout (raw, unwrapped) — pipe it or paste it in manually
+vibrai skill print > SKILL.md
+
+# Show the resolved install directory for each target, writing nothing
+vibrai skill path
+vibrai skill path --target codex --scope project
+```
+
+`vibrai skill print` is the escape hatch for an agent that auto-detect doesn't cover: print the body and copy it into that agent's skills directory yourself.
+
+## Read the skill from an MCP client
+
+The same `SKILL.md` is exposed to any connected MCP client as a read-only resource:
+
+- **URI:** `vibrai://skill`
+- **Name:** `vibrai-skill`
+- **MIME type:** `text/markdown`
+
+Reading that resource is the MCP-side counterpart of `vibrai skill print`. Installing to disk stays CLI-only by design: writing a file into an agent's local config directory has no sensible MCP shape, and a connected MCP client already has the tools plus the [`vibrai://reference`](/mcp/overview) resource.
+
+## What the skill teaches the agent
+
+On activation, `SKILL.md` walks the agent through a short preflight, tells it which surface to use, and gives it a handful of workflows and rules:
+
+- **Preflight (once per session):** confirm the binary with `vibrai --version` (if it's missing, surface the install + free-trial link and stop), install the Live integration, confirm the bridge — including an independent `curl -s http://localhost:3333/health` check — and run `vibrai device load-defaults` so generation is audible.
+- **Surface selection:** prefer connected Vibrai MCP tools when present; otherwise run the paired `vibrai …` CLI command. The two surfaces are 1:1.
+- **Core workflows:** generate a genre track (`genre list` → `genre presets <genre>` → `genre apply` → `generate --with-instruments`), build or extend an arrangement, apply automation, and capture or export a session.
+- **Hard rules:** never leave empty MIDI clips, load an instrument before generating or the track is silent, the bridge uses ports `:3333` (Max for Live) and `:3334` (Python remote script), Live's automation is main-thread-only, drum pitches follow the General MIDI map per part type, and a clip rejects duplicate `(pitch, start)` notes.
+
+For every command and tool with its full argument detail, the agent reads the bundled `references/command-reference.md`. If that file is absent, it regenerates one with `vibrai docs export --format md`.
+
+## Uninstalling
+
+`vibrai uninstall` removes installed skills by default, via its `agent-skill` category — leaving a `SKILL.md` behind after removing the binary would point an agent at a `vibrai` that no longer exists. Keep the skill files with `--keep-agent-skills`:
+
+```bash
+vibrai uninstall                       # also removes user-scope agent skills
+vibrai uninstall --keep-agent-skills   # leave installed skills in place
+```
+
+The MCP `uninstall` tool mirrors this with a `keep_agent_skills` parameter — it can remove the skill directories even though it can't remove program files, since skills live in your home directory and need no elevation.
+
+<Warning>
+Only **user-scope** installs (`~/.claude/skills/vibrai/`, `~/.codex/skills/vibrai/`, `~/.gemini/skills/vibrai/`) have deterministic paths and are cleaned up automatically. Project-scope installs live in arbitrary project directories the uninstaller can't enumerate — remove those by hand.
+</Warning>
+
+## See also
+
+- [CLI Overview](/cli/overview) — the surface the skill drives
+- [MCP Overview](/mcp/overview) — connect an MCP client directly
+- [Genre](/reference/genre) and [Generation](/reference/generation) — the commands behind the core workflow
+- [Uninstall](/reference/uninstall) — every uninstall scope and flag

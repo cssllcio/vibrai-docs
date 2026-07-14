@@ -23,6 +23,7 @@
         "pages": [
           "cli/overview",
           "mcp/overview",
+          "agent-skill/overview",
           "concepts",
           "design-principles",
           "plugins",
