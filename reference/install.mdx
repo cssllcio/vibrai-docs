@@ -1,11 +1,11 @@
 ---
 title: "Install"
-description: "Install the Vibrai M4L device and Python remote script."
+description: "Install the Vibrai M4L device, Python remote script, and Ableton templates."
 ---
 
 {/* GENERATED — do not edit by hand. Regenerate with `npm run generate:reference`. */}
 
-Install the Vibrai M4L device and Python remote script.
+Install the Vibrai M4L device, Python remote script, and Ableton templates.
 
 ## Command line
 
@@ -51,9 +51,27 @@ vibrai install remote-script --force --source <PATH> --dest <PATH> --user <NAME>
   Install into &lt;name>'s home directory instead of the current user's. Used by the macOS .pkg postinstall to deposit files into the real installing user's Ableton User Library when running as root.
 </ParamField>
 
+### `install templates`
+
+Install the Vibrai Starter and Vibrai Demo Ableton templates into Live's User Library (always overwrites)
+
+```bash
+vibrai install templates --source <PATH> --dest <PATH> --user <NAME>
+```
+
+<ParamField path="--source">
+  [[advanced]] Override the source directory (test/debug use).
+</ParamField>
+<ParamField path="--dest">
+  [[advanced]] Override the destination directory (test/debug use).
+</ParamField>
+<ParamField path="--user">
+  Install into &lt;name>'s home directory instead of the current user's. Used by the macOS .pkg postinstall to deposit files into the real installing user's Ableton User Library when running as root.
+</ParamField>
+
 ### `install all`
 
-Install both the M4L device and the Python remote script
+Install the M4L device, the Python remote script, and the Ableton templates
 
 ```bash
 vibrai install all --force --user <NAME>
@@ -116,4 +134,42 @@ Copy the bundled Vibrai Python remote script into Live's User Library Remote Scr
 </ParamField>
 <ParamField path="dest_override" type="String">
   [advanced] Test-only override for the destination directory
+</ParamField>
+
+### `install_templates`
+
+Copy the bundled "Vibrai Starter" (blank, bridge preloaded on a Return track) and "Vibrai Demo" (a ready-to-play loop) Ableton Live Set templates into your Ableton User Library's Templates/Vibrai folder. Always overwrites — templates are refreshed on every install/update and are not meant to be hand-edited in place. Returns the source/destination paths, status (Installed | AlreadyUpToDate), and the list of files.
+
+```json
+{
+  "tool": "install_templates",
+  "arguments": {
+    "source_override": "<String>",
+    "dest_override": "<String>"
+  }
+}
+```
+
+<ParamField path="source_override" type="String">
+  [advanced] Test-only override for the source directory
+</ParamField>
+<ParamField path="dest_override" type="String">
+  [advanced] Test-only override for the destination directory
+</ParamField>
+
+### `install_all`
+
+Install the Max-for-Live device, Python remote script, and Ableton templates in one call — equivalent to install_device + install_vibrai_remote_script + install_templates run in sequence. Stops at the first failure (each step must succeed before the next runs). Templates always overwrite regardless of force. Returns per-target results (device, remote_script, templates).
+
+```json
+{
+  "tool": "install_all",
+  "arguments": {
+    "force": "<Boolean>"
+  }
+}
+```
+
+<ParamField path="force" type="Boolean">
+  Overwrite existing device/remote-script installs whose files differ from the source (default false). Templates always overwrite regardless of this flag.
 </ParamField>

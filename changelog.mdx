@@ -1,0 +1,49 @@
+---
+title: "Changelog"
+description: "New features, improvements, and fixes in Vibrai."
+rss: true
+---
+
+<Update label="1.1.0" description="July 13, 2026">
+  Cleaner install and uninstall, drive Vibrai from your coding agent, and a smoother activation experience.
+
+  ## Install, update, and uninstall — cleanly
+
+  Getting set up (and unset) is simpler in 1.1.0:
+
+  - **Bundled Live Sets** — the installer now ships two ready-to-open Ableton Live Sets, **Vibrai Starter** and **Vibrai Demo**, so you have a correctly-wired project to open the moment you're installed.
+  - **One-step updates** — `vibrai update` now updates the built-in server together with the command line in a single step.
+  - **One-command uninstall** — `vibrai uninstall` removes Vibrai cleanly, showing you a plan of exactly what it will remove before it touches anything.
+
+  ## Drive Vibrai from your coding agent
+
+  Vibrai now ships an **Agent Skill** — a portable skill that installs straight into your coding agent (Claude Code and other skill-aware CLIs). Once it's in, your agent knows how to drive Vibrai on its own: generating genre tracks, building arrangements, loading instruments, applying automation — going from a cold session to an audible result without you wiring anything up.
+
+  ```bash
+  vibrai skill install
+  ```
+
+  Your agent uses connected Vibrai tools when it has them, and the `vibrai` command line otherwise.
+
+  ## A smoother activation experience
+
+  If you reached your machine limit, activation used to point you to a page that can't actually free a seat. It now points you to `support@vibrai.com`, who can.
+
+  Activation also sends **less** about your machine — your computer's name is no longer transmitted. The registration label is just your operating system plus a random tag (like `macos-a1b2c3d4`), and a new command shows you exactly what's sent, and nothing more:
+
+  ```bash
+  vibrai license privacy
+  ```
+
+  ## Fixes and polish
+
+  A round of fixes from a hands-on trial run, so what you see matches what's actually there:
+
+  - **Clip lists show real note counts** instead of always reading `0`.
+  - **Reading an empty clip slot** returns a clean "no notes" result instead of an error.
+  - **Generated songs name every scene**, even in longer arrangements — no more blank trailing scenes.
+  - **Automation read-backs** point you to the right place when Live can't display a bounced envelope, instead of looking like the write failed.
+  - **Consistent casing** in generated scene and clip names.
+  - **Command shortcuts that match the tool names** — `arrangement list`, `note write`, `clip set-name`, and more now work.
+  - **Mistyped options fail loudly** instead of being silently ignored.
+</Update>
