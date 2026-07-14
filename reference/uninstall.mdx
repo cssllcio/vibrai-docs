@@ -14,7 +14,7 @@ Remove Vibrai's program files, and optionally app data, Ableton integration, and
 Remove Vibrai's program files, and optionally app data, Ableton integration, and the Claude Desktop registration
 
 ```bash
-vibrai uninstall --purge-data --remove-ableton --keep-claude-desktop-entry --yes --dry-run --user <NAME> --program-files-only
+vibrai uninstall --purge-data --remove-ableton --keep-claude-desktop-entry --keep-agent-skills --yes --dry-run --user <NAME> --program-files-only
 ```
 
 <ParamField path="--purge-data">
@@ -25,6 +25,9 @@ vibrai uninstall --purge-data --remove-ableton --keep-claude-desktop-entry --yes
 </ParamField>
 <ParamField path="--keep-claude-desktop-entry">
   Skip removing the vibrai entry from Claude Desktop's config.
+</ParamField>
+<ParamField path="--keep-agent-skills">
+  Skip removing installed Vibrai Agent Skills from coding-agent config dirs.
 </ParamField>
 <ParamField path="--yes">
   Skip the confirmation prompt (required for non-interactive use).
@@ -43,7 +46,7 @@ vibrai uninstall --purge-data --remove-ableton --keep-claude-desktop-entry --yes
 
 ### `uninstall`
 
-Remove Vibrai's app data, Ableton integration (M4L device + remote script), and/or its Claude Desktop MCP registration. Does NOT remove the installed CLI/MCP program files (/usr/local/bin/vibrai, /usr/local/lib/vibrai) — that requires root and must be run from a terminal via `vibrai uninstall`. Call with confirm=false first to preview what would be removed; call again with confirm=true to actually remove it.
+Remove Vibrai's app data, installed Agent Skills (from coding-agent config dirs, removed by default unless keepAgentSkills=true), Ableton integration (M4L device + remote script), and/or its Claude Desktop MCP registration. Does NOT remove the installed CLI/MCP program files (/usr/local/bin/vibrai, /usr/local/lib/vibrai) — that requires root and must be run from a terminal via `vibrai uninstall`. Call with confirm=false first to preview what would be removed; call again with confirm=true to actually remove it.
 
 ```json
 {
@@ -52,7 +55,8 @@ Remove Vibrai's app data, Ableton integration (M4L device + remote script), and/
     "confirm": "<Boolean>",
     "purge_data": "<Boolean>",
     "remove_ableton": "<Boolean>",
-    "keep_claude_desktop_entry": "<Boolean>"
+    "keep_claude_desktop_entry": "<Boolean>",
+    "keep_agent_skills": "<Boolean>"
   }
 }
 ```
@@ -68,4 +72,7 @@ Remove Vibrai's app data, Ableton integration (M4L device + remote script), and/
 </ParamField>
 <ParamField path="keep_claude_desktop_entry" type="Boolean">
   Skip removing the vibrai entry from Claude Desktop's config. Default false (entry IS removed).
+</ParamField>
+<ParamField path="keep_agent_skills" type="Boolean">
+  Skip removing installed Vibrai Agent Skills from coding-agent config dirs. Default false (skills ARE removed).
 </ParamField>

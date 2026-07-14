@@ -66,6 +66,12 @@
         ]
       },
       {
+        "group": "Changelog",
+        "pages": [
+          "changelog"
+        ]
+      },
+      {
         "group": "Blog",
         "pages": [
           "blog/building-vibrai"

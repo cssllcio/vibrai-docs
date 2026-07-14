@@ -1,6 +1,6 @@
 {
-  "engineVersion": "1.0.0.0",
-  "generatedAt": "2026-07-13T05:19:57Z",
+  "engineVersion": "1.1.0.0",
+  "generatedAt": "2026-07-14T02:15:55Z",
   "features": [
     {
       "id": "transport",
@@ -3264,7 +3264,7 @@
     {
       "id": "install",
       "title": "Install",
-      "description": "Install the Vibrai M4L device and Python remote script.",
+      "description": "Install the Vibrai M4L device, Python remote script, and Ableton templates.",
       "cli": {
         "branch": "install",
         "commands": [
@@ -3331,8 +3331,33 @@
             ]
           },
           {
+            "name": "install templates",
+            "description": "Install the Vibrai Starter and Vibrai Demo Ableton templates into Live\u0027s User Library (always overwrites)",
+            "arguments": [],
+            "options": [
+              {
+                "name": "--source",
+                "valueName": "PATH",
+                "default": null,
+                "description": "[[advanced]] Override the source directory (test/debug use)."
+              },
+              {
+                "name": "--dest",
+                "valueName": "PATH",
+                "default": null,
+                "description": "[[advanced]] Override the destination directory (test/debug use)."
+              },
+              {
+                "name": "--user",
+                "valueName": "NAME",
+                "default": null,
+                "description": "Install into \u003Cname\u003E\u0027s home directory instead of the current user\u0027s. Used by the macOS .pkg postinstall to deposit files into the real installing user\u0027s Ableton User Library when running as root."
+              }
+            ]
+          },
+          {
             "name": "install all",
-            "description": "Install both the M4L device and the Python remote script",
+            "description": "Install the M4L device, the Python remote script, and the Ableton templates",
             "arguments": [],
             "options": [
               {
@@ -3398,6 +3423,36 @@
                 "type": "String",
                 "required": false,
                 "description": "[advanced] Test-only override for the destination directory"
+              }
+            ]
+          },
+          {
+            "name": "install_templates",
+            "description": "Copy the bundled \u0022Vibrai Starter\u0022 (blank, bridge preloaded on a Return track) and \u0022Vibrai Demo\u0022 (a ready-to-play loop) Ableton Live Set templates into your Ableton User Library\u0027s Templates/Vibrai folder. Always overwrites \u2014 templates are refreshed on every install/update and are not meant to be hand-edited in place. Returns the source/destination paths, status (Installed | AlreadyUpToDate), and the list of files.",
+            "parameters": [
+              {
+                "name": "source_override",
+                "type": "String",
+                "required": false,
+                "description": "[advanced] Test-only override for the source directory"
+              },
+              {
+                "name": "dest_override",
+                "type": "String",
+                "required": false,
+                "description": "[advanced] Test-only override for the destination directory"
+              }
+            ]
+          },
+          {
+            "name": "install_all",
+            "description": "Install the Max-for-Live device, Python remote script, and Ableton templates in one call \u2014 equivalent to install_device \u002B install_vibrai_remote_script \u002B install_templates run in sequence. Stops at the first failure (each step must succeed before the next runs). Templates always overwrite regardless of force. Returns per-target results (device, remote_script, templates).",
+            "parameters": [
+              {
+                "name": "force",
+                "type": "Boolean",
+                "required": false,
+                "description": "Overwrite existing device/remote-script installs whose files differ from the source (default false). Templates always overwrite regardless of this flag."
               }
             ]
           }
@@ -3801,6 +3856,12 @@
             "description": "Force an online license re-validation",
             "arguments": [],
             "options": []
+          },
+          {
+            "name": "license privacy",
+            "description": "Show exactly what data licensing transmits",
+            "arguments": [],
+            "options": []
           }
         ]
       },
@@ -3950,6 +4011,12 @@
                 "description": "Skip removing the vibrai entry from Claude Desktop\u0027s config."
               },
               {
+                "name": "--keep-agent-skills",
+                "valueName": null,
+                "default": null,
+                "description": "Skip removing installed Vibrai Agent Skills from coding-agent config dirs."
+              },
+              {
                 "name": "--yes",
                 "valueName": null,
                 "default": null,
@@ -3981,7 +4048,7 @@
         "tools": [
           {
             "name": "uninstall",
-            "description": "Remove Vibrai\u0027s app data, Ableton integration (M4L device \u002B remote script), and/or its Claude Desktop MCP registration. Does NOT remove the installed CLI/MCP program files (/usr/local/bin/vibrai, /usr/local/lib/vibrai) \u2014 that requires root and must be run from a terminal via \u0060vibrai uninstall\u0060. Call with confirm=false first to preview what would be removed; call again with confirm=true to actually remove it.",
+            "description": "Remove Vibrai\u0027s app data, installed Agent Skills (from coding-agent config dirs, removed by default unless keepAgentSkills=true), Ableton integration (M4L device \u002B remote script), and/or its Claude Desktop MCP registration. Does NOT remove the installed CLI/MCP program files (/usr/local/bin/vibrai, /usr/local/lib/vibrai) \u2014 that requires root and must be run from a terminal via \u0060vibrai uninstall\u0060. Call with confirm=false first to preview what would be removed; call again with confirm=true to actually remove it.",
             "parameters": [
               {
                 "name": "confirm",
@@ -4006,6 +4073,12 @@
                 "type": "Boolean",
                 "required": false,
                 "description": "Skip removing the vibrai entry from Claude Desktop\u0027s config. Default false (entry IS removed)."
+              },
+              {
+                "name": "keep_agent_skills",
+                "type": "Boolean",
+                "required": false,
+                "description": "Skip removing installed Vibrai Agent Skills from coding-agent config dirs. Default false (skills ARE removed)."
               }
             ]
           }
