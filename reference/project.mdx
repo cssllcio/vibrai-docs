@@ -14,7 +14,7 @@ Initialize, load, save, and inspect Vibrai project files.
 Initialize a new .vibrai project file
 
 ```bash
-vibrai project init --name <NAME> --project <PATH> --demo --genre <NAME> --preset <PRESET>
+vibrai project init --name <NAME> --project <PATH> --demo --genre <NAME> --preset <PRESET> --number-tracks
 ```
 
 <ParamField path="--name">
@@ -31,6 +31,9 @@ vibrai project init --name <NAME> --project <PATH> --demo --genre <NAME> --prese
 </ParamField>
 <ParamField path="--preset">
   Preset id or display name within --genre (default: first preset alphabetically)
+</ParamField>
+<ParamField path="--number-tracks">
+  Persist Ableton '#' track auto-numbering into the new project.
 </ParamField>
 
 ### `project load`
@@ -69,11 +72,26 @@ vibrai project info --project <PATH>
   Path to .vibrai file (default: Untitled.vibrai in CWD)
 </ParamField>
 
+### `project config`
+
+Edit persisted project preferences (e.g. --number-tracks)
+
+```bash
+vibrai project config --project <PATH> --number-tracks <BOOL>
+```
+
+<ParamField path="--project">
+  Path to .vibrai file (default: Untitled.vibrai in CWD)
+</ParamField>
+<ParamField path="--number-tracks">
+  Persist Ableton '#' track auto-numbering: true or false.
+</ParamField>
+
 ## MCP tools
 
 ### `init_project`
 
-Create a new .vibrai YAML file at the given absolute path. Without `demo`, writes a minimal 2-section / 1-part boilerplate. With `demo: true`, writes an opinionated 3-section / 2-part starter that exercises variation, per-section scale overrides, naming, and both generator types. Track IDs are probed from the bridge (first N MIDI tracks) and each probed binding records the track's current name (part `track_name`) so `generate` reuses those tracks; if the bridge is unreachable, falls back to track 1 (and 2 for demo) with no binding.
+Create a new .vibrai YAML file at the given absolute path. Without `demo`, writes a minimal 2-section / 1-part boilerplate. With `demo: true`, writes an opinionated 3-section / 2-part starter that exercises variation, per-section scale overrides, naming, and both generator types. Track IDs are probed from the bridge (first N MIDI tracks) and each probed binding records the track's current name (part `track_name`) so `generate` reuses those tracks; if the bridge is unreachable, falls back to track 1 (and 2 for demo) with no binding. Set number_tracks=true to persist Ableton '#' track auto-numbering into the new project's Defaults.
 
 ```json
 {
@@ -81,7 +99,8 @@ Create a new .vibrai YAML file at the given absolute path. Without `demo`, write
   "arguments": {
     "path": "<String>",
     "name": "<String>",
-    "demo": "<Boolean>"
+    "demo": "<Boolean>",
+    "number_tracks": "<Boolean>"
   }
 }
 ```
@@ -94,6 +113,9 @@ Create a new .vibrai YAML file at the given absolute path. Without `demo`, write
 </ParamField>
 <ParamField path="demo" type="Boolean">
   If true, write the demo content instead of the boilerplate.
+</ParamField>
+<ParamField path="number_tracks" type="Boolean">
+  Persist Ableton '#' track auto-numbering into the new project.
 </ParamField>
 
 ### `load_project`
@@ -121,13 +143,17 @@ Save a VibraiProject (same shape as load_project's return value) to the given ab
 {
   "tool": "save_project",
   "arguments": {
-    "path": "<String>"
+    "path": "<String>",
+    "project": "<VibraiProject>"
   }
 }
 ```
 
 <ParamField path="path" type="String" required>
   Absolute filesystem path to write to.
+</ParamField>
+<ParamField path="project" type="VibraiProject" required>
+  Project document, same shape as load_project's return value.
 </ParamField>
 
 ### `project_info`
@@ -145,4 +171,25 @@ Return a summary of the project (counts of sections, parts, templates) at the gi
 
 <ParamField path="path" type="String" required>
   Absolute filesystem path to the .vibrai file.
+</ParamField>
+
+### `configure_project`
+
+Edit project-level preferences in an existing .vibrai file. Currently: number_tracks (persist Ableton '#' track auto-numbering). Loads, updates project.defaults, and saves. Errors if the file is missing.
+
+```json
+{
+  "tool": "configure_project",
+  "arguments": {
+    "path": "<String>",
+    "number_tracks": "<Boolean>"
+  }
+}
+```
+
+<ParamField path="path" type="String" required>
+  Absolute filesystem path to the .vibrai file.
+</ParamField>
+<ParamField path="number_tracks" type="Boolean" required>
+  Persist Ableton '#' track auto-numbering (true) or disable it (false).
 </ParamField>

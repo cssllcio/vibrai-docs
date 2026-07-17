@@ -24,35 +24,41 @@ vibrai scene list
 Create a new scene
 
 ```bash
-vibrai scene create --at <SCENE>
+vibrai scene create --at <SCENE> --after <SCENE> --before <SCENE>
 ```
 
 <ParamField path="--at">
-  Optional scene number to insert at (1-based: 1, 2, … or first, second, …); omit to append.
+  Optional scene number to insert at (1-based: 1, 2, … or first, second, …); omit to append. Mutually exclusive with --after/--before.
+</ParamField>
+<ParamField path="--after">
+  Insert the new scene AFTER this scene — handle (scn_7) OR 1-based number OR ordinal. Mutually exclusive with --at/--before.
+</ParamField>
+<ParamField path="--before">
+  Insert the new scene BEFORE this scene — handle (scn_7) OR 1-based number OR ordinal. Mutually exclusive with --at/--after.
 </ParamField>
 
 ### `scene delete`
 
-Delete a scene by its index
+Delete a scene by its handle
 
 ```bash
 vibrai scene delete <scene>
 ```
 
 <ParamField path="scene" required>
-  Scene number to delete (1-based: 1, 2, … or first, second, …)
+  Scene handle (scn_7) OR 1-based number (1, 2, …) OR ordinal (first, second, …)
 </ParamField>
 
 ### `scene rename`
 
-Rename a scene by its index
+Rename a scene by its handle
 
 ```bash
 vibrai scene rename <scene> <name>
 ```
 
 <ParamField path="scene" required>
-  Scene number to rename (1-based: 1, 2, … or first, second, …)
+  Scene handle (scn_7) OR 1-based number (1, 2, …) OR ordinal (first, second, …)
 </ParamField>
 <ParamField path="name" required>
   New scene name
@@ -62,7 +68,7 @@ vibrai scene rename <scene> <name>
 
 ### `list_scenes`
 
-List all scenes in the current Live set. Returned in order (1-based). Each entry has an index and a name (empty string if unnamed).
+List all scenes. Each entry has a 1-based `index`, a `name`, and a `liveset_id` handle (e.g. scn_7). Address scenes by that handle — copy it verbatim.
 
 ```json
 {
@@ -75,20 +81,20 @@ List all scenes in the current Live set. Returned in order (1-based). Each entry
 
 ### `set_scene_name`
 
-Rename the scene at the given index.
+Rename a scene. Address it by its liveset_id handle from list_scenes (e.g. scn_7).
 
 ```json
 {
   "tool": "set_scene_name",
   "arguments": {
-    "scene_index": "<String>",
+    "liveset_id": "<String>",
     "name": "<String>"
   }
 }
 ```
 
-<ParamField path="scene_index" type="String" required>
-  Scene number (1-based: 1, 2, … or 'first', 'second', …)
+<ParamField path="liveset_id" type="String" required>
+  Scene handle from list_scenes, e.g. "scn_7". Copy verbatim; not a position number.
 </ParamField>
 <ParamField path="name" type="String" required>
   New scene name
@@ -96,34 +102,38 @@ Rename the scene at the given index.
 
 ### `create_scene`
 
-Create a new scene. Omit insert_index to append at the end.
+Create a scene. Omit after/before to append at the end. Pass exactly one of after/before (each a scene handle from list_scenes) to insert relative to it.
 
 ```json
 {
   "tool": "create_scene",
   "arguments": {
-    "insert_index": "<String>"
+    "after": "<String>",
+    "before": "<String>"
   }
 }
 ```
 
-<ParamField path="insert_index" type="String">
-  Optional scene number to insert at (1-based: 1, 2, … or 'first', 'second', …); omit to append at the end.
+<ParamField path="after" type="String">
+  Insert the new scene AFTER this scene handle (e.g. scn_7).
+</ParamField>
+<ParamField path="before" type="String">
+  Insert the new scene BEFORE this scene handle (e.g. scn_7).
 </ParamField>
 
 ### `delete_scene`
 
-Delete a scene by its index. Idempotent: out-of-range and last-remaining-scene are no-ops.
+Delete a scene by its liveset_id handle from list_scenes (e.g. scn_7). Idempotent: last-remaining-scene is a no-op.
 
 ```json
 {
   "tool": "delete_scene",
   "arguments": {
-    "scene_index": "<String>"
+    "liveset_id": "<String>"
   }
 }
 ```
 
-<ParamField path="scene_index" type="String" required>
-  Scene number to delete (1-based: 1, 2, … or 'first', 'second', …)
+<ParamField path="liveset_id" type="String" required>
+  Scene handle from list_scenes, e.g. "scn_7". Copy verbatim; not a position number.
 </ParamField>

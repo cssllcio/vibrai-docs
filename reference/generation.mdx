@@ -14,7 +14,7 @@ Generate or plan a composition from a .vibrai project file.
 Generate clips and arrangement from a .vibrai project file
 
 ```bash
-vibrai generate --project <PATH> --force --dry-run --seed <VALUE> --allow-skip --with-instruments --stock-only --on-existing-tracks <MODE> --keep-empty-clips --swing <PCT> --humanize <PCT> --ornaments <PCT> --dropout <PCT>
+vibrai generate --project <PATH> --force --dry-run --seed <VALUE> --allow-skip --with-instruments --stock-only --on-existing-tracks <MODE> --keep-empty-clips --swing <PCT> --humanize <PCT> --ornaments <PCT> --dropout <PCT> --number-tracks --no-number-tracks
 ```
 
 <ParamField path="--project">
@@ -55,6 +55,12 @@ vibrai generate --project <PATH> --force --dry-run --seed <VALUE> --allow-skip -
 </ParamField>
 <ParamField path="--dropout">
   Tension-section note thinning 0-100. Overrides genre/preset default.
+</ParamField>
+<ParamField path="--number-tracks">
+  Prefix track names with Ableton's '#' auto-numbering token for this run.
+</ParamField>
+<ParamField path="--no-number-tracks">
+  Disable '#' track auto-numbering for this run (overrides env / project setting).
 </ParamField>
 
 ### `plan`
@@ -149,7 +155,8 @@ Plan + render a composition into Live's session view and arrangement view. force
     "swing": "<Nullable`1>",
     "humanize": "<Nullable`1>",
     "ornament_density": "<Nullable`1>",
-    "dropout": "<Nullable`1>"
+    "dropout": "<Nullable`1>",
+    "number_tracks": "<Nullable`1>"
   }
 }
 ```
@@ -189,4 +196,7 @@ Plan + render a composition into Live's session view and arrangement view. force
 </ParamField>
 <ParamField path="dropout" type="Nullable`1">
   Tension-section note thinning 0-100; overrides genre/preset default
+</ParamField>
+<ParamField path="number_tracks" type="Nullable`1">
+  Prefix track names with Ableton's '#' auto-numbering token for this render (overrides env / project setting). Null inherits.
 </ParamField>
