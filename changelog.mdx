@@ -4,6 +4,53 @@ description: "New features, improvements, and fixes in Vibrai."
 rss: true
 ---
 
+<Update label="1.2.0" description="July 16, 2026">
+  Automation you can trust, smaller installs, and a new way to install Vibrai — plus a more reliable connection for AI assistants.
+
+  ## Automation you can trust
+
+  A round of fixes to how automation curves are written and read back:
+
+  - **Curves land where you expect them.** Automation values now scale correctly to each parameter's real range, instead of sometimes landing squashed into the wrong part of the dial.
+  - **Generated songs are audible.** A quiet bug meant some automation written during song generation didn't actually move the sound the way it looked like it should — fixed, so what you hear now matches what you designed.
+  - **Clip names survive automation writes.** Writing automation over a named clip no longer blanks out its name.
+  - **Bad automation values are caught immediately** instead of being silently saved and only causing trouble later.
+  - **Automation pushed live now reads back correctly**, instead of silently disappearing the moment you check it.
+
+  ## Auto-numbered tracks
+
+  An optional setting adds Ableton's own `#` auto-numbering to tracks Vibrai creates, so your track names stay numbered in order as you rearrange your set — just like tracks you number by hand.
+
+  ## Smaller installs, more reliable updates
+
+  - **Installs are roughly half the size** they were, with no change to download size and barely any extra startup time.
+  - **The Claude Desktop extension no longer bundles the standalone command line tool it doesn't need** — a leaner extension.
+  - **Uninstalling no longer ends in a crash.**
+  - **Updating from Claude Desktop now refuses safely** instead of overwriting the wrong file, when it can't tell exactly what it's updating.
+  - **A permission problem during an update now tells you how to fix it**, instead of showing a raw error.
+  - **The bundled starter templates now actually show up** in Ableton's browser.
+
+  ## A new way to install: Homebrew
+
+  If you use [Homebrew](https://brew.sh), you can now install Vibrai with:
+
+  ```bash
+  brew install vibrai
+  ```
+
+  right alongside the existing installer and self-update options.
+
+  ## A more reliable connection for AI assistants
+
+  Vibrai's AI-assistant interface (MCP) now addresses tracks and scenes with stable, reliable references instead of plain numbers — closing the door on a subtle class of bug where an assistant could end up talking to the wrong track or scene. If you've built your own integration against Vibrai's MCP tools, track and scene ids now come back as short reference strings rather than bare numbers; everything else about talking to Vibrai from the command line is unchanged.
+
+  ## Fixes and polish
+
+  - **Placing a clip over an already-occupied spot** in the arrangement no longer times out.
+  - **Scene commands now support `--json`** consistently from the command line.
+  - **Inserting a scene at a specific position** now actually inserts it, instead of always adding it to the end.
+</Update>
+
 <Update label="1.1.0" description="July 13, 2026">
   Cleaner install and uninstall, drive Vibrai from your coding agent, and a smoother activation experience.
 
