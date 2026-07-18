@@ -1,8 +1,8 @@
 ---
 title: "Drive Vibrai from your coding agent"
 sidebarTitle: "Agent Skill"
-description: "Install the Vibrai Agent Skill — a portable SKILL.md that teaches Claude Code, Codex CLI, or Gemini CLI to drive Vibrai."
-keywords: ["agent skill", "SKILL.md", "claude code", "codex cli", "gemini cli", "vibrai skill install", "vibrai://skill"]
+description: "Install the Vibrai Agent Skill — a portable SKILL.md that teaches Claude Code, Codex CLI, Gemini CLI, or Claude Desktop to drive Vibrai."
+keywords: ["agent skill", "SKILL.md", "claude code", "codex cli", "gemini cli", "claude desktop", "vibrai skill install", "vibrai skill package", "vibrai://skill"]
 ---
 
 The **Agent Skill** is Vibrai's third surface, alongside the [CLI](/cli/overview) and the [MCP server](/mcp/overview). It's a portable `SKILL.md` that self-installs into a coding agent's skills directory and teaches that agent to drive Vibrai — by running the `vibrai` CLI, or by preferring connected Vibrai MCP tools when they're available in the session.
@@ -18,6 +18,8 @@ It works with three coding-agent CLIs:
 - **Claude Code**
 - **Codex CLI**
 - **Gemini CLI**
+
+**Claude Desktop** is also supported, but through a different mechanism — it has no directory-install convention, so the skill is packaged as a `.zip` for manual upload instead. See [Package the skill for Claude Desktop](#package-the-skill-for-claude-desktop) below.
 
 ## Install the skill
 
@@ -50,6 +52,34 @@ vibrai skill install --force
 <Note>
 With no `--target`, install writes into every agent it detects on the machine. If it finds none, it stops and tells you to pass `--target claude-code|codex|gemini` or `--to <dir>`. An existing install is left untouched unless you pass `--force`.
 </Note>
+
+`--target claude-desktop` is accepted but doesn't install anything — Claude Desktop has no directory to write into, so it points you at `skill package` instead and exits non-zero:
+
+```text
+$ vibrai skill install --target claude-desktop
+Claude Desktop has no directory-install location — use `vibrai skill package` instead
+(produces a .zip to upload via Settings → Capabilities → Skills).
+```
+
+`vibrai skill path --target claude-desktop` does the same — there's no path to show, so it redirects to `skill package` rather than erroring as an unknown target.
+
+## Package the skill for Claude Desktop
+
+Claude Desktop's Skills UI (**Settings → Capabilities → Skills → Upload skill**) only accepts a manually-uploaded `.zip` — unlike Claude Code, Codex CLI, and Gemini CLI, it has no directory-write convention to install into. Use `vibrai skill package` instead of `skill install`:
+
+```bash
+# Write ./vibrai-skill.zip in the current directory
+vibrai skill package
+
+# Choose an output path
+vibrai skill package --to ~/Desktop/vibrai-skill.zip
+```
+
+| Flag | Values | Default | Purpose |
+|------|--------|---------|---------|
+| `--to <path>` | any file path | `./vibrai-skill.zip` | Output zip path |
+
+The zip contains the same two files a directory install writes — `SKILL.md` and `references/command-reference.md` — just archived instead of written to disk, so the unzipped contents are identical either way. Upload the resulting file in Claude Desktop under **Settings → Capabilities → Skills → Upload skill**.
 
 ## What gets written
 
@@ -100,6 +130,8 @@ The same `SKILL.md` is exposed to any connected MCP client as a read-only resour
 - **MIME type:** `text/markdown`
 
 Reading that resource is the MCP-side counterpart of `vibrai skill print`. Installing to disk stays CLI-only by design: writing a file into an agent's local config directory has no sensible MCP shape, and a connected MCP client already has the tools plus the [`vibrai://reference`](/mcp/overview) resource.
+
+`skill package` has an MCP counterpart, though: the `package_claude_desktop_skill` tool writes the same zip (`SKILL.md` + `references/command-reference.md`) to a path you choose, since producing a standalone file for manual upload — unlike writing into an agent's own config directory — has a sensible MCP shape.
 
 ## What the skill teaches the agent
 
