@@ -51,7 +51,7 @@ vibrai genre import-songsketch <json> --out <DIR>
 Apply a genre+preset to a .vibrai project
 
 ```bash
-vibrai genre apply [genre] [preset] [project-path] --genre <NAME> --preset <ID> --yes
+vibrai genre apply [genre] [preset] [project-path] --genre <NAME> --preset <ID> --yes --number-tracks --no-number-tracks
 ```
 
 <ParamField path="genre">
@@ -71,6 +71,12 @@ vibrai genre apply [genre] [preset] [project-path] --genre <NAME> --preset <ID> 
 </ParamField>
 <ParamField path="--yes">
   Confirm destructive overwrite of sections / parts / templates / arrangement / generation
+</ParamField>
+<ParamField path="--number-tracks">
+  Persist Ableton '#' track auto-numbering into the project (applied when you later run generate).
+</ParamField>
+<ParamField path="--no-number-tracks">
+  Persist '#' track auto-numbering as OFF in the project (overrides env / an existing setting).
 </ParamField>
 
 ### `genre extract`
@@ -140,7 +146,7 @@ List presets in a genre library. Each entry has id (use with apply_genre / init_
 
 ### `apply_genre`
 
-Materialize a genre+preset into a .vibrai project at the given path. Destructive: overwrites sections, parts, templates, arrangement.blueprint, and generation — requires confirm=true (parity with the CLI's `genre apply --yes`); refuses without modifying the project otherwise. Preserves meta.name and meta.als_path from the existing project if present. Note: the `preset_id` parameter was renamed to `preset` for CLI/MCP naming parity; update any callers.
+Materialize a genre+preset into a .vibrai project at the given path. Destructive: overwrites sections, parts, templates, arrangement.blueprint, and generation — requires confirm=true (parity with the CLI's `genre apply --yes`); refuses without modifying the project otherwise. Preserves meta.name, meta.als_path, and Defaults.NumberTracks from the existing project if present (number_tracks omitted). Note: the `preset_id` parameter was renamed to `preset` for CLI/MCP naming parity; update any callers.
 
 ```json
 {
@@ -149,7 +155,8 @@ Materialize a genre+preset into a .vibrai project at the given path. Destructive
     "genre": "<String>",
     "preset": "<String>",
     "project_path": "<String>",
-    "confirm": "<Boolean>"
+    "confirm": "<Boolean>",
+    "number_tracks": "<Nullable`1>"
   }
 }
 ```
@@ -165,6 +172,9 @@ Materialize a genre+preset into a .vibrai project at the given path. Destructive
 </ParamField>
 <ParamField path="confirm" type="Boolean">
   Confirm the destructive overwrite (CLI --yes equivalent). Must be true to proceed; confirm with the user first when the project already has content.
+</ParamField>
+<ParamField path="number_tracks" type="Nullable`1">
+  Persist Ableton '#' track auto-numbering into the project. Null preserves the existing project's setting.
 </ParamField>
 
 ### `extract_genre`

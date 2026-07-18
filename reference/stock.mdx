@@ -73,7 +73,7 @@ vibrai stock load <track> <path> --position <N>
 ```
 
 <ParamField path="track" required>
-  Track number (1-based: 1, 2, … or first, second, …)
+  Track handle (trk_42) OR 1-based number (1, 2, …) OR ordinal (first, second, …)
 </ParamField>
 <ParamField path="path" required>
   Exact relative path of the item to load (from stock list / stock browse / stock show).
@@ -199,15 +199,15 @@ Load a Core Library item onto a track by its relative path. Unlike the discovery
 {
   "tool": "load_stock_sound",
   "arguments": {
-    "track_id": "<String>",
+    "track": "<String>",
     "path": "<String>",
     "position": "<String>"
   }
 }
 ```
 
-<ParamField path="track_id" type="String" required>
-  Track number (1-based: 1, 2, … or 'first', 'second', …)
+<ParamField path="track" type="String" required>
+  Track handle from list_tracks, e.g. "trk_42". Copy verbatim.
 </ParamField>
 <ParamField path="path" type="String" required>
   Exact relative path of the item to load (from list_stock_sounds / browse_stock_sounds / show_stock_sound).

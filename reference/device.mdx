@@ -18,7 +18,7 @@ vibrai device list <track>
 ```
 
 <ParamField path="track" required>
-  Track number (1-based: 1, 2, … or first, second, …)
+  Track handle (trk_42) OR 1-based number (1, 2, …) OR ordinal (first, second, …)
 </ParamField>
 
 ### `device drum-pads`
@@ -30,7 +30,7 @@ vibrai device drum-pads <track> --device <INDEX>
 ```
 
 <ParamField path="track" required>
-  Track number (1-based: 1, 2, … or first, second, …)
+  Track handle (trk_42) OR 1-based number (1, 2, …) OR ordinal (first, second, …)
 </ParamField>
 <ParamField path="--device" default="0">
   Index of the Drum Rack device in the track's chain (default 0)
@@ -45,7 +45,7 @@ vibrai device load <track> --path <PATH> --part-type <TYPE> --position <N>
 ```
 
 <ParamField path="track" required>
-  Track number (1-based: 1, 2, … or first, second, …)
+  Track handle (trk_42) OR 1-based number (1, 2, …) OR ordinal (first, second, …)
 </ParamField>
 <ParamField path="--path">
   Browser path or URI. Accepts (a) classic stock-device paths like 'Instruments/Operator', (b) preset '.adg' browser paths like 'Drums/F9 TK Menu_ Hat Closed V2.adg' (auto-resolved to their query: URI), or (c) query: URIs from find_instruments_by_tag/show_instrument, including plug-in URIs from the Plug-Ins browser section.
@@ -96,7 +96,7 @@ vibrai device delete <track> <device-index>
 ```
 
 <ParamField path="track" required>
-  Track number (1-based: 1, 2, … or first, second, …)
+  Track handle (trk_42) OR 1-based number (1, 2, …) OR ordinal (first, second, …)
 </ParamField>
 <ParamField path="device-index" required>
   Device chain position (1-based: 1 = first device in the chain)
@@ -127,7 +127,7 @@ Load a stock device, User Library preset, or plug-in (VST3/AU) onto a track. Spe
 {
   "tool": "load_device",
   "arguments": {
-    "track_id": "<String>",
+    "track": "<String>",
     "path": "<String>",
     "part_type": "<Nullable`1>",
     "position": "<String>"
@@ -135,8 +135,8 @@ Load a stock device, User Library preset, or plug-in (VST3/AU) onto a track. Spe
 }
 ```
 
-<ParamField path="track_id" type="String" required>
-  Track number (1-based: 1, 2, … or 'first', 'second', …)
+<ParamField path="track" type="String" required>
+  Track handle from list_tracks, e.g. "trk_42". Copy verbatim.
 </ParamField>
 <ParamField path="path" type="String">
   Browser path or URI. Accepts (a) classic stock-device paths like 'Instruments/Operator', (b) preset '.adg' browser paths like 'Drums/F9 TK Menu_ Hat Closed V2.adg' (auto-resolved to their query: URI), or (c) query: URIs from find_instruments_by_tag/show_instrument, including plug-in URIs from the Plug-Ins browser section.
@@ -173,14 +173,14 @@ Remove a device from a track's top-level device chain by index. v1 scope: top-le
 {
   "tool": "delete_device",
   "arguments": {
-    "track_id": "<String>",
+    "track": "<String>",
     "device_index": "<String>"
   }
 }
 ```
 
-<ParamField path="track_id" type="String" required>
-  Track number (1-based: 1, 2, … or 'first', 'second', …)
+<ParamField path="track" type="String" required>
+  Track handle from list_tracks, e.g. "trk_42". Copy verbatim.
 </ParamField>
 <ParamField path="device_index" type="String" required>
   Device chain position (1-based: 1 = first device in the chain)
@@ -194,13 +194,13 @@ List devices currently loaded on a track in chain order. Returns each device's i
 {
   "tool": "list_devices",
   "arguments": {
-    "track_id": "<String>"
+    "track": "<String>"
   }
 }
 ```
 
-<ParamField path="track_id" type="String" required>
-  Track number (1-based: 1, 2, … or 'first', 'second', …)
+<ParamField path="track" type="String" required>
+  Track handle from list_tracks, e.g. "trk_42". Copy verbatim.
 </ParamField>
 
 ### `list_drum_pads`
@@ -211,14 +211,14 @@ List the pads of a Drum Rack on a track: each pad's index, name, and the MIDI no
 {
   "tool": "list_drum_pads",
   "arguments": {
-    "track_id": "<String>",
+    "track": "<String>",
     "device_index": "<Nullable`1>"
   }
 }
 ```
 
-<ParamField path="track_id" type="String" required>
-  Track number (1-based: 1, 2, … or 'first', 'second', …)
+<ParamField path="track" type="String" required>
+  Track handle from list_tracks, e.g. "trk_42". Copy verbatim.
 </ParamField>
 <ParamField path="device_index" type="Nullable`1">
   Index of the Drum Rack device in the track's chain (default 0 = first device)

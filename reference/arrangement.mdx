@@ -18,7 +18,7 @@ vibrai arrangement get-clips <track>
 ```
 
 <ParamField path="track" required>
-  Track number (1-based: 1, 2, … or first, second, …)
+  Track handle (trk_42) OR 1-based number (1, 2, …) OR ordinal (first, second, …)
 </ParamField>
 
 ### `arrangement place`
@@ -30,10 +30,10 @@ vibrai arrangement place <track> <scene> <start> --no-carry-envelopes --force
 ```
 
 <ParamField path="track" required>
-  Track number (1-based: 1, 2, … or first, second, …)
+  Track handle (trk_42) OR 1-based number (1, 2, …) OR ordinal (first, second, …)
 </ParamField>
 <ParamField path="scene" required>
-  Session-view scene number (1-based: 1, 2, … or first, second, …)
+  Session-view scene handle (scn_7) OR 1-based number (1, 2, …) OR ordinal (first, second, …) — identifies the source clip's scene
 </ParamField>
 <ParamField path="start" required>
   Arrangement start: bar.beat notation (e.g. 2.1 = bar 2, beat 1) or raw beats
@@ -54,7 +54,7 @@ vibrai arrangement delete <track> <start>
 ```
 
 <ParamField path="track" required>
-  Track number (1-based: 1, 2, … or first, second, …)
+  Track handle (trk_42) OR 1-based number (1, 2, …) OR ordinal (first, second, …)
 </ParamField>
 <ParamField path="start" required>
   Arrangement start: bar.beat notation (e.g. 5.1 = bar 5, beat 1) or raw beats
@@ -69,7 +69,7 @@ vibrai arrangement clear-scoped <tracks>
 ```
 
 <ParamField path="tracks" required>
-  One or more track numbers to clear (1-based, space-separated)
+  One or more track handles (trk_42) OR 1-based numbers OR ordinals to clear (space-separated)
 </ParamField>
 
 ### `arrangement clear-all`
@@ -92,25 +92,25 @@ List the arrangement-view clips for a track.
 {
   "tool": "get_arrangement_clips",
   "arguments": {
-    "track_id": "<String>"
+    "track": "<String>"
   }
 }
 ```
 
-<ParamField path="track_id" type="String" required>
-  Track number (1-based: 1, 2, … or 'first', 'second', …)
+<ParamField path="track" type="String" required>
+  Track handle from list_tracks, e.g. "trk_42". Copy verbatim.
 </ParamField>
 
 ### `place_arrangement_clip`
 
-Copy the session-view clip at (track_id, source_scene_index) into the arrangement on the same track, starting at the given beat. By default, session-clip envelopes are also carried into the arrangement as track-lane automation; pass carry_envelopes: false to disable. Refuses with ARRANGEMENT_OVERLAP if existing destination-track automation would be clobbered; pass force: true to override.
+Copy the session-view clip at (track, source_scene) into the arrangement on the same track, starting at the given beat. By default, session-clip envelopes are also carried into the arrangement as track-lane automation; pass carry_envelopes: false to disable. Refuses with ARRANGEMENT_OVERLAP if existing destination-track automation would be clobbered; pass force: true to override.
 
 ```json
 {
   "tool": "place_arrangement_clip",
   "arguments": {
-    "track_id": "<String>",
-    "source_scene_index": "<String>",
+    "track": "<String>",
+    "source_scene": "<String>",
     "start_beat": "<String>",
     "carry_envelopes": "<Boolean>",
     "force": "<Boolean>"
@@ -118,11 +118,11 @@ Copy the session-view clip at (track_id, source_scene_index) into the arrangemen
 }
 ```
 
-<ParamField path="track_id" type="String" required>
-  Track number (1-based: 1, 2, … or 'first', 'second', …)
+<ParamField path="track" type="String" required>
+  Track handle from list_tracks, e.g. "trk_42". Copy verbatim.
 </ParamField>
-<ParamField path="source_scene_index" type="String" required>
-  Session-view scene number (1-based: 1, 2, … or 'first', 'second', …)
+<ParamField path="source_scene" type="String" required>
+  Session-view scene handle from list_scenes, e.g. "scn_7". Copy verbatim — identifies the source clip's scene.
 </ParamField>
 <ParamField path="start_beat" type="String" required>
   Start position in arrangement: bar.beat notation (e.g. '2.3' = bar 2, beat 3) or raw beats (e.g. '8' or '8.0')
@@ -142,14 +142,14 @@ Delete a single arrangement-view clip on a track at the given start beat (surgic
 {
   "tool": "delete_arrangement_clip",
   "arguments": {
-    "track_id": "<String>",
+    "track": "<String>",
     "start_beat": "<String>"
   }
 }
 ```
 
-<ParamField path="track_id" type="String" required>
-  Track number (1-based: 1, 2, … or 'first', 'second', …)
+<ParamField path="track" type="String" required>
+  Track handle from list_tracks, e.g. "trk_42". Copy verbatim.
 </ParamField>
 <ParamField path="start_beat" type="String" required>
   Arrangement start: bar.beat notation (e.g. '2.3' = bar 2, beat 3) or raw beats (e.g. '16' or '16.0')
@@ -163,13 +163,13 @@ Clear all arrangement-view clips for the specified tracks.
 {
   "tool": "clear_arrangement_for_tracks",
   "arguments": {
-    "track_ids": "<String[]>"
+    "tracks": "<String[]>"
   }
 }
 ```
 
-<ParamField path="track_ids" type="String[]" required>
-  Track numbers (1-based: 1, 2, … or 'first', 'second', …)
+<ParamField path="tracks" type="String[]" required>
+  Track handles from list_tracks, e.g. "trk_42". Copy verbatim.
 </ParamField>
 
 ### `clear_arrangement_all`

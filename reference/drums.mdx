@@ -60,7 +60,7 @@ vibrai drums retarget --track <N> --dry-run --project <PATH>
 ```
 
 <ParamField path="--track">
-  Live track number (1-based); repeatable to limit the retarget
+  Track handle (trk_42) OR 1-based number OR ordinal; repeatable to limit the retarget
 </ParamField>
 <ParamField path="--dry-run">
   Preview without remapping or saving
@@ -149,7 +149,7 @@ Re-resolve every drum part's pitch against the CURRENT kits (drum map → pad na
   Path to the .vibrai file (defaults to Untitled.vibrai in CWD when omitted)
 </ParamField>
 <ParamField path="tracks" type="String[]">
-  Optional live track numbers (1-based, as in list_tracks) to limit the retarget
+  Optional track handles from list_tracks, e.g. ["trk_42"], to limit the retarget. Copy verbatim.
 </ParamField>
 <ParamField path="dry_run" type="Boolean">
   Preview the plan without remapping or saving

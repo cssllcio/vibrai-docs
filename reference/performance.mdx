@@ -1,0 +1,64 @@
+---
+title: "Performance"
+description: "Drive Session-view playback: sequence scenes as a song."
+---
+
+{/* GENERATED — do not edit by hand. Regenerate with `npm run generate:reference`. */}
+
+Drive Session-view playback: sequence scenes as a song.
+
+## Command line
+
+### `play-song`
+
+Play the song by firing session scenes in section order.
+
+```bash
+vibrai play-song [project] --loop --stop
+```
+
+<ParamField path="project">
+  Path to the .vibrai file (defaults to Untitled.vibrai in CWD).
+</ParamField>
+<ParamField path="--loop">
+  Repeat the song until stopped (Ctrl-C).
+</ParamField>
+<ParamField path="--stop">
+  Stop a performance already running (in this or another Vibrai process) instead of starting one.
+</ParamField>
+
+## MCP tools
+
+### `play_song`
+
+Play the song by firing Session scenes in section order, advancing at each section's bar boundary. Runs in the background; use stop_performance to halt.
+
+```json
+{
+  "tool": "play_song",
+  "arguments": {
+    "project_path": "<String>",
+    "loop": "<Boolean>"
+  }
+}
+```
+
+<ParamField path="project_path" type="String">
+  Path to the .vibrai file (defaults to Untitled.vibrai in CWD when omitted)
+</ParamField>
+<ParamField path="loop" type="Boolean">
+  Repeat the song until stopped
+</ParamField>
+
+### `stop_performance`
+
+Stop the running play_song performance.
+
+```json
+{
+  "tool": "stop_performance",
+  "arguments": {}
+}
+```
+
+

@@ -18,10 +18,10 @@ vibrai note list <track> <scene>
 ```
 
 <ParamField path="track" required>
-  Track number (1-based: 1, 2, … or first, second, …)
+  Track handle (trk_42) OR 1-based number (1, 2, …) OR ordinal (first, second, …)
 </ParamField>
 <ParamField path="scene" required>
-  Scene number (1-based: 1, 2, … or first, second, …)
+  Scene handle (scn_7) OR 1-based number (1, 2, …) OR ordinal (first, second, …)
 </ParamField>
 
 ### `note set`
@@ -33,10 +33,10 @@ vibrai note set <track> <scene> --json-data <JSON> --file <PATH>
 ```
 
 <ParamField path="track" required>
-  Track number (1-based: 1, 2, … or first, second, …)
+  Track handle (trk_42) OR 1-based number (1, 2, …) OR ordinal (first, second, …)
 </ParamField>
 <ParamField path="scene" required>
-  Scene number (1-based: 1, 2, … or first, second, …)
+  Scene handle (scn_7) OR 1-based number (1, 2, …) OR ordinal (first, second, …)
 </ParamField>
 <ParamField path="--json-data">
   Notes as JSON array
@@ -54,10 +54,10 @@ vibrai note add <track> <scene> --json-data <JSON> --file <PATH>
 ```
 
 <ParamField path="track" required>
-  Track number (1-based: 1, 2, … or first, second, …)
+  Track handle (trk_42) OR 1-based number (1, 2, …) OR ordinal (first, second, …)
 </ParamField>
 <ParamField path="scene" required>
-  Scene number (1-based: 1, 2, … or first, second, …)
+  Scene handle (scn_7) OR 1-based number (1, 2, …) OR ordinal (first, second, …)
 </ParamField>
 <ParamField path="--json-data">
   Notes as JSON array
@@ -75,7 +75,7 @@ vibrai note remap <track> --from <PITCH> --to <PITCH> --scope <SCOPE> --scene <N
 ```
 
 <ParamField path="track" required>
-  Track number (1-based: 1, 2, … or first, second, …)
+  Track handle (trk_42) OR 1-based number (1, 2, …) OR ordinal (first, second, …)
 </ParamField>
 <ParamField path="--from">
   Source MIDI pitch 0-127 (only notes at this pitch move)
@@ -87,7 +87,7 @@ vibrai note remap <track> --from <PITCH> --to <PITCH> --scope <SCOPE> --scene <N
   session, arrangement, or both (default both)
 </ParamField>
 <ParamField path="--scene">
-  Scene number (1-based) to limit to one session clip; requires --scope session
+  Scene handle (scn_7) OR 1-based number OR ordinal, to limit to one session clip; requires --scope session
 </ParamField>
 
 ## MCP tools
@@ -100,17 +100,17 @@ List all notes in a clip.
 {
   "tool": "list_notes",
   "arguments": {
-    "track_id": "<String>",
-    "scene_index": "<String>"
+    "track": "<String>",
+    "scene": "<String>"
   }
 }
 ```
 
-<ParamField path="track_id" type="String" required>
-  Track number (1-based: 1, 2, … or 'first', 'second', …)
+<ParamField path="track" type="String" required>
+  Track handle from list_tracks, e.g. "trk_42". Copy verbatim.
 </ParamField>
-<ParamField path="scene_index" type="String" required>
-  Scene number (1-based: 1, 2, … or 'first', 'second', …)
+<ParamField path="scene" type="String" required>
+  Scene handle from list_scenes, e.g. "scn_7". Copy verbatim.
 </ParamField>
 
 ### `write_notes`
@@ -121,18 +121,18 @@ Replace all notes in a clip with the given list.
 {
   "tool": "write_notes",
   "arguments": {
-    "track_id": "<String>",
-    "scene_index": "<String>",
+    "track": "<String>",
+    "scene": "<String>",
     "notes": "<NoteEvent[]>"
   }
 }
 ```
 
-<ParamField path="track_id" type="String" required>
-  Track number (1-based: 1, 2, … or 'first', 'second', …)
+<ParamField path="track" type="String" required>
+  Track handle from list_tracks, e.g. "trk_42". Copy verbatim.
 </ParamField>
-<ParamField path="scene_index" type="String" required>
-  Scene number (1-based: 1, 2, … or 'first', 'second', …)
+<ParamField path="scene" type="String" required>
+  Scene handle from list_scenes, e.g. "scn_7". Copy verbatim.
 </ParamField>
 <ParamField path="notes" type="NoteEvent[]" required>
   Notes to write (replaces all existing).
@@ -146,18 +146,18 @@ Append notes to a clip without removing existing notes.
 {
   "tool": "add_notes",
   "arguments": {
-    "track_id": "<String>",
-    "scene_index": "<String>",
+    "track": "<String>",
+    "scene": "<String>",
     "notes": "<NoteEvent[]>"
   }
 }
 ```
 
-<ParamField path="track_id" type="String" required>
-  Track number (1-based: 1, 2, … or 'first', 'second', …)
+<ParamField path="track" type="String" required>
+  Track handle from list_tracks, e.g. "trk_42". Copy verbatim.
 </ParamField>
-<ParamField path="scene_index" type="String" required>
-  Scene number (1-based: 1, 2, … or 'first', 'second', …)
+<ParamField path="scene" type="String" required>
+  Scene handle from list_scenes, e.g. "scn_7". Copy verbatim.
 </ParamField>
 <ParamField path="notes" type="NoteEvent[]" required>
   Notes to append.
@@ -165,23 +165,23 @@ Append notes to a clip without removing existing notes.
 
 ### `remap_pitch`
 
-Move every note at from_pitch to to_pitch on one track, server-side — no note round-tripping, all other note fields preserved. Scope 'session', 'arrangement', or 'both' (default both); scene_index (session scope only) narrows to one clip. Reports clips_touched/notes_changed. The drum-pad retargeting primitive; see retarget_drums for the automatic kit-swap flow.
+Move every note at from_pitch to to_pitch on one track, server-side — no note round-tripping, all other note fields preserved. Scope 'session', 'arrangement', or 'both' (default both); scene (session scope only) narrows to one session clip. Reports clips_touched/notes_changed. The drum-pad retargeting primitive; see retarget_drums for the automatic kit-swap flow.
 
 ```json
 {
   "tool": "remap_pitch",
   "arguments": {
-    "track_id": "<String>",
+    "track": "<String>",
     "from_pitch": "<Int32>",
     "to_pitch": "<Int32>",
     "scope": "<String>",
-    "scene_index": "<String>"
+    "scene": "<String>"
   }
 }
 ```
 
-<ParamField path="track_id" type="String" required>
-  Track number (1-based: 1, 2, … or 'first', 'second', …)
+<ParamField path="track" type="String" required>
+  Track handle from list_tracks, e.g. "trk_42". Copy verbatim.
 </ParamField>
 <ParamField path="from_pitch" type="Int32" required>
   Source MIDI pitch 0-127 (only notes at this pitch move)
@@ -192,6 +192,6 @@ Move every note at from_pitch to to_pitch on one track, server-side — no note 
 <ParamField path="scope" type="String">
   'session', 'arrangement', or 'both' (default)
 </ParamField>
-<ParamField path="scene_index" type="String">
-  Scene number (1-based) to limit to one session clip; requires scope='session'
+<ParamField path="scene" type="String">
+  Scene handle from list_scenes, e.g. "scn_7". Optional — limits the remap to one session clip; requires scope='session'. Omit (null) to leave the remap unscoped to a single scene.
 </ParamField>

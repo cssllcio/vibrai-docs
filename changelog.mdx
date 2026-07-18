@@ -4,6 +4,49 @@ description: "New features, improvements, and fixes in Vibrai."
 rss: true
 ---
 
+<Update label="1.3.1" description="July 18, 2026">
+  New ways to package the Vibrai Agent Skill for Claude Desktop, a few new guided MCP wizards, and two install-time fixes.
+
+  ## Claude Desktop Skill packaging
+
+  Claude Desktop's Skills feature only accepts a manually-uploaded `.zip`, unlike the directory-based install Claude Code, Codex, and Gemini CLI use. Vibrai now supports it directly:
+
+  - **`vibrai skill package`** produces a ready-to-upload `.zip` (add `--to <path>` for a custom location).
+  - Running `vibrai skill install` or `vibrai skill path` with `--target claude-desktop` now points you at the new command instead of erroring.
+  - The same packaging is available as an MCP tool, so an AI assistant connected to Vibrai can produce the zip on your behalf.
+
+  ## New guided wizards
+
+  Four new guided prompts for AI assistants connected over MCP — each walks the assistant through an existing capability step by step: wrapping up a session (capture + export), finding a stock sound, swapping a drum kit, and authoring automation.
+
+  ## Fixes
+
+  - **`brew install`/self-update installs now include the starter templates.** A packaging gap meant `vibrai install templates` (and `install all`) failed right after the Homebrew or self-update path finished installing everything else — the standard `.pkg` installer was unaffected.
+  - **The Max for Live device's status page loads correctly after install.** A copy step was skipping a nested folder, so the in-Ableton status page showed a blank error instead of Vibrai's status.
+  - The extension's install listing now links to the real support/documentation pages instead of the private development repo.
+</Update>
+
+<Update label="1.3.0" description="July 17, 2026">
+  Play songs from Session view, and a round of macOS installer hardening found during 1.2.0's own post-release checks.
+
+  ## Session-view scene playback
+
+  Play a song by firing Session scenes — playback can now be driven from the Session view, on both the CLI and MCP surfaces, not just the arrangement.
+
+  ## macOS installer + uninstall hardening
+
+  - **`uninstall --purge-data` run with elevated privileges no longer resurrects the profile directory as root**, which had been leaving behind root-owned files a normal user couldn't clean up.
+  - **A missing or unreadable license file no longer crashes Vibrai** — the license check now fails open instead of aborting.
+  - **The postinstall step repairs profile-directory ownership** before Ableton Live or `vibrai` ever runs as your normal user account.
+  - **The installer now runs natively on Apple Silicon** during install/uninstall scripts, instead of under Rosetta translation.
+  - **Uninstall diagnostics are now captured and reported** instead of silently discarded, making it easier to tell what happened if an uninstall doesn't fully clean up.
+
+  ## `.mcpb` manifest fixes
+
+  - The install prerequisite now correctly states **Ableton Live 12+** (an arrangement-clip feature the manifest relies on is Live-12-only; the manifest previously said 11+).
+  - The Claude Desktop extension listing's license, homepage, and repository links now point at the correct commercial-license terms and public pages instead of an incorrect open-source claim and a private repo.
+</Update>
+
 <Update label="1.2.0" description="July 16, 2026">
   Automation you can trust, smaller installs, and a new way to install Vibrai — plus a more reliable connection for AI assistants.
 
