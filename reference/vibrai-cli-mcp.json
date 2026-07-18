@@ -1,6 +1,6 @@
 {
-  "engineVersion": "1.1.0.0",
-  "generatedAt": "2026-07-14T02:15:55Z",
+  "engineVersion": "1.3.1.0",
+  "generatedAt": "2026-07-18T21:00:00Z",
   "features": [
     {
       "id": "transport",
@@ -112,12 +112,12 @@
           },
           {
             "name": "track get",
-            "description": "Get a track by its 1-based number",
+            "description": "Get a track by its handle",
             "arguments": [
               {
                 "name": "track",
                 "required": true,
-                "description": "Track number (1-based: 1, 2, \u2026 or first, second, \u2026)"
+                "description": "Track handle (trk_42) OR 1-based number (1, 2, \u2026) OR ordinal (first, second, \u2026)"
               }
             ],
             "options": []
@@ -138,17 +138,29 @@
                 "valueName": "PARTTYPE",
                 "default": "Other",
                 "description": "Part type (Bass, Lead, Melody, etc.)"
+              },
+              {
+                "name": "--number-tracks",
+                "valueName": null,
+                "default": null,
+                "description": "Prefix track names with Ableton\u0027s \u0027#\u0027 auto-numbering token for this run."
+              },
+              {
+                "name": "--no-number-tracks",
+                "valueName": null,
+                "default": null,
+                "description": "Disable \u0027#\u0027 track auto-numbering for this run (overrides env / project setting)."
               }
             ]
           },
           {
             "name": "track delete",
-            "description": "Delete a track by its 1-based number",
+            "description": "Delete a track by its handle",
             "arguments": [
               {
                 "name": "track",
                 "required": false,
-                "description": "Positional track number (1-based: 1, 2, \u2026 or first, second, \u2026). Omit if using --liveset-id."
+                "description": "Track handle (trk_42) OR 1-based number (1, 2, \u2026) OR ordinal (first, second, \u2026). Omit if using --liveset-id."
               }
             ],
             "options": [
@@ -156,18 +168,18 @@
                 "name": "--liveset-id",
                 "valueName": "ID",
                 "default": null,
-                "description": "Stable liveset_id from \u0027vibrai track list --json\u0027; preferred over the positional track number when available (survives reorders)."
+                "description": "Stable liveset_id handle (trk_42) from \u0027vibrai track list --json\u0027; equivalent to passing the handle positionally as \u003Ctrack\u003E. Kept for backward compatibility \u2014 takes precedence over the positional value when both are supplied."
               }
             ]
           },
           {
             "name": "track rename",
-            "description": "Rename a track by its 1-based number",
+            "description": "Rename a track by its handle",
             "arguments": [
               {
                 "name": "track",
                 "required": false,
-                "description": "Positional track number (1-based: 1, 2, \u2026 or first, second, \u2026). Omit if using --liveset-id (in that case pass \u003Cname\u003E alone after the flag)."
+                "description": "Track handle (trk_42) OR 1-based number (1, 2, \u2026) OR ordinal (first, second, \u2026). Omit if using --liveset-id (in that case pass \u003Cname\u003E alone after the flag)."
               },
               {
                 "name": "name",
@@ -180,7 +192,19 @@
                 "name": "--liveset-id",
                 "valueName": "ID",
                 "default": null,
-                "description": "Stable liveset_id from \u0027vibrai track list --json\u0027; preferred over the positional track number when available (survives reorders)."
+                "description": "Stable liveset_id handle (trk_42) from \u0027vibrai track list --json\u0027; equivalent to passing the handle positionally as \u003Ctrack\u003E. Kept for backward compatibility \u2014 takes precedence over the positional value when both are supplied."
+              },
+              {
+                "name": "--number-tracks",
+                "valueName": null,
+                "default": null,
+                "description": "Prefix track names with Ableton\u0027s \u0027#\u0027 auto-numbering token for this run."
+              },
+              {
+                "name": "--no-number-tracks",
+                "valueName": null,
+                "default": null,
+                "description": "Disable \u0027#\u0027 track auto-numbering for this run (overrides env / project setting)."
               }
             ]
           }
@@ -195,19 +219,13 @@
           },
           {
             "name": "get_track",
-            "description": "Get a single track. Pass either track_id (positional, 1-based) or liveset_id (stable across reorders within one Live session \u2014 get it from list_tracks). liveset_id wins if both are supplied. Returns the track in the same shape as list_tracks (1-based \u0060id\u0060 and \u0060midi_index\u0060). Errors TRACK_NOT_FOUND if no such track exists.",
+            "description": "Get a single track by its liveset_id handle from list_tracks (e.g. trk_42). Returns the same shape as list_tracks (1-based \u0060id\u0060/\u0060midi_index\u0060). Errors TRACK_NOT_FOUND if no such track exists.",
             "parameters": [
-              {
-                "name": "track_id",
-                "type": "String",
-                "required": false,
-                "description": "Positional track number (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
-              },
               {
                 "name": "liveset_id",
                 "type": "String",
-                "required": false,
-                "description": "Stable liveset_id from list_tracks; preferred over track_id when available."
+                "required": true,
+                "description": "Track handle from list_tracks, e.g. \u0022trk_42\u0022. Copy verbatim; not a position number."
               }
             ]
           },
@@ -226,30 +244,30 @@
                 "type": "PartType",
                 "required": true,
                 "description": "Part type (drums, bass, chords, lead, pad, fx, etc.)"
+              },
+              {
+                "name": "number_tracks",
+                "type": "Nullable\u00601",
+                "required": false,
+                "description": "Prefix the name with Ableton\u0027s \u0027#\u0027 auto-numbering token. Null inherits VIBRAI_NUMBER_TRACKS."
               }
             ]
           },
           {
             "name": "delete_track",
-            "description": "Delete a track. Pass either track_id (positional, 1-based) or liveset_id (stable across reorders \u2014 get it from list_tracks). liveset_id wins if both are supplied. Subsequent tracks shift down so positional IDs stay dense; existing liveset_ids on the remaining tracks are unaffected. Destructive \u2014 no undo. Errors: TRACK_NOT_FOUND, CANNOT_DELETE_LAST_TRACK.",
+            "description": "Delete a track by its liveset_id handle from list_tracks (e.g. trk_42). Remaining tracks keep their handles. Destructive \u2014 no undo. Errors: TRACK_NOT_FOUND, CANNOT_DELETE_LAST_TRACK.",
             "parameters": [
-              {
-                "name": "track_id",
-                "type": "String",
-                "required": false,
-                "description": "Positional track number (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
-              },
               {
                 "name": "liveset_id",
                 "type": "String",
-                "required": false,
-                "description": "Stable liveset_id from list_tracks; preferred over track_id when available."
+                "required": true,
+                "description": "Track handle from list_tracks, e.g. \u0022trk_42\u0022. Copy verbatim; not a position number."
               }
             ]
           },
           {
             "name": "set_track_name",
-            "description": "Rename a track. Pass either track_id (positional, 1-based, may shift on reorder) or liveset_id (stable across reorders within one Live session \u2014 get it from list_tracks). liveset_id wins if both are supplied. Use liveset_id when you plan to issue multiple ops on the same track over time, especially across track insertions.",
+            "description": "Rename a track. Address it by its liveset_id handle from list_tracks (e.g. trk_42).",
             "parameters": [
               {
                 "name": "name",
@@ -258,16 +276,16 @@
                 "description": "New track name"
               },
               {
-                "name": "track_id",
-                "type": "String",
-                "required": false,
-                "description": "Positional track number (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
-              },
-              {
                 "name": "liveset_id",
                 "type": "String",
+                "required": true,
+                "description": "Track handle from list_tracks, e.g. \u0022trk_42\u0022. Copy verbatim; not a position number."
+              },
+              {
+                "name": "number_tracks",
+                "type": "Nullable\u00601",
                 "required": false,
-                "description": "Stable liveset_id from list_tracks; preferred over track_id when available."
+                "description": "Prefix the name with Ableton\u0027s \u0027#\u0027 auto-numbering token. Null inherits VIBRAI_NUMBER_TRACKS."
               }
             ]
           }
@@ -288,7 +306,7 @@
               {
                 "name": "track",
                 "required": true,
-                "description": "Track number (1-based: 1, 2, \u2026 or first, second, \u2026)"
+                "description": "Track handle (trk_42) OR 1-based number (1, 2, \u2026) OR ordinal (first, second, \u2026)"
               }
             ],
             "options": []
@@ -300,7 +318,7 @@
               {
                 "name": "track",
                 "required": true,
-                "description": "Track number (1-based: 1, 2, \u2026 or first, second, \u2026)"
+                "description": "Track handle (trk_42) OR 1-based number (1, 2, \u2026) OR ordinal (first, second, \u2026)"
               }
             ],
             "options": [
@@ -319,7 +337,7 @@
               {
                 "name": "track",
                 "required": true,
-                "description": "Track number (1-based: 1, 2, \u2026 or first, second, \u2026)"
+                "description": "Track handle (trk_42) OR 1-based number (1, 2, \u2026) OR ordinal (first, second, \u2026)"
               }
             ],
             "options": [
@@ -387,7 +405,7 @@
               {
                 "name": "track",
                 "required": true,
-                "description": "Track number (1-based: 1, 2, \u2026 or first, second, \u2026)"
+                "description": "Track handle (trk_42) OR 1-based number (1, 2, \u2026) OR ordinal (first, second, \u2026)"
               },
               {
                 "name": "device-index",
@@ -425,10 +443,10 @@
             "description": "Load a stock device, User Library preset, or plug-in (VST3/AU) onto a track. Specify either path OR part_type, not both. The \u0060path\u0060 argument accepts (a) classic browser paths like \u0022Instruments/Operator\u0022 for stock devices, (b) \u0060query:\u0060 URIs from find_instruments_by_tag for user-tagged presets, or (c) plug-in URIs from the Plug-Ins browser section. part_type=Bd/Snare/HiHat/Perc/Crash/Fill/Roll/Drums loads the deterministic default kit (the stock 909 Core Kit), falling back to an empty \u0022Instruments/Drum Rack\u0022 \u002B warning when it is unavailable (use browse_devices \u0022Drums\u0022 and load_device on a specific kit preset to override). Tonal part_types (Bass/Pad/Chord/etc.) load synths that sound by default.",
             "parameters": [
               {
-                "name": "track_id",
+                "name": "track",
                 "type": "String",
                 "required": true,
-                "description": "Track number (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
+                "description": "Track handle from list_tracks, e.g. \u0022trk_42\u0022. Copy verbatim."
               },
               {
                 "name": "path",
@@ -467,10 +485,10 @@
             "description": "Remove a device from a track\u0027s top-level device chain by index. v1 scope: top-level chain only \u2014 nested racks (Drum Rack pads, Instrument Rack chains) are not addressable through this call. The device is gone immediately; there is no undo. Use list_devices to discover indices.",
             "parameters": [
               {
-                "name": "track_id",
+                "name": "track",
                 "type": "String",
                 "required": true,
-                "description": "Track number (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
+                "description": "Track handle from list_tracks, e.g. \u0022trk_42\u0022. Copy verbatim."
               },
               {
                 "name": "device_index",
@@ -485,10 +503,10 @@
             "description": "List devices currently loaded on a track in chain order. Returns each device\u0027s index, id, name, and class info \u2014 pass device_id to list_automation_params / get_automation / write_automation.",
             "parameters": [
               {
-                "name": "track_id",
+                "name": "track",
                 "type": "String",
                 "required": true,
-                "description": "Track number (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
+                "description": "Track handle from list_tracks, e.g. \u0022trk_42\u0022. Copy verbatim."
               }
             ]
           },
@@ -497,10 +515,10 @@
             "description": "List the pads of a Drum Rack on a track: each pad\u0027s index, name, and the MIDI note that triggers it. Use this to see which sounds a loaded kit maps to (e.g. which note is the snare). Returns an empty list when the device at device_index is not a Drum Rack.",
             "parameters": [
               {
-                "name": "track_id",
+                "name": "track",
                 "type": "String",
                 "required": true,
-                "description": "Track number (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
+                "description": "Track handle from list_tracks, e.g. \u0022trk_42\u0022. Copy verbatim."
               },
               {
                 "name": "device_index",
@@ -630,7 +648,7 @@
               {
                 "name": "track",
                 "required": true,
-                "description": "Track number (1-based: 1, 2, \u2026 or first, second, \u2026)"
+                "description": "Track handle (trk_42) OR 1-based number (1, 2, \u2026) OR ordinal (first, second, \u2026)"
               },
               {
                 "name": "path",
@@ -752,10 +770,10 @@
             "description": "Load a Core Library item onto a track by its relative path. Unlike the discovery tools, THIS needs a running Ableton \u2014 it resolves the item offline (via the same cached index), then loads it by its trusted derived URI through the Vibrai bridge. Returns the same result shape as load_device (track, device id, name, chain position, optional M4L health warning). Errors STOCK_ITEM_NOT_FOUND if the path doesn\u0027t match, or STOCK_LOAD_NEEDS_SNAPSHOT for the rare item with no offline-derivable URI.",
             "parameters": [
               {
-                "name": "track_id",
+                "name": "track",
                 "type": "String",
                 "required": true,
-                "description": "Track number (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
+                "description": "Track handle from list_tracks, e.g. \u0022trk_42\u0022. Copy verbatim."
               },
               {
                 "name": "path",
@@ -846,7 +864,7 @@
                 "name": "--track",
                 "valueName": "N",
                 "default": null,
-                "description": "Live track number (1-based); repeatable to limit the retarget"
+                "description": "Track handle (trk_42) OR 1-based number OR ordinal; repeatable to limit the retarget"
               },
               {
                 "name": "--dry-run",
@@ -928,7 +946,7 @@
                 "name": "tracks",
                 "type": "String[]",
                 "required": false,
-                "description": "Optional live track numbers (1-based, as in list_tracks) to limit the retarget"
+                "description": "Optional track handles from list_tracks, e.g. [\u0022trk_42\u0022], to limit the retarget. Copy verbatim."
               },
               {
                 "name": "dry_run",
@@ -1256,24 +1274,24 @@
               {
                 "name": "track",
                 "required": true,
-                "description": "Track number (1-based: 1, 2, \u2026 or first, second, \u2026)"
+                "description": "Track handle (trk_42) OR 1-based number (1, 2, \u2026) OR ordinal (first, second, \u2026)"
               }
             ],
             "options": []
           },
           {
             "name": "clip get",
-            "description": "Get a clip by track and scene index",
+            "description": "Get a clip by track and scene handle",
             "arguments": [
               {
                 "name": "track",
                 "required": true,
-                "description": "Track number (1-based: 1, 2, \u2026 or first, second, \u2026)"
+                "description": "Track handle (trk_42) OR 1-based number (1, 2, \u2026) OR ordinal (first, second, \u2026)"
               },
               {
                 "name": "scene",
                 "required": true,
-                "description": "Scene number (1-based: 1, 2, \u2026 or first, second, \u2026)"
+                "description": "Scene handle (scn_7) OR 1-based number (1, 2, \u2026) OR ordinal (first, second, \u2026)"
               }
             ],
             "options": []
@@ -1285,12 +1303,12 @@
               {
                 "name": "track",
                 "required": true,
-                "description": "Track number (1-based: 1, 2, \u2026 or first, second, \u2026)"
+                "description": "Track handle (trk_42) OR 1-based number (1, 2, \u2026) OR ordinal (first, second, \u2026)"
               },
               {
                 "name": "scene",
                 "required": true,
-                "description": "Scene number (1-based: 1, 2, \u2026 or first, second, \u2026)"
+                "description": "Scene handle (scn_7) OR 1-based number (1, 2, \u2026) OR ordinal (first, second, \u2026)"
               }
             ],
             "options": [
@@ -1309,12 +1327,12 @@
               {
                 "name": "track",
                 "required": true,
-                "description": "Track number (1-based: 1, 2, \u2026 or first, second, \u2026)"
+                "description": "Track handle (trk_42) OR 1-based number (1, 2, \u2026) OR ordinal (first, second, \u2026)"
               },
               {
                 "name": "scene",
                 "required": true,
-                "description": "Scene number (1-based: 1, 2, \u2026 or first, second, \u2026)"
+                "description": "Scene handle (scn_7) OR 1-based number (1, 2, \u2026) OR ordinal (first, second, \u2026)"
               }
             ],
             "options": []
@@ -1326,29 +1344,29 @@
               {
                 "name": "track",
                 "required": true,
-                "description": "Track number (1-based: 1, 2, \u2026 or first, second, \u2026)"
+                "description": "Track handle (trk_42) OR 1-based number (1, 2, \u2026) OR ordinal (first, second, \u2026)"
               },
               {
                 "name": "scene",
                 "required": true,
-                "description": "Scene number (1-based: 1, 2, \u2026 or first, second, \u2026)"
+                "description": "Scene handle (scn_7) OR 1-based number (1, 2, \u2026) OR ordinal (first, second, \u2026)"
               }
             ],
             "options": []
           },
           {
             "name": "clip rename",
-            "description": "Rename a clip by track and scene index",
+            "description": "Rename a clip by track and scene handle",
             "arguments": [
               {
                 "name": "track",
                 "required": true,
-                "description": "Track number (1-based: 1, 2, \u2026 or first, second, \u2026)"
+                "description": "Track handle (trk_42) OR 1-based number (1, 2, \u2026) OR ordinal (first, second, \u2026)"
               },
               {
                 "name": "scene",
                 "required": true,
-                "description": "Scene number (1-based: 1, 2, \u2026 or first, second, \u2026)"
+                "description": "Scene handle (scn_7) OR 1-based number (1, 2, \u2026) OR ordinal (first, second, \u2026)"
               },
               {
                 "name": "name",
@@ -1365,12 +1383,12 @@
               {
                 "name": "track",
                 "required": true,
-                "description": "Track number (1-based: 1, 2, \u2026 or first, second, \u2026)"
+                "description": "Track handle (trk_42) OR 1-based number (1, 2, \u2026) OR ordinal (first, second, \u2026)"
               },
               {
                 "name": "scene",
                 "required": true,
-                "description": "Scene number (1-based: 1, 2, \u2026 or first, second, \u2026)"
+                "description": "Scene handle (scn_7) OR 1-based number (1, 2, \u2026) OR ordinal (first, second, \u2026)"
               }
             ],
             "options": [
@@ -1395,12 +1413,12 @@
               {
                 "name": "track",
                 "required": true,
-                "description": "Track number (1-based: 1, 2, \u2026 or first, second, \u2026)"
+                "description": "Track handle (trk_42) OR 1-based number (1, 2, \u2026) OR ordinal (first, second, \u2026)"
               },
               {
                 "name": "scene",
                 "required": true,
-                "description": "Scene number (1-based: 1, 2, \u2026 or first, second, \u2026)"
+                "description": "Scene handle (scn_7) OR 1-based number (1, 2, \u2026) OR ordinal (first, second, \u2026)"
               },
               {
                 "name": "device",
@@ -1442,13 +1460,13 @@
                 "name": "--from",
                 "valueName": "0-1",
                 "default": null,
-                "description": "Curve start value (for Linear/Exp/Sine/Triangle/Saw/Hold)."
+                "description": "Curve start value as a fraction of the parameter\u0027s travel (0 = its min, 1 = its max); scaled to native units at write time. Defaults to 0. For Linear/Exp/Sine/Triangle/Saw/Hold."
               },
               {
                 "name": "--to",
                 "valueName": "0-1",
                 "default": null,
-                "description": "Curve end value (for Linear/Exp/Sine/Triangle/Saw)."
+                "description": "Curve end value as a fraction of the parameter\u0027s travel (0 = min, 1 = max). Defaults to 1. For Linear/Exp/Sine/Triangle/Saw."
               },
               {
                 "name": "--subdivisions",
@@ -1460,13 +1478,13 @@
                 "name": "--center",
                 "valueName": "0-1",
                 "default": null,
-                "description": "Wander center value."
+                "description": "Wander center as a fraction of the parameter\u0027s travel. Defaults to 0.5 (midpoint)."
               },
               {
                 "name": "--range",
                 "valueName": "0-1",
                 "default": null,
-                "description": "Wander deviation amplitude."
+                "description": "Wander deviation amplitude as a fraction of the parameter\u0027s travel (must be \u003E 0 and \u003C= 1)."
               },
               {
                 "name": "--smoothness",
@@ -1489,12 +1507,12 @@
               {
                 "name": "track",
                 "required": true,
-                "description": "Track number (1-based: 1, 2, \u2026 or first, second, \u2026)"
+                "description": "Track handle (trk_42) OR 1-based number (1, 2, \u2026) OR ordinal (first, second, \u2026)"
               },
               {
                 "name": "scene",
                 "required": true,
-                "description": "Scene number (1-based: 1, 2, \u2026 or first, second, \u2026)"
+                "description": "Scene handle (scn_7) OR 1-based number (1, 2, \u2026) OR ordinal (first, second, \u2026)"
               }
             ],
             "options": [
@@ -1518,49 +1536,49 @@
         "tools": [
           {
             "name": "list_clips",
-            "description": "List all clip slots for a track. Empty slots are included as empty entries. Returns clip metadata only \u2014 notes are stripped for performance; call \u0060get_clip\u0060 for note detail.",
+            "description": "List all clip slots for a track (a track handle). Empty slots are included as empty entries. Returns clip metadata only \u2014 notes are stripped for performance; call \u0060get_clip\u0060 for note detail.",
             "parameters": [
               {
-                "name": "track_id",
+                "name": "track",
                 "type": "String",
                 "required": true,
-                "description": "Track number (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
+                "description": "Track handle from list_tracks, e.g. \u0022trk_42\u0022. Copy verbatim."
               }
             ]
           },
           {
             "name": "get_clip",
-            "description": "Get a single clip by track and scene. Returns null if the slot is empty. Includes the clip\u0027s notes; use \u0060list_clips\u0060 for a notes-less summary across a track.",
+            "description": "Get a single clip by track and scene (both handles). Returns null if the slot is empty. Includes the clip\u0027s notes; use \u0060list_clips\u0060 for a notes-less summary across a track.",
             "parameters": [
               {
-                "name": "track_id",
+                "name": "track",
                 "type": "String",
                 "required": true,
-                "description": "Track number (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
+                "description": "Track handle from list_tracks, e.g. \u0022trk_42\u0022. Copy verbatim."
               },
               {
-                "name": "scene_index",
+                "name": "scene",
                 "type": "String",
                 "required": true,
-                "description": "Scene number (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
+                "description": "Scene handle from list_scenes, e.g. \u0022scn_7\u0022. Copy verbatim."
               }
             ]
           },
           {
             "name": "create_clip",
-            "description": "Create an empty MIDI clip at the given track and scene.",
+            "description": "Create an empty MIDI clip at the given track and scene (both handles).",
             "parameters": [
               {
-                "name": "track_id",
+                "name": "track",
                 "type": "String",
                 "required": true,
-                "description": "Track number (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
+                "description": "Track handle from list_tracks, e.g. \u0022trk_42\u0022. Copy verbatim."
               },
               {
-                "name": "scene_index",
+                "name": "scene",
                 "type": "String",
                 "required": true,
-                "description": "Scene number (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
+                "description": "Scene handle from list_scenes, e.g. \u0022scn_7\u0022. Copy verbatim."
               },
               {
                 "name": "bars",
@@ -1572,55 +1590,55 @@
           },
           {
             "name": "delete_clip",
-            "description": "Delete the clip at the given track and scene.",
+            "description": "Delete the clip at the given track and scene (both handles).",
             "parameters": [
               {
-                "name": "track_id",
+                "name": "track",
                 "type": "String",
                 "required": true,
-                "description": "Track number (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
+                "description": "Track handle from list_tracks, e.g. \u0022trk_42\u0022. Copy verbatim."
               },
               {
-                "name": "scene_index",
+                "name": "scene",
                 "type": "String",
                 "required": true,
-                "description": "Scene number (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
+                "description": "Scene handle from list_scenes, e.g. \u0022scn_7\u0022. Copy verbatim."
               }
             ]
           },
           {
             "name": "fire_clip",
-            "description": "Trigger the clip at the given track and scene.",
+            "description": "Trigger the clip at the given track and scene (both handles).",
             "parameters": [
               {
-                "name": "track_id",
+                "name": "track",
                 "type": "String",
                 "required": true,
-                "description": "Track number (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
+                "description": "Track handle from list_tracks, e.g. \u0022trk_42\u0022. Copy verbatim."
               },
               {
-                "name": "scene_index",
+                "name": "scene",
                 "type": "String",
                 "required": true,
-                "description": "Scene number (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
+                "description": "Scene handle from list_scenes, e.g. \u0022scn_7\u0022. Copy verbatim."
               }
             ]
           },
           {
             "name": "set_clip_name",
-            "description": "Rename the clip at the given track and scene.",
+            "description": "Rename the clip at the given track and scene (both handles).",
             "parameters": [
               {
-                "name": "track_id",
+                "name": "track",
                 "type": "String",
                 "required": true,
-                "description": "Track number (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
+                "description": "Track handle from list_tracks, e.g. \u0022trk_42\u0022. Copy verbatim."
               },
               {
-                "name": "scene_index",
+                "name": "scene",
                 "type": "String",
                 "required": true,
-                "description": "Scene number (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
+                "description": "Scene handle from list_scenes, e.g. \u0022scn_7\u0022. Copy verbatim."
               },
               {
                 "name": "name",
@@ -1635,16 +1653,16 @@
             "description": "Read automation envelope(s) on a session-view clip. Omit both deviceId and paramId for a bulk read of every envelope on the clip; supply BOTH to read one specific (device, param) envelope. Supplying exactly one is an error.",
             "parameters": [
               {
-                "name": "track_id",
+                "name": "track",
                 "type": "String",
                 "required": true,
-                "description": "Track number (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
+                "description": "Track handle from list_tracks, e.g. \u0022trk_42\u0022. Copy verbatim."
               },
               {
-                "name": "scene_index",
+                "name": "scene",
                 "type": "String",
                 "required": true,
-                "description": "Scene number of the clip carrying the envelope(s) (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
+                "description": "Scene handle from list_scenes, e.g. \u0022scn_7\u0022. Copy verbatim."
               },
               {
                 "name": "device_id",
@@ -1665,16 +1683,16 @@
             "description": "Write an automation envelope onto a session-view clip (replaces existing points). Provide EITHER points (free-form) OR curve_spec (compact shape \u2014 Sine, Wander, etc \u2014 expanded server-side). Returns the readback so you can verify what landed.",
             "parameters": [
               {
-                "name": "track_id",
+                "name": "track",
                 "type": "String",
                 "required": true,
-                "description": "Track number (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
+                "description": "Track handle from list_tracks, e.g. \u0022trk_42\u0022. Copy verbatim."
               },
               {
-                "name": "scene_index",
+                "name": "scene",
                 "type": "String",
                 "required": true,
-                "description": "Scene number of the clip that should carry the envelope (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
+                "description": "Scene handle from list_scenes, e.g. \u0022scn_7\u0022. Copy verbatim."
               },
               {
                 "name": "device_id",
@@ -1707,16 +1725,16 @@
             "description": "Clear automation envelope(s) on a session-view clip. Supply BOTH deviceId and paramId to remove one specific envelope; omit BOTH to remove every envelope on the clip. Supplying exactly one is an error.",
             "parameters": [
               {
-                "name": "track_id",
+                "name": "track",
                 "type": "String",
                 "required": true,
-                "description": "Track number (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
+                "description": "Track handle from list_tracks, e.g. \u0022trk_42\u0022. Copy verbatim."
               },
               {
-                "name": "scene_index",
+                "name": "scene",
                 "type": "String",
                 "required": true,
-                "description": "Scene number of the clip (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
+                "description": "Scene handle from list_scenes, e.g. \u0022scn_7\u0022. Copy verbatim."
               },
               {
                 "name": "device_id",
@@ -1749,12 +1767,12 @@
               {
                 "name": "track",
                 "required": true,
-                "description": "Track number (1-based: 1, 2, \u2026 or first, second, \u2026)"
+                "description": "Track handle (trk_42) OR 1-based number (1, 2, \u2026) OR ordinal (first, second, \u2026)"
               },
               {
                 "name": "scene",
                 "required": true,
-                "description": "Scene number (1-based: 1, 2, \u2026 or first, second, \u2026)"
+                "description": "Scene handle (scn_7) OR 1-based number (1, 2, \u2026) OR ordinal (first, second, \u2026)"
               }
             ],
             "options": []
@@ -1766,12 +1784,12 @@
               {
                 "name": "track",
                 "required": true,
-                "description": "Track number (1-based: 1, 2, \u2026 or first, second, \u2026)"
+                "description": "Track handle (trk_42) OR 1-based number (1, 2, \u2026) OR ordinal (first, second, \u2026)"
               },
               {
                 "name": "scene",
                 "required": true,
-                "description": "Scene number (1-based: 1, 2, \u2026 or first, second, \u2026)"
+                "description": "Scene handle (scn_7) OR 1-based number (1, 2, \u2026) OR ordinal (first, second, \u2026)"
               }
             ],
             "options": [
@@ -1796,12 +1814,12 @@
               {
                 "name": "track",
                 "required": true,
-                "description": "Track number (1-based: 1, 2, \u2026 or first, second, \u2026)"
+                "description": "Track handle (trk_42) OR 1-based number (1, 2, \u2026) OR ordinal (first, second, \u2026)"
               },
               {
                 "name": "scene",
                 "required": true,
-                "description": "Scene number (1-based: 1, 2, \u2026 or first, second, \u2026)"
+                "description": "Scene handle (scn_7) OR 1-based number (1, 2, \u2026) OR ordinal (first, second, \u2026)"
               }
             ],
             "options": [
@@ -1826,7 +1844,7 @@
               {
                 "name": "track",
                 "required": true,
-                "description": "Track number (1-based: 1, 2, \u2026 or first, second, \u2026)"
+                "description": "Track handle (trk_42) OR 1-based number (1, 2, \u2026) OR ordinal (first, second, \u2026)"
               }
             ],
             "options": [
@@ -1852,7 +1870,7 @@
                 "name": "--scene",
                 "valueName": "N",
                 "default": null,
-                "description": "Scene number (1-based) to limit to one session clip; requires --scope session"
+                "description": "Scene handle (scn_7) OR 1-based number OR ordinal, to limit to one session clip; requires --scope session"
               }
             ]
           }
@@ -1865,16 +1883,16 @@
             "description": "List all notes in a clip.",
             "parameters": [
               {
-                "name": "track_id",
+                "name": "track",
                 "type": "String",
                 "required": true,
-                "description": "Track number (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
+                "description": "Track handle from list_tracks, e.g. \u0022trk_42\u0022. Copy verbatim."
               },
               {
-                "name": "scene_index",
+                "name": "scene",
                 "type": "String",
                 "required": true,
-                "description": "Scene number (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
+                "description": "Scene handle from list_scenes, e.g. \u0022scn_7\u0022. Copy verbatim."
               }
             ]
           },
@@ -1883,16 +1901,16 @@
             "description": "Replace all notes in a clip with the given list.",
             "parameters": [
               {
-                "name": "track_id",
+                "name": "track",
                 "type": "String",
                 "required": true,
-                "description": "Track number (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
+                "description": "Track handle from list_tracks, e.g. \u0022trk_42\u0022. Copy verbatim."
               },
               {
-                "name": "scene_index",
+                "name": "scene",
                 "type": "String",
                 "required": true,
-                "description": "Scene number (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
+                "description": "Scene handle from list_scenes, e.g. \u0022scn_7\u0022. Copy verbatim."
               },
               {
                 "name": "notes",
@@ -1907,16 +1925,16 @@
             "description": "Append notes to a clip without removing existing notes.",
             "parameters": [
               {
-                "name": "track_id",
+                "name": "track",
                 "type": "String",
                 "required": true,
-                "description": "Track number (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
+                "description": "Track handle from list_tracks, e.g. \u0022trk_42\u0022. Copy verbatim."
               },
               {
-                "name": "scene_index",
+                "name": "scene",
                 "type": "String",
                 "required": true,
-                "description": "Scene number (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
+                "description": "Scene handle from list_scenes, e.g. \u0022scn_7\u0022. Copy verbatim."
               },
               {
                 "name": "notes",
@@ -1928,13 +1946,13 @@
           },
           {
             "name": "remap_pitch",
-            "description": "Move every note at from_pitch to to_pitch on one track, server-side \u2014 no note round-tripping, all other note fields preserved. Scope \u0027session\u0027, \u0027arrangement\u0027, or \u0027both\u0027 (default both); scene_index (session scope only) narrows to one clip. Reports clips_touched/notes_changed. The drum-pad retargeting primitive; see retarget_drums for the automatic kit-swap flow.",
+            "description": "Move every note at from_pitch to to_pitch on one track, server-side \u2014 no note round-tripping, all other note fields preserved. Scope \u0027session\u0027, \u0027arrangement\u0027, or \u0027both\u0027 (default both); scene (session scope only) narrows to one session clip. Reports clips_touched/notes_changed. The drum-pad retargeting primitive; see retarget_drums for the automatic kit-swap flow.",
             "parameters": [
               {
-                "name": "track_id",
+                "name": "track",
                 "type": "String",
                 "required": true,
-                "description": "Track number (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
+                "description": "Track handle from list_tracks, e.g. \u0022trk_42\u0022. Copy verbatim."
               },
               {
                 "name": "from_pitch",
@@ -1955,10 +1973,10 @@
                 "description": "\u0027session\u0027, \u0027arrangement\u0027, or \u0027both\u0027 (default)"
               },
               {
-                "name": "scene_index",
+                "name": "scene",
                 "type": "String",
                 "required": false,
-                "description": "Scene number (1-based) to limit to one session clip; requires scope=\u0027session\u0027"
+                "description": "Scene handle from list_scenes, e.g. \u0022scn_7\u0022. Optional \u2014 limits the remap to one session clip; requires scope=\u0027session\u0027. Omit (null) to leave the remap unscoped to a single scene."
               }
             ]
           }
@@ -1979,7 +1997,7 @@
               {
                 "name": "track",
                 "required": true,
-                "description": "Track number (1-based: 1, 2, \u2026 or first, second, \u2026)"
+                "description": "Track handle (trk_42) OR 1-based number (1, 2, \u2026) OR ordinal (first, second, \u2026)"
               },
               {
                 "name": "device",
@@ -2003,12 +2021,12 @@
           },
           {
             "name": "automation get",
-            "description": "Read arrangement automation for a track (merged ledger \u002B live, provenance-tagged)",
+            "description": "Read arrangement automation for a track (merged ledger \u002B live, provenance-tagged). Arrangement automation is bounced, not directly LOM-readable \u2014 this merges the write ledger, so save the set (Cmd-S) if you need read-back across separate CLI invocations.",
             "arguments": [
               {
                 "name": "track",
                 "required": true,
-                "description": "Track number (1-based: 1, 2, \u2026 or first, second, \u2026)"
+                "description": "Track handle (trk_42) OR 1-based number (1, 2, \u2026) OR ordinal (first, second, \u2026)"
               }
             ],
             "options": [
@@ -2040,12 +2058,12 @@
           },
           {
             "name": "automation write",
-            "description": "Write automation onto the arrangement timeline (chunked per clip, ledger-backed)",
+            "description": "Write automation onto the arrangement timeline (chunked per clip, ledger-backed). Not directly LOM-readable afterward \u2014 confirm with \u0027automation get\u0027 (it merges the write ledger); save the set (Cmd-S) so the ledger persists for read-back across separate CLI invocations.",
             "arguments": [
               {
                 "name": "track",
                 "required": true,
-                "description": "Track number (1-based: 1, 2, \u2026 or first, second, \u2026)"
+                "description": "Track handle (trk_42) OR 1-based number (1, 2, \u2026) OR ordinal (first, second, \u2026)"
               },
               {
                 "name": "start",
@@ -2081,13 +2099,13 @@
                 "name": "--from",
                 "valueName": "0-1",
                 "default": null,
-                "description": "Curve start value (for Linear/Exp/Sine/Triangle/Saw/Hold)."
+                "description": "Curve start value as a fraction of the parameter\u0027s travel (0 = its min, 1 = its max); scaled to native units at write time. Defaults to 0. For Linear/Exp/Sine/Triangle/Saw/Hold."
               },
               {
                 "name": "--to",
                 "valueName": "0-1",
                 "default": null,
-                "description": "Curve end value (for Linear/Exp/Sine/Triangle/Saw)."
+                "description": "Curve end value as a fraction of the parameter\u0027s travel (0 = min, 1 = max). Defaults to 1. For Linear/Exp/Sine/Triangle/Saw."
               },
               {
                 "name": "--subdivisions",
@@ -2099,13 +2117,13 @@
                 "name": "--center",
                 "valueName": "0-1",
                 "default": null,
-                "description": "Wander center value."
+                "description": "Wander center as a fraction of the parameter\u0027s travel. Defaults to 0.5 (midpoint)."
               },
               {
                 "name": "--range",
                 "valueName": "0-1",
                 "default": null,
-                "description": "Wander deviation amplitude."
+                "description": "Wander deviation amplitude as a fraction of the parameter\u0027s travel (must be \u003E 0 and \u003C= 1)."
               },
               {
                 "name": "--smoothness",
@@ -2135,7 +2153,7 @@
                 "name": "--envelopes",
                 "valueName": "PATH",
                 "default": null,
-                "description": "Path to a JSON file containing an array of AutomationEnvelopeSpec entries (multi-envelope write; each entry carries its own device_param/macro target \u2014 supports macro targets, unlike the single-envelope form). Mutually exclusive with --curve/--json-data/--file."
+                "description": "Path to a JSON file: an array of envelope entries (multi-envelope write). Each entry has a flat \u0060target\u0060 \u2014 device_id\u002Bparam_id (a device parameter) OR rack_kind\u002Bmacro_index (a rack macro; inferred, no \u0060kind\u0060 field) \u2014 plus \u0060points\u0060 or \u0060curve_spec\u0060. Supports macro targets, unlike the single-envelope form. Mutually exclusive with --curve/--json-data/--file."
               },
               {
                 "name": "--replace",
@@ -2164,7 +2182,7 @@
               {
                 "name": "track",
                 "required": true,
-                "description": "Track number (1-based: 1, 2, \u2026 or first, second, \u2026)"
+                "description": "Track handle (trk_42) OR 1-based number (1, 2, \u2026) OR ordinal (first, second, \u2026)"
               }
             ],
             "options": [
@@ -2214,8 +2232,8 @@
               {
                 "name": "--curve",
                 "valueName": "CURVE",
-                "default": "LinearUp",
-                "description": "LinearUp | LinearDown | ExpUp | ExpDown | Sine | Triangle | SawUp | SawDown | Hold | Wander"
+                "default": null,
+                "description": "LinearUp | LinearDown | ExpUp | ExpDown | Sine | Triangle | SawUp | SawDown | Hold | Wander (default LinearUp)"
               },
               {
                 "name": "--sections",
@@ -2263,7 +2281,7 @@
                 "name": "--range",
                 "valueName": "0-1",
                 "default": null,
-                "description": "Wander deviation amplitude."
+                "description": "Wander deviation amplitude, 0-1 (must be \u003E 0)."
               },
               {
                 "name": "--smoothness",
@@ -2294,10 +2312,10 @@
             "description": "List the automatable parameters of a device on a track.",
             "parameters": [
               {
-                "name": "track_id",
+                "name": "track",
                 "type": "String",
                 "required": true,
-                "description": "Track number (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
+                "description": "Track handle from list_tracks, e.g. \u0022trk_42\u0022. Copy verbatim."
               },
               {
                 "name": "device_id",
@@ -2309,13 +2327,13 @@
           },
           {
             "name": "write_automation",
-            "description": "Write automation onto the ARRANGEMENT timeline (Live\u0027s primary automation home). One logical write may span several arrangement clips: the curve is sliced per clip (chunked delivery \u2014 clip names/colors/boundaries preserved; no coalescing). Gaps are FILLED with envelope-bearing curve-slice clips by default (create_clip:false skips them instead \u2014 a skipped gap is an audible reset to the dial value; the lane does not interpolate). A window starting/ending mid-clip refuses without force:true. Sequential writes to the same window are safe: ledger-known envelopes re-deliver automatically (replace:true opts out). Session-view clips use write_clip_envelope instead.",
+            "description": "Write automation onto the ARRANGEMENT timeline (Live\u0027s primary automation home). One logical write may span several arrangement clips: the curve is sliced per clip (chunked delivery \u2014 clip names/colors/boundaries preserved; no coalescing). Gaps are FILLED with envelope-bearing curve-slice clips by default (create_clip:false skips them instead \u2014 a skipped gap is an audible reset to the dial value; the lane does not interpolate). A window starting/ending mid-clip refuses without force:true. Sequential writes to the same window are safe: ledger-known envelopes re-deliver automatically (replace:true opts out). Session-view clips use write_clip_envelope instead. Bounced automation is not directly LOM-readable afterward \u2014 confirm with get_automation (it merges the write ledger); save the set (Cmd-S) so the ledger persists for read-back across separate CLI/MCP invocations.",
             "parameters": [
               {
-                "name": "track_id",
+                "name": "track",
                 "type": "String",
                 "required": true,
-                "description": "Track number (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
+                "description": "Track handle from list_tracks, e.g. \u0022trk_42\u0022. Copy verbatim."
               },
               {
                 "name": "start",
@@ -2331,9 +2349,9 @@
               },
               {
                 "name": "envelopes",
-                "type": "AutomationEnvelopeSpec[]",
+                "type": "AutomationEnvelopeDto[]",
                 "required": true,
-                "description": "Envelope specs. Each: discriminated target (kind=\u0022device_param\u0022|\u0022macro\u0022) \u002B points OR curve_spec."
+                "description": "Envelope specs. Each has a flat \u0060target\u0060 plus \u0060points\u0060 OR \u0060curve_spec\u0060. target = a device parameter (device_id \u002B param_id) OR a rack macro (rack_kind \u002B macro_index); the kind is inferred from which fields you supply \u2014 no discriminator needed."
               },
               {
                 "name": "replace",
@@ -2357,13 +2375,13 @@
           },
           {
             "name": "get_automation",
-            "description": "Read ARRANGEMENT automation for a track \u2014 one merged, honest answer. Each envelope is provenance-tagged: source=\u0022ledger\u0022 (authored by Vibrai; exact points; survives restarts for SAVED Live sets, process-lifetime only for unsaved ones) or source=\u0022live\u0022 (visible to the LOM; 0.25-beat sampled). Optional window/target filters.",
+            "description": "Read ARRANGEMENT automation for a track \u2014 one merged, honest answer. Each envelope is provenance-tagged: source=\u0022ledger\u0022 (authored by Vibrai; exact points; survives restarts for SAVED Live sets, process-lifetime only for unsaved ones) or source=\u0022live\u0022 (visible to the LOM; 0.25-beat sampled). Optional window/target filters. Arrangement automation is bounced, not directly LOM-readable \u2014 this merges the write ledger, so save the set (Cmd-S) if you need read-back across separate CLI/MCP invocations.",
             "parameters": [
               {
-                "name": "track_id",
+                "name": "track",
                 "type": "String",
                 "required": true,
-                "description": "Track number (1-based)"
+                "description": "Track handle from list_tracks, e.g. \u0022trk_42\u0022. Copy verbatim."
               },
               {
                 "name": "start",
@@ -2396,10 +2414,10 @@
             "description": "Clear ARRANGEMENT automation by track, optionally narrowed by device\u002Bparam and/or window. Always clears by unconditional baseline-overwrite: each ledger-known (Vibrai-authored) entry in scope is overwritten with a flat envelope at its final authored value, then forgotten. Native LOM deletion is never used as the effect mechanism \u2014 its supported:true is not proof of an effect on Vibrai-delivered clips. Automation the ledger doesn\u0027t know about (hand-drawn in Live, or written before the ledger existed) cannot be targeted this way; the result reports that honestly instead of pretending to have cleared it.",
             "parameters": [
               {
-                "name": "track_id",
+                "name": "track",
                 "type": "String",
                 "required": true,
-                "description": "Track number (1-based)"
+                "description": "Track handle from list_tracks, e.g. \u0022trk_42\u0022. Copy verbatim."
               },
               {
                 "name": "device_id",
@@ -2459,7 +2477,49 @@
                 "name": "sections",
                 "type": "String[]",
                 "required": true,
-                "description": "Section ids to apply to, or the single literal \u0022all\u0022 to apply to every section in project.Sections. Sections where the part has no clip source are skipped and reported in skipped_no_clip_source."
+                "description": "Section ids to apply to, or the single literal \u0022all\u0022 (case-insensitive) to apply to every section in project.Sections. Sections where the part has no clip source are skipped and reported in skipped_no_clip_source."
+              },
+              {
+                "name": "from_value",
+                "type": "Nullable\u00601",
+                "required": false,
+                "description": "Curve start value: a fraction of the parameter\u0027s travel, 0-1. Default per shape."
+              },
+              {
+                "name": "to_value",
+                "type": "Nullable\u00601",
+                "required": false,
+                "description": "Curve end value: a fraction of the parameter\u0027s travel, 0-1."
+              },
+              {
+                "name": "subdivisions",
+                "type": "Nullable\u00601",
+                "required": false,
+                "description": "Saw teeth (default 4)."
+              },
+              {
+                "name": "center_value",
+                "type": "Nullable\u00601",
+                "required": false,
+                "description": "Wander center as a fraction of travel, 0-1."
+              },
+              {
+                "name": "range",
+                "type": "Nullable\u00601",
+                "required": false,
+                "description": "Wander deviation amplitude as a fraction of travel, 0-1 (must be \u003E 0)."
+              },
+              {
+                "name": "smoothness",
+                "type": "Nullable\u00601",
+                "required": false,
+                "description": "Wander knot density, 0-1."
+              },
+              {
+                "name": "seed",
+                "type": "Nullable\u00601",
+                "required": false,
+                "description": "Wander RNG seed (auto if omitted)."
               },
               {
                 "name": "apply_to_live",
@@ -2525,6 +2585,12 @@
                 "valueName": "PRESET",
                 "default": null,
                 "description": "Preset id or display name within --genre (default: first preset alphabetically)"
+              },
+              {
+                "name": "--number-tracks",
+                "valueName": null,
+                "default": null,
+                "description": "Persist Ableton \u0027#\u0027 track auto-numbering into the new project."
               }
             ]
           },
@@ -2566,6 +2632,25 @@
                 "description": "Path to .vibrai file (default: Untitled.vibrai in CWD)"
               }
             ]
+          },
+          {
+            "name": "project config",
+            "description": "Edit persisted project preferences (e.g. --number-tracks)",
+            "arguments": [],
+            "options": [
+              {
+                "name": "--project",
+                "valueName": "PATH",
+                "default": null,
+                "description": "Path to .vibrai file (default: Untitled.vibrai in CWD)"
+              },
+              {
+                "name": "--number-tracks",
+                "valueName": "BOOL",
+                "default": null,
+                "description": "Persist Ableton \u0027#\u0027 track auto-numbering: true or false."
+              }
+            ]
           }
         ]
       },
@@ -2573,7 +2658,7 @@
         "tools": [
           {
             "name": "init_project",
-            "description": "Create a new .vibrai YAML file at the given absolute path. Without \u0060demo\u0060, writes a minimal 2-section / 1-part boilerplate. With \u0060demo: true\u0060, writes an opinionated 3-section / 2-part starter that exercises variation, per-section scale overrides, naming, and both generator types. Track IDs are probed from the bridge (first N MIDI tracks) and each probed binding records the track\u0027s current name (part \u0060track_name\u0060) so \u0060generate\u0060 reuses those tracks; if the bridge is unreachable, falls back to track 1 (and 2 for demo) with no binding.",
+            "description": "Create a new .vibrai YAML file at the given absolute path. Without \u0060demo\u0060, writes a minimal 2-section / 1-part boilerplate. With \u0060demo: true\u0060, writes an opinionated 3-section / 2-part starter that exercises variation, per-section scale overrides, naming, and both generator types. Track IDs are probed from the bridge (first N MIDI tracks) and each probed binding records the track\u0027s current name (part \u0060track_name\u0060) so \u0060generate\u0060 reuses those tracks; if the bridge is unreachable, falls back to track 1 (and 2 for demo) with no binding. Set number_tracks=true to persist Ableton \u0027#\u0027 track auto-numbering into the new project\u0027s Defaults.",
             "parameters": [
               {
                 "name": "path",
@@ -2592,6 +2677,12 @@
                 "type": "Boolean",
                 "required": false,
                 "description": "If true, write the demo content instead of the boilerplate."
+              },
+              {
+                "name": "number_tracks",
+                "type": "Boolean",
+                "required": false,
+                "description": "Persist Ableton \u0027#\u0027 track auto-numbering into the new project."
               }
             ]
           },
@@ -2616,6 +2707,12 @@
                 "type": "String",
                 "required": true,
                 "description": "Absolute filesystem path to write to."
+              },
+              {
+                "name": "project",
+                "type": "VibraiProject",
+                "required": true,
+                "description": "Project document, same shape as load_project\u0027s return value."
               }
             ]
           },
@@ -2628,6 +2725,24 @@
                 "type": "String",
                 "required": true,
                 "description": "Absolute filesystem path to the .vibrai file."
+              }
+            ]
+          },
+          {
+            "name": "configure_project",
+            "description": "Edit project-level preferences in an existing .vibrai file. Currently: number_tracks (persist Ableton \u0027#\u0027 track auto-numbering). Loads, updates project.defaults, and saves. Errors if the file is missing.",
+            "parameters": [
+              {
+                "name": "path",
+                "type": "String",
+                "required": true,
+                "description": "Absolute filesystem path to the .vibrai file."
+              },
+              {
+                "name": "number_tracks",
+                "type": "Boolean",
+                "required": true,
+                "description": "Persist Ableton \u0027#\u0027 track auto-numbering (true) or disable it (false)."
               }
             ]
           }
@@ -2747,35 +2862,59 @@
                 "name": "--at",
                 "valueName": "SCENE",
                 "default": null,
-                "description": "Optional scene number to insert at (1-based: 1, 2, \u2026 or first, second, \u2026); omit to append."
+                "description": "Optional scene number to insert at (1-based: 1, 2, \u2026 or first, second, \u2026); omit to append. Mutually exclusive with --after/--before."
+              },
+              {
+                "name": "--after",
+                "valueName": "SCENE",
+                "default": null,
+                "description": "Insert the new scene AFTER this scene \u2014 handle (scn_7) OR 1-based number OR ordinal. Mutually exclusive with --at/--before."
+              },
+              {
+                "name": "--before",
+                "valueName": "SCENE",
+                "default": null,
+                "description": "Insert the new scene BEFORE this scene \u2014 handle (scn_7) OR 1-based number OR ordinal. Mutually exclusive with --at/--after."
               }
             ]
           },
           {
             "name": "scene delete",
-            "description": "Delete a scene by its index",
+            "description": "Delete a scene by its handle",
             "arguments": [
               {
                 "name": "scene",
                 "required": true,
-                "description": "Scene number to delete (1-based: 1, 2, \u2026 or first, second, \u2026)"
+                "description": "Scene handle (scn_7) OR 1-based number (1, 2, \u2026) OR ordinal (first, second, \u2026)"
               }
             ],
             "options": []
           },
           {
             "name": "scene rename",
-            "description": "Rename a scene by its index",
+            "description": "Rename a scene by its handle",
             "arguments": [
               {
                 "name": "scene",
                 "required": true,
-                "description": "Scene number to rename (1-based: 1, 2, \u2026 or first, second, \u2026)"
+                "description": "Scene handle (scn_7) OR 1-based number (1, 2, \u2026) OR ordinal (first, second, \u2026)"
               },
               {
                 "name": "name",
                 "required": true,
                 "description": "New scene name"
+              }
+            ],
+            "options": []
+          },
+          {
+            "name": "scene play",
+            "description": "Fire (play) a scene by its handle.",
+            "arguments": [
+              {
+                "name": "scene",
+                "required": true,
+                "description": "Scene handle (scn_7) OR 1-based number (1, 2, \u2026) OR ordinal (first, second, \u2026)"
               }
             ],
             "options": []
@@ -2786,18 +2925,18 @@
         "tools": [
           {
             "name": "list_scenes",
-            "description": "List all scenes in the current Live set. Returned in order (1-based). Each entry has an index and a name (empty string if unnamed).",
+            "description": "List all scenes. Each entry has a 1-based \u0060index\u0060, a \u0060name\u0060, and a \u0060liveset_id\u0060 handle (e.g. scn_7). Address scenes by that handle \u2014 copy it verbatim.",
             "parameters": []
           },
           {
             "name": "set_scene_name",
-            "description": "Rename the scene at the given index.",
+            "description": "Rename a scene. Address it by its liveset_id handle from list_scenes (e.g. scn_7).",
             "parameters": [
               {
-                "name": "scene_index",
+                "name": "liveset_id",
                 "type": "String",
                 "required": true,
-                "description": "Scene number (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
+                "description": "Scene handle from list_scenes, e.g. \u0022scn_7\u0022. Copy verbatim; not a position number."
               },
               {
                 "name": "name",
@@ -2809,27 +2948,107 @@
           },
           {
             "name": "create_scene",
-            "description": "Create a new scene. Omit insert_index to append at the end.",
+            "description": "Create a scene. Omit after/before to append at the end. Pass exactly one of after/before (each a scene handle from list_scenes) to insert relative to it.",
             "parameters": [
               {
-                "name": "insert_index",
+                "name": "after",
                 "type": "String",
                 "required": false,
-                "description": "Optional scene number to insert at (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026); omit to append at the end."
+                "description": "Insert the new scene AFTER this scene handle (e.g. scn_7)."
+              },
+              {
+                "name": "before",
+                "type": "String",
+                "required": false,
+                "description": "Insert the new scene BEFORE this scene handle (e.g. scn_7)."
               }
             ]
           },
           {
             "name": "delete_scene",
-            "description": "Delete a scene by its index. Idempotent: out-of-range and last-remaining-scene are no-ops.",
+            "description": "Delete a scene by its liveset_id handle from list_scenes (e.g. scn_7). Idempotent: last-remaining-scene is a no-op.",
             "parameters": [
               {
-                "name": "scene_index",
+                "name": "liveset_id",
                 "type": "String",
                 "required": true,
-                "description": "Scene number to delete (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
+                "description": "Scene handle from list_scenes, e.g. \u0022scn_7\u0022. Copy verbatim; not a position number."
               }
             ]
+          },
+          {
+            "name": "play_scene",
+            "description": "Fire (play) a scene by its liveset_id handle from list_scenes (e.g. scn_7) \u2014 launches every clip in that row.",
+            "parameters": [
+              {
+                "name": "liveset_id",
+                "type": "String",
+                "required": true,
+                "description": "Scene handle from list_scenes, e.g. \u0022scn_7\u0022. Copy verbatim; not a position number."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "performance",
+      "title": "Performance",
+      "description": "Drive Session-view playback: sequence scenes as a song.",
+      "cli": {
+        "branch": "play-song",
+        "commands": [
+          {
+            "name": "play-song",
+            "description": "Play the song by firing session scenes in section order.",
+            "arguments": [
+              {
+                "name": "project",
+                "required": false,
+                "description": "Path to the .vibrai file (defaults to Untitled.vibrai in CWD)."
+              }
+            ],
+            "options": [
+              {
+                "name": "--loop",
+                "valueName": null,
+                "default": null,
+                "description": "Repeat the song until stopped (Ctrl-C)."
+              },
+              {
+                "name": "--stop",
+                "valueName": null,
+                "default": null,
+                "description": "Stop a performance already running (in this or another Vibrai process) instead of starting one."
+              }
+            ]
+          }
+        ]
+      },
+      "mcp": {
+        "tools": [
+          {
+            "name": "play_song",
+            "description": "Play the song by firing Session scenes in section order, advancing at each section\u0027s bar boundary. Runs in the background; use stop_performance to halt.",
+            "parameters": [
+              {
+                "name": "project_path",
+                "type": "String",
+                "required": false,
+                "description": "Path to the .vibrai file (defaults to Untitled.vibrai in CWD when omitted)"
+              },
+              {
+                "name": "loop",
+                "type": "Boolean",
+                "required": false,
+                "description": "Repeat the song until stopped"
+              }
+            ]
+          },
+          {
+            "name": "stop_performance",
+            "description": "Stop the running play_song performance.",
+            "parameters": []
           }
         ]
       }
@@ -2848,7 +3067,7 @@
               {
                 "name": "track",
                 "required": true,
-                "description": "Track number (1-based: 1, 2, \u2026 or first, second, \u2026)"
+                "description": "Track handle (trk_42) OR 1-based number (1, 2, \u2026) OR ordinal (first, second, \u2026)"
               }
             ],
             "options": []
@@ -2860,12 +3079,12 @@
               {
                 "name": "track",
                 "required": true,
-                "description": "Track number (1-based: 1, 2, \u2026 or first, second, \u2026)"
+                "description": "Track handle (trk_42) OR 1-based number (1, 2, \u2026) OR ordinal (first, second, \u2026)"
               },
               {
                 "name": "scene",
                 "required": true,
-                "description": "Session-view scene number (1-based: 1, 2, \u2026 or first, second, \u2026)"
+                "description": "Session-view scene handle (scn_7) OR 1-based number (1, 2, \u2026) OR ordinal (first, second, \u2026) \u2014 identifies the source clip\u0027s scene"
               },
               {
                 "name": "start",
@@ -2895,7 +3114,7 @@
               {
                 "name": "track",
                 "required": true,
-                "description": "Track number (1-based: 1, 2, \u2026 or first, second, \u2026)"
+                "description": "Track handle (trk_42) OR 1-based number (1, 2, \u2026) OR ordinal (first, second, \u2026)"
               },
               {
                 "name": "start",
@@ -2912,7 +3131,7 @@
               {
                 "name": "tracks",
                 "required": true,
-                "description": "One or more track numbers to clear (1-based, space-separated)"
+                "description": "One or more track handles (trk_42) OR 1-based numbers OR ordinals to clear (space-separated)"
               }
             ],
             "options": []
@@ -2932,28 +3151,28 @@
             "description": "List the arrangement-view clips for a track.",
             "parameters": [
               {
-                "name": "track_id",
+                "name": "track",
                 "type": "String",
                 "required": true,
-                "description": "Track number (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
+                "description": "Track handle from list_tracks, e.g. \u0022trk_42\u0022. Copy verbatim."
               }
             ]
           },
           {
             "name": "place_arrangement_clip",
-            "description": "Copy the session-view clip at (track_id, source_scene_index) into the arrangement on the same track, starting at the given beat. By default, session-clip envelopes are also carried into the arrangement as track-lane automation; pass carry_envelopes: false to disable. Refuses with ARRANGEMENT_OVERLAP if existing destination-track automation would be clobbered; pass force: true to override.",
+            "description": "Copy the session-view clip at (track, source_scene) into the arrangement on the same track, starting at the given beat. By default, session-clip envelopes are also carried into the arrangement as track-lane automation; pass carry_envelopes: false to disable. Refuses with ARRANGEMENT_OVERLAP if existing destination-track automation would be clobbered; pass force: true to override.",
             "parameters": [
               {
-                "name": "track_id",
+                "name": "track",
                 "type": "String",
                 "required": true,
-                "description": "Track number (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
+                "description": "Track handle from list_tracks, e.g. \u0022trk_42\u0022. Copy verbatim."
               },
               {
-                "name": "source_scene_index",
+                "name": "source_scene",
                 "type": "String",
                 "required": true,
-                "description": "Session-view scene number (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
+                "description": "Session-view scene handle from list_scenes, e.g. \u0022scn_7\u0022. Copy verbatim \u2014 identifies the source clip\u0027s scene."
               },
               {
                 "name": "start_beat",
@@ -2980,10 +3199,10 @@
             "description": "Delete a single arrangement-view clip on a track at the given start beat (surgical \u2014 does not affect other clips on the track or track-level automation envelopes).",
             "parameters": [
               {
-                "name": "track_id",
+                "name": "track",
                 "type": "String",
                 "required": true,
-                "description": "Track number (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
+                "description": "Track handle from list_tracks, e.g. \u0022trk_42\u0022. Copy verbatim."
               },
               {
                 "name": "start_beat",
@@ -2998,10 +3217,10 @@
             "description": "Clear all arrangement-view clips for the specified tracks.",
             "parameters": [
               {
-                "name": "track_ids",
+                "name": "tracks",
                 "type": "String[]",
                 "required": true,
-                "description": "Track numbers (1-based: 1, 2, \u2026 or \u0027first\u0027, \u0027second\u0027, \u2026)"
+                "description": "Track handles from list_tracks, e.g. \u0022trk_42\u0022. Copy verbatim."
               }
             ]
           },
@@ -3095,6 +3314,18 @@
                 "valueName": null,
                 "default": null,
                 "description": "Confirm destructive overwrite of sections / parts / templates / arrangement / generation"
+              },
+              {
+                "name": "--number-tracks",
+                "valueName": null,
+                "default": null,
+                "description": "Persist Ableton \u0027#\u0027 track auto-numbering into the project (applied when you later run generate)."
+              },
+              {
+                "name": "--no-number-tracks",
+                "valueName": null,
+                "default": null,
+                "description": "Persist \u0027#\u0027 track auto-numbering as OFF in the project (overrides env / an existing setting)."
               }
             ]
           },
@@ -3176,7 +3407,7 @@
           },
           {
             "name": "apply_genre",
-            "description": "Materialize a genre\u002Bpreset into a .vibrai project at the given path. Destructive: overwrites sections, parts, templates, arrangement.blueprint, and generation \u2014 requires confirm=true (parity with the CLI\u0027s \u0060genre apply --yes\u0060); refuses without modifying the project otherwise. Preserves meta.name and meta.als_path from the existing project if present. Note: the \u0060preset_id\u0060 parameter was renamed to \u0060preset\u0060 for CLI/MCP naming parity; update any callers.",
+            "description": "Materialize a genre\u002Bpreset into a .vibrai project at the given path. Destructive: overwrites sections, parts, templates, arrangement.blueprint, and generation \u2014 requires confirm=true (parity with the CLI\u0027s \u0060genre apply --yes\u0060); refuses without modifying the project otherwise. Preserves meta.name, meta.als_path, and Defaults.NumberTracks from the existing project if present (number_tracks omitted). Note: the \u0060preset_id\u0060 parameter was renamed to \u0060preset\u0060 for CLI/MCP naming parity; update any callers.",
             "parameters": [
               {
                 "name": "genre",
@@ -3201,6 +3432,12 @@
                 "type": "Boolean",
                 "required": false,
                 "description": "Confirm the destructive overwrite (CLI --yes equivalent). Must be true to proceed; confirm with the user first when the project already has content."
+              },
+              {
+                "name": "number_tracks",
+                "type": "Nullable\u00601",
+                "required": false,
+                "description": "Persist Ableton \u0027#\u0027 track auto-numbering into the project. Null preserves the existing project\u0027s setting."
               }
             ]
           },
@@ -3428,7 +3665,7 @@
           },
           {
             "name": "install_templates",
-            "description": "Copy the bundled \u0022Vibrai Starter\u0022 (blank, bridge preloaded on a Return track) and \u0022Vibrai Demo\u0022 (a ready-to-play loop) Ableton Live Set templates into your Ableton User Library\u0027s Templates/Vibrai folder. Always overwrites \u2014 templates are refreshed on every install/update and are not meant to be hand-edited in place. Returns the source/destination paths, status (Installed | AlreadyUpToDate), and the list of files.",
+            "description": "Copy the bundled \u0022Vibrai Starter\u0022 (blank, bridge preloaded on a Return track) and \u0022Vibrai Demo\u0022 (a ready-to-play loop) Ableton Live Set templates into your Ableton User Library\u0027s Templates folder. Always overwrites \u2014 templates are refreshed on every install/update and are not meant to be hand-edited in place. Returns the source/destination paths, status (Installed | AlreadyUpToDate), and the list of files.",
             "parameters": [
               {
                 "name": "source_override",
@@ -3526,6 +3763,12 @@
                 "description": "Keep generator-produced clips that resolve to zero notes. By default these are skipped, leaving a gap in both session and arrangement views. Authored literal empty clips are always kept."
               },
               {
+                "name": "--session-only",
+                "valueName": null,
+                "default": null,
+                "description": "Write clips to the Session grid only; skip Arrangement placement. Use with play-song to drive the song from Session view."
+              },
+              {
                 "name": "--swing",
                 "valueName": "PCT",
                 "default": null,
@@ -3548,6 +3791,18 @@
                 "valueName": "PCT",
                 "default": null,
                 "description": "Tension-section note thinning 0-100. Overrides genre/preset default."
+              },
+              {
+                "name": "--number-tracks",
+                "valueName": null,
+                "default": null,
+                "description": "Prefix track names with Ableton\u0027s \u0027#\u0027 auto-numbering token for this run."
+              },
+              {
+                "name": "--no-number-tracks",
+                "valueName": null,
+                "default": null,
+                "description": "Disable \u0027#\u0027 track auto-numbering for this run (overrides env / project setting)."
               }
             ]
           },
@@ -3727,6 +3982,18 @@
                 "type": "Nullable\u00601",
                 "required": false,
                 "description": "Tension-section note thinning 0-100; overrides genre/preset default"
+              },
+              {
+                "name": "number_tracks",
+                "type": "Nullable\u00601",
+                "required": false,
+                "description": "Prefix track names with Ableton\u0027s \u0027#\u0027 auto-numbering token for this render (overrides env / project setting). Null inherits."
+              },
+              {
+                "name": "session_only",
+                "type": "Boolean",
+                "required": false,
+                "description": "Write clips to the Session grid only; skip Arrangement placement. Use with play_song to drive the song from Session view."
               }
             ]
           }
@@ -3869,7 +4136,7 @@
         "tools": [
           {
             "name": "get_license_status",
-            "description": "Get the current Vibrai license / trial status: state (trial, activated, offline_grace, trial_expired, license_unverifiable), whether features are enabled, trial days remaining, and the offline-grace day count. Read-only.",
+            "description": "Get the current Vibrai license / trial status: state (trial, activated, offline_grace, trial_expired, license_unverifiable, storage_unavailable), whether features are enabled, trial days remaining, and the offline-grace day count. Read-only.",
             "parameters": []
           },
           {
@@ -3949,7 +4216,7 @@
         "tools": [
           {
             "name": "update",
-            "description": "Check for and optionally install the latest Vibrai release. By default (apply=false) this only reports whether an update is available. Pass apply=true to download \u002B verify (SHA-256) \u002B swap the vibrai CLI binary, swap the MCP server binary (Vibrai.Mcp) and refresh the Claude Desktop extension bundle (Vibrai.mcpb) when the release ships them, and reinstall the Max-for-Live device \u002B Python remote script (via the same installer as install_device / install_vibrai_remote_script). If Ableton Live is running during an apply, M4L/Python changes take effect after you restart Live; if the MCP server was updated, restart Claude Desktop (or your MCP client) to use the new version. Returns the current/latest version, update_available, per-component status (cli, and mcp on platforms that ship an MCP server), and (on apply) the actions taken. Applying is destructive (swaps binaries); requires confirm=true (parity with the CLI\u0027s \u0060vibrai update --yes\u0060); refuses without changing anything otherwise.",
+            "description": "Check for and optionally install the latest Vibrai release. By default (apply=false) this only reports whether an update is available. Pass apply=true to download \u002B verify (SHA-256) \u002B swap the vibrai CLI binary, swap the MCP server binary (Vibrai.Mcp) and refresh the Claude Desktop extension bundle (Vibrai.mcpb) when the release ships them, and reinstall the Max-for-Live device \u002B Python remote script (via the same installer as install_device / install_vibrai_remote_script). If Ableton Live is running during an apply, M4L/Python changes take effect after you restart Live; if the MCP server was updated, restart Claude Desktop (or your MCP client) to use the new version. When this server is running from the Claude Desktop extension directory (or any layout without a real co-located vibrai CLI install), apply refuses with UPDATE_UNSUPPORTED_LAYOUT without changing anything \u2014 relay its instructions: run \u0060vibrai update\u0060 in a terminal, then reinstall the refreshed Vibrai.mcpb in Claude Desktop. When this install is managed by Homebrew (resolves under a /Cellar/vibrai/ path), apply and rollback both refuse with UPDATE_HOMEBREW_MANAGED without changing anything \u2014 relay: run \u0060brew upgrade vibrai\u0060 instead of \u0060vibrai update\u0060. Returns the current/latest version, update_available, per-component status (cli, and mcp on platforms that ship an MCP server), and (on apply) the actions taken. Applying is destructive (swaps binaries); requires confirm=true (parity with the CLI\u0027s \u0060vibrai update --yes\u0060); refuses without changing anything otherwise.",
             "parameters": [
               {
                 "name": "apply",
@@ -4238,6 +4505,45 @@
                 "type": "String",
                 "required": false,
                 "description": "Optional free-text note (rendered as a comment on export)."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "skill-package",
+      "title": "Claude Desktop Skill Packaging",
+      "description": "Package the Vibrai skill (agent instructions plus the full command reference) as a .zip for manual upload to Claude Desktop.",
+      "cli": {
+        "branch": "skill",
+        "commands": [
+          {
+            "name": "skill package",
+            "description": "Package the Vibrai skill as a .zip for Claude Desktop\u0027s manual Skill upload",
+            "arguments": [],
+            "options": [
+              {
+                "name": "--to",
+                "valueName": "PATH",
+                "default": null,
+                "description": "Output zip path. Defaults to ./vibrai-skill.zip in the current directory."
+              }
+            ]
+          }
+        ]
+      },
+      "mcp": {
+        "tools": [
+          {
+            "name": "package_claude_desktop_skill",
+            "description": "Package the Vibrai Agent Skill (SKILL.md \u002B command reference) as a .zip for Claude Desktop\u0027s manual Skill upload (Settings \u2192 Capabilities \u2192 Skills \u2192 Upload skill). Claude Desktop has no directory-install convention the way Claude Code/Codex/Gemini do, so this produces a standalone zip instead. Same content the CLI\u0027s \u0060vibrai skill package\u0060 writes.",
+            "parameters": [
+              {
+                "name": "out_path",
+                "type": "String",
+                "required": false,
+                "description": "Output zip path. Defaults to ./vibrai-skill.zip in the current directory."
               }
             ]
           }

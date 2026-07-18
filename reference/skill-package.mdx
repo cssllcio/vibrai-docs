@@ -1,0 +1,41 @@
+---
+title: "Claude Desktop Skill Packaging"
+description: "Package the Vibrai skill (agent instructions plus the full command reference) as a .zip for manual upload to Claude Desktop."
+---
+
+{/* GENERATED — do not edit by hand. Regenerate with `npm run generate:reference`. */}
+
+Package the Vibrai skill (agent instructions plus the full command reference) as a .zip for manual upload to Claude Desktop.
+
+## Command line
+
+### `skill package`
+
+Package the Vibrai skill as a .zip for Claude Desktop's manual Skill upload
+
+```bash
+vibrai skill package --to <PATH>
+```
+
+<ParamField path="--to">
+  Output zip path. Defaults to ./vibrai-skill.zip in the current directory.
+</ParamField>
+
+## MCP tools
+
+### `package_claude_desktop_skill`
+
+Package the Vibrai Agent Skill (SKILL.md + command reference) as a .zip for Claude Desktop's manual Skill upload (Settings → Capabilities → Skills → Upload skill). Claude Desktop has no directory-install convention the way Claude Code/Codex/Gemini do, so this produces a standalone zip instead. Same content the CLI's `vibrai skill package` writes.
+
+```json
+{
+  "tool": "package_claude_desktop_skill",
+  "arguments": {
+    "out_path": "<String>"
+  }
+}
+```
+
+<ParamField path="out_path" type="String">
+  Output zip path. Defaults to ./vibrai-skill.zip in the current directory.
+</ParamField>

@@ -21,14 +21,14 @@ vibrai track list
 
 ### `track get`
 
-Get a track by its 1-based number
+Get a track by its handle
 
 ```bash
 vibrai track get <track>
 ```
 
 <ParamField path="track" required>
-  Track number (1-based: 1, 2, … or first, second, …)
+  Track handle (trk_42) OR 1-based number (1, 2, …) OR ordinal (first, second, …)
 </ParamField>
 
 ### `track create`
@@ -36,7 +36,7 @@ vibrai track get <track>
 Create a new track
 
 ```bash
-vibrai track create <name> --type <PARTTYPE>
+vibrai track create <name> --type <PARTTYPE> --number-tracks --no-number-tracks
 ```
 
 <ParamField path="name" required>
@@ -45,38 +45,50 @@ vibrai track create <name> --type <PARTTYPE>
 <ParamField path="--type" default="Other">
   Part type (Bass, Lead, Melody, etc.)
 </ParamField>
+<ParamField path="--number-tracks">
+  Prefix track names with Ableton's '#' auto-numbering token for this run.
+</ParamField>
+<ParamField path="--no-number-tracks">
+  Disable '#' track auto-numbering for this run (overrides env / project setting).
+</ParamField>
 
 ### `track delete`
 
-Delete a track by its 1-based number
+Delete a track by its handle
 
 ```bash
 vibrai track delete [track] --liveset-id <ID>
 ```
 
 <ParamField path="track">
-  Positional track number (1-based: 1, 2, … or first, second, …). Omit if using --liveset-id.
+  Track handle (trk_42) OR 1-based number (1, 2, …) OR ordinal (first, second, …). Omit if using --liveset-id.
 </ParamField>
 <ParamField path="--liveset-id">
-  Stable liveset_id from 'vibrai track list --json'; preferred over the positional track number when available (survives reorders).
+  Stable liveset_id handle (trk_42) from 'vibrai track list --json'; equivalent to passing the handle positionally as &lt;track>. Kept for backward compatibility — takes precedence over the positional value when both are supplied.
 </ParamField>
 
 ### `track rename`
 
-Rename a track by its 1-based number
+Rename a track by its handle
 
 ```bash
-vibrai track rename [track] [name] --liveset-id <ID>
+vibrai track rename [track] [name] --liveset-id <ID> --number-tracks --no-number-tracks
 ```
 
 <ParamField path="track">
-  Positional track number (1-based: 1, 2, … or first, second, …). Omit if using --liveset-id (in that case pass &lt;name> alone after the flag).
+  Track handle (trk_42) OR 1-based number (1, 2, …) OR ordinal (first, second, …). Omit if using --liveset-id (in that case pass &lt;name> alone after the flag).
 </ParamField>
 <ParamField path="name">
   New track name. Required (validated at runtime; declared optional only so Spectre permits the --liveset-id &lt;name> shape).
 </ParamField>
 <ParamField path="--liveset-id">
-  Stable liveset_id from 'vibrai track list --json'; preferred over the positional track number when available (survives reorders).
+  Stable liveset_id handle (trk_42) from 'vibrai track list --json'; equivalent to passing the handle positionally as &lt;track>. Kept for backward compatibility — takes precedence over the positional value when both are supplied.
+</ParamField>
+<ParamField path="--number-tracks">
+  Prefix track names with Ableton's '#' auto-numbering token for this run.
+</ParamField>
+<ParamField path="--no-number-tracks">
+  Disable '#' track auto-numbering for this run (overrides env / project setting).
 </ParamField>
 
 ## MCP tools
@@ -96,23 +108,19 @@ List all tracks in the current Live set. Track `id` is 1-based. `midi_index` is 
 
 ### `get_track`
 
-Get a single track. Pass either track_id (positional, 1-based) or liveset_id (stable across reorders within one Live session — get it from list_tracks). liveset_id wins if both are supplied. Returns the track in the same shape as list_tracks (1-based `id` and `midi_index`). Errors TRACK_NOT_FOUND if no such track exists.
+Get a single track by its liveset_id handle from list_tracks (e.g. trk_42). Returns the same shape as list_tracks (1-based `id`/`midi_index`). Errors TRACK_NOT_FOUND if no such track exists.
 
 ```json
 {
   "tool": "get_track",
   "arguments": {
-    "track_id": "<String>",
     "liveset_id": "<String>"
   }
 }
 ```
 
-<ParamField path="track_id" type="String">
-  Positional track number (1-based: 1, 2, … or 'first', 'second', …)
-</ParamField>
-<ParamField path="liveset_id" type="String">
-  Stable liveset_id from list_tracks; preferred over track_id when available.
+<ParamField path="liveset_id" type="String" required>
+  Track handle from list_tracks, e.g. "trk_42". Copy verbatim; not a position number.
 </ParamField>
 
 ### `create_track`
@@ -124,7 +132,8 @@ Create a new MIDI track of the given part type. Returns the created track with a
   "tool": "create_track",
   "arguments": {
     "name": "<String>",
-    "type": "<PartType>"
+    "type": "<PartType>",
+    "number_tracks": "<Nullable`1>"
   }
 }
 ```
@@ -135,39 +144,38 @@ Create a new MIDI track of the given part type. Returns the created track with a
 <ParamField path="type" type="PartType" required>
   Part type (drums, bass, chords, lead, pad, fx, etc.)
 </ParamField>
+<ParamField path="number_tracks" type="Nullable`1">
+  Prefix the name with Ableton's '#' auto-numbering token. Null inherits VIBRAI_NUMBER_TRACKS.
+</ParamField>
 
 ### `delete_track`
 
-Delete a track. Pass either track_id (positional, 1-based) or liveset_id (stable across reorders — get it from list_tracks). liveset_id wins if both are supplied. Subsequent tracks shift down so positional IDs stay dense; existing liveset_ids on the remaining tracks are unaffected. Destructive — no undo. Errors: TRACK_NOT_FOUND, CANNOT_DELETE_LAST_TRACK.
+Delete a track by its liveset_id handle from list_tracks (e.g. trk_42). Remaining tracks keep their handles. Destructive — no undo. Errors: TRACK_NOT_FOUND, CANNOT_DELETE_LAST_TRACK.
 
 ```json
 {
   "tool": "delete_track",
   "arguments": {
-    "track_id": "<String>",
     "liveset_id": "<String>"
   }
 }
 ```
 
-<ParamField path="track_id" type="String">
-  Positional track number (1-based: 1, 2, … or 'first', 'second', …)
-</ParamField>
-<ParamField path="liveset_id" type="String">
-  Stable liveset_id from list_tracks; preferred over track_id when available.
+<ParamField path="liveset_id" type="String" required>
+  Track handle from list_tracks, e.g. "trk_42". Copy verbatim; not a position number.
 </ParamField>
 
 ### `set_track_name`
 
-Rename a track. Pass either track_id (positional, 1-based, may shift on reorder) or liveset_id (stable across reorders within one Live session — get it from list_tracks). liveset_id wins if both are supplied. Use liveset_id when you plan to issue multiple ops on the same track over time, especially across track insertions.
+Rename a track. Address it by its liveset_id handle from list_tracks (e.g. trk_42).
 
 ```json
 {
   "tool": "set_track_name",
   "arguments": {
     "name": "<String>",
-    "track_id": "<String>",
-    "liveset_id": "<String>"
+    "liveset_id": "<String>",
+    "number_tracks": "<Nullable`1>"
   }
 }
 ```
@@ -175,9 +183,9 @@ Rename a track. Pass either track_id (positional, 1-based, may shift on reorder)
 <ParamField path="name" type="String" required>
   New track name
 </ParamField>
-<ParamField path="track_id" type="String">
-  Positional track number (1-based: 1, 2, … or 'first', 'second', …)
+<ParamField path="liveset_id" type="String" required>
+  Track handle from list_tracks, e.g. "trk_42". Copy verbatim; not a position number.
 </ParamField>
-<ParamField path="liveset_id" type="String">
-  Stable liveset_id from list_tracks; preferred over track_id when available.
+<ParamField path="number_tracks" type="Nullable`1">
+  Prefix the name with Ableton's '#' auto-numbering token. Null inherits VIBRAI_NUMBER_TRACKS.
 </ParamField>
