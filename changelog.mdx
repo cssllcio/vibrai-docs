@@ -4,6 +4,34 @@ description: "New features, improvements, and fixes in Vibrai."
 rss: true
 ---
 
+<Update label="1.3.4" description="July 24, 2026">
+  Clear-before-generate, automatic Max for Live bridge recovery, and a batch of CLI fixes.
+
+  ## Clear-before-generate
+
+  Generating a **different** project into a Live set that already held a previous one used to stack the new tracks on top of the old ones — up to three compositions could pile up audibly. New **`project clear`** command and a **`generate --clear-first`** flag remove the previous Vibrai-generated tracks first, so a fresh generate replaces instead of stacks. It never touches your own tracks — only tracks Vibrai created. Both surfaces (`clear_project`, and a `clear_first` option on `generate`).
+
+  ## Automatic Max for Live bridge recovery
+
+  When Max for Live gives up respawning Vibrai's bridge after repeated crashes, Vibrai now recovers on its own instead of leaving you to reload the device by hand, and shows a clearer "bridge unavailable" message while it's down.
+
+  ## Fixes
+
+  - **Snake_case part types are now accepted** in the commands that previously rejected them — the real cause of the earlier `hi_hat`/`fx_*` "gaps."
+  - **`project init` no longer overwrites an existing project.** Pointing it at an existing project file used to silently replace it; it now refuses instead.
+  - **`--json` is honored** on `project init`, `genre apply`, and `project save`, which previously fell back to plain text.
+  - **`instruments untag` now reports what it actually removed** instead of always claiming success.
+  - **Long file paths in command output are no longer corrupted** by line-wrapping.
+</Update>
+
+<Update label="1.3.3" description="July 19, 2026">
+  Fixes an intermittent startup crash on Apple Silicon Macs.
+
+  ## Fixes
+
+  - **Intermittent startup crash on Apple Silicon fixed.** On Apple Silicon Macs the CLI and MCP server could crash on launch roughly 10–15% of the time, regardless of the command, because of a .NET runtime defect in compressed application bundles. Those builds now ship uncompressed and start reliably. The on-disk binaries are larger as a result; compression will return once the underlying runtime fix ships. Intel Macs and Windows were unaffected.
+</Update>
+
 <Update label="1.3.2" description="July 19, 2026">
   Three fixes: corrected genre catalog data, more reliable device/clip deletion under heavy load, and `device load` now accepts the same path shown by `stock list`/`stock browse`.
 
