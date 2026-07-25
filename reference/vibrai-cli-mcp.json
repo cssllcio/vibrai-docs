@@ -1,6 +1,6 @@
 {
-  "engineVersion": "1.3.1.0",
-  "generatedAt": "2026-07-18T21:00:00Z",
+  "engineVersion": "1.3.4.0",
+  "generatedAt": "2026-07-25T12:45:56Z",
   "features": [
     {
       "id": "transport",
@@ -1217,7 +1217,7 @@
           },
           {
             "name": "untag_instrument",
-            "description": "Remove a Vibrai PartType tag from a browser item. If the item ends with no tags at all (recognized \u002B extra both empty), the record is dropped from the tag store. Errors: INSTRUMENT_NOT_FOUND, MULTIPLE_MATCHES, INVALID_PART_TYPE.",
+            "description": "Remove a Vibrai PartType tag from a browser item. If the item ends with no tags at all (recognized \u002B extra both empty), the record is dropped from the tag store. Untagging is idempotent, so check the response before reporting success: \u0060removed\u0060 is true ONLY when the store actually changed, and \u0060outcome\u0060 says which of no_record / tag_not_present / tag_removed / record_cleared happened. Errors: INSTRUMENT_NOT_FOUND, MULTIPLE_MATCHES, INVALID_PART_TYPE.",
             "parameters": [
               {
                 "name": "uri_or_search",
@@ -2591,6 +2591,12 @@
                 "valueName": null,
                 "default": null,
                 "description": "Persist Ableton \u0027#\u0027 track auto-numbering into the new project."
+              },
+              {
+                "name": "--force",
+                "valueName": null,
+                "default": null,
+                "description": "Overwrite the file at --project if it already exists (without this, init refuses rather than destroying an existing project)"
               }
             ]
           },
@@ -2651,6 +2657,19 @@
                 "description": "Persist Ableton \u0027#\u0027 track auto-numbering: true or false."
               }
             ]
+          },
+          {
+            "name": "project clear",
+            "description": "Delete all Vibrai-generated tracks from the Live set (clean slate before a new generate)",
+            "arguments": [],
+            "options": [
+              {
+                "name": "--yes",
+                "valueName": null,
+                "default": null,
+                "description": "Confirm deletion of Vibrai-generated tracks (MIDI tracks whose Part Type is not Other \u2014 see \u0027vibrai project clear\u0027 docs). Without this, lists the tracks that would be deleted and exits non-zero."
+              }
+            ]
           }
         ]
       },
@@ -2658,7 +2677,7 @@
         "tools": [
           {
             "name": "init_project",
-            "description": "Create a new .vibrai YAML file at the given absolute path. Without \u0060demo\u0060, writes a minimal 2-section / 1-part boilerplate. With \u0060demo: true\u0060, writes an opinionated 3-section / 2-part starter that exercises variation, per-section scale overrides, naming, and both generator types. Track IDs are probed from the bridge (first N MIDI tracks) and each probed binding records the track\u0027s current name (part \u0060track_name\u0060) so \u0060generate\u0060 reuses those tracks; if the bridge is unreachable, falls back to track 1 (and 2 for demo) with no binding. Set number_tracks=true to persist Ableton \u0027#\u0027 track auto-numbering into the new project\u0027s Defaults.",
+            "description": "Create a new .vibrai YAML file at the given absolute path. Without \u0060demo\u0060, writes a minimal 2-section / 1-part boilerplate. With \u0060demo: true\u0060, writes an opinionated 3-section / 2-part starter that exercises variation, per-section scale overrides, naming, and both generator types. Track IDs are probed from the bridge (first N MIDI tracks) and each probed binding records the track\u0027s current name (part \u0060track_name\u0060) so \u0060generate\u0060 reuses those tracks; if the bridge is unreachable, falls back to track 1 (and 2 for demo) with no binding. Set number_tracks=true to persist Ableton \u0027#\u0027 track auto-numbering into the new project\u0027s Defaults. Refuses with PROJECT_EXISTS if a file already exists at \u0060path\u0060 \u2014 pass force=true to overwrite it.",
             "parameters": [
               {
                 "name": "path",
@@ -2683,6 +2702,12 @@
                 "type": "Boolean",
                 "required": false,
                 "description": "Persist Ableton \u0027#\u0027 track auto-numbering into the new project."
+              },
+              {
+                "name": "force",
+                "type": "Boolean",
+                "required": false,
+                "description": "Overwrite an existing file at \u0060path\u0060. Without this, init refuses rather than destroying an existing project."
               }
             ]
           },
@@ -2743,6 +2768,18 @@
                 "type": "Boolean",
                 "required": true,
                 "description": "Persist Ableton \u0027#\u0027 track auto-numbering (true) or disable it (false)."
+              }
+            ]
+          },
+          {
+            "name": "clear_project",
+            "description": "Delete every Vibrai-generated track from the current Live set \u2014 a clean slate before rendering a different composition into the same set (the fix for successive generate runs of different projects stacking tracks after each other). Selection rule: MIDI tracks whose part type is not \u0027other\u0027 \u2014 the same stamp LiveRenderer writes on every track it creates; a user\u0027s own tracks, template tracks, and Audio/Return/Master tracks are never touched. Deletes highest-index-first, one at a time. Destructive \u2014 requires confirm=true (parity with the CLI\u0027s \u0060project clear --yes\u0060); without it, errors listing exactly what would be deleted and changes nothing. When nothing is Vibrai-generated, succeeds trivially without requiring confirm.",
+            "parameters": [
+              {
+                "name": "confirm",
+                "type": "Boolean",
+                "required": false,
+                "description": "Confirm the destructive delete (CLI --yes equivalent). Must be true to proceed when there is anything to clear; confirm with the user first."
               }
             ]
           }
@@ -3721,6 +3758,12 @@
                 "description": "Overwrite existing session clips and arrangement content in project tracks"
               },
               {
+                "name": "--clear-first",
+                "valueName": null,
+                "default": null,
+                "description": "Delete all Vibrai-generated tracks (same rule/order as \u0027vibrai project clear --yes\u0027) before planning and rendering \u2014 a clean slate so this run\u0027s composition doesn\u0027t stack on top of a previous, different project\u0027s tracks. Never touches Audio/Return/Master tracks or MIDI tracks whose Part Type is Other (user/template tracks). Skipped entirely under --dry-run (which never calls the bridge)."
+              },
+              {
                 "name": "--dry-run",
                 "valueName": null,
                 "default": null,
@@ -3994,6 +4037,12 @@
                 "type": "Boolean",
                 "required": false,
                 "description": "Write clips to the Session grid only; skip Arrangement placement. Use with play_song to drive the song from Session view."
+              },
+              {
+                "name": "clear_first",
+                "type": "Boolean",
+                "required": false,
+                "description": "Delete all Vibrai-generated tracks (same rule/order as clear_project with confirm=true, or \u0027vibrai project clear --yes\u0027) before planning and rendering \u2014 a clean slate so this run\u0027s composition doesn\u0027t stack on top of a previous, different project\u0027s tracks. Never touches Audio/Return/Master tracks or MIDI tracks whose part type is \u0027other\u0027 (user/template tracks)."
               }
             ]
           }
