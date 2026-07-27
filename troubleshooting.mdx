@@ -37,6 +37,16 @@ description: "Common issues and fixes."
     You should see a `tools/list` response listing the Vibrai tools.
   </Accordion>
 
+  <Accordion title="A tool call hangs while get_version still succeeds">
+    A fast, healthy `get_version` (or `vibrai version`) alongside a hanging tool call means the bridges are fine — the call was lost between the MCP client and the Vibrai server (a known Claude Desktop transport issue). It is not a wedged bridge, so restarting Live or re-toggling the Control Surface will not help.
+
+    1. Retry the call — the drop is usually transient (a single lost request, not a stuck pipe).
+    2. If it keeps happening, run the same operation with the `vibrai` CLI — it bypasses the MCP client entirely.
+    3. To confirm, check `~/Library/Logs/Claude/mcp-server-vibrai.log` (macOS): the hung call never appears there, while every request that was logged has a response.
+
+    Since v1.3.5 a healthy probe says this outright: both version surfaces always report `bridge_status` and `python_bridge_status` (`"ok"` plus probe timings on success), and when both bridges are healthy the payload includes a `note` naming the client transport as the fault. A genuinely wedged bridge behaves differently — the tool call itself fails with a reload runbook, and `get_version` reports `bridge_status: "timed_out"`.
+  </Accordion>
+
   <Accordion title="generate fails with 'target tracks already contain clips'">
     `vibrai generate` is non-destructive by default. Add `--force` once you have reviewed the dry-run output:
 
