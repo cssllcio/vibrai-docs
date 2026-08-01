@@ -4,6 +4,46 @@ description: "New features, improvements, and fixes in Vibrai."
 rss: true
 ---
 
+<Update label="1.4.0" description="August 1, 2026">
+  Your tracks sound better — and they sound different. Melodic parts get real rhythm and memory, bass finally moves, and harvested phrases become reusable.
+
+  ## Before you upgrade
+
+  **The same project and the same seed now render differently.** Four improvements land on the melodic engine at once, so re-generating an existing project produces new parts rather than the ones you had. That is the point of the release — but if there is a render you want to keep exactly as it is, capture it before upgrading.
+
+  **Your genre files upgrade automatically** the first time Vibrai opens them. Drum patterns you harvested with `--faithful` are now stored as actual pad numbers instead of relative to the key they were recorded in, so a captured beat lands on the right drums whatever key you play it in. One thing to know: if you built a genre file by merging two extractions recorded in *different* keys, only one of those keys can be recovered — if a harvested beat sounds wrong afterwards, extract it again.
+
+  ## Bass that moves
+
+  Bass used to sit on the root note. It now has six ways to move — root, root and fifth, octave pump, arpeggiated, walking, and pedal — picks notes that fit the chord underneath it, leads smoothly from one note to the next, and can walk into the next chord with an approach note. It also knows about the kick drum, and can lock to it, dodge it, or ignore it. All 14 genres ship with their own setting, and you can override it per render with `--bass-motion` and `--kick-relation`.
+
+  ## Melodic parts with rhythm and memory
+
+  Melodic parts (bass, riff, arp, lead, melody, solo, hook) used to scatter notes across every sixteenth. They now play real rhythms with real note lengths, repeat from bar to bar, and turn around at the end of a phrase. They also remember a motif and develop it instead of wandering. A new `--gate` control sets how long notes ring, from staccato to legato.
+
+  ## Harvested phrases you can reuse
+
+  A phrase you captured from your own playing used to replay only in the exact section you lifted it from. It can now be reused anywhere in the track, refitted to whatever chords that section is playing. Drum grooves get reused too, but never refitted — moving a groove to a different chord would land it on different drums rather than transposing it. New `vibrai phrase` commands let you list, import, and remove the phrases in a genre file.
+
+  ## Everything in a section agrees on the chords
+
+  Parts within the same section could each roll their own chord progression and disagree with one another. They now share one progression.
+
+  ## Fixes
+
+  - **`--clear-first` really does clear.** When every track in a set was made by Vibrai, one track survived with its clips intact — so an old composition kept playing underneath the new one. Live refuses to delete a set's last track, so Vibrai now empties it instead, and tells you it did.
+  - **Renders survive a slow Live.** A render could fail outright and leave a half-finished set when Live took too long to accept a batch of notes. Vibrai now checks whether the notes actually arrived and retries only when they did not.
+  - **Note data is checked instead of quietly ignored.** Mistyped fields in a note used to be dropped silently, which could pile every note onto the first beat. Bad note data is now rejected with a real error.
+  - **Retargeting drums picks the right tracks.** `drums retarget` could bind parts to the wrong tracks, and a run that matched nothing finished silently instead of saying so.
+  - **Genre files cannot be truncated.** An interrupted save used to be able to destroy everything in the file — phrases, palettes, presets. Saves are now all-or-nothing.
+  - **`project save` writes a loadable file** when the project does not exist yet.
+  - **Version reporting is accurate.** `vibrai version` could show a stale "latest version", and now always reports the status of each bridge so a hang is not mistaken for an outage.
+
+  ## Also new
+
+  **`vibrai skill`** serves Vibrai's playbook and full command reference to AI clients that cannot read it any other way.
+</Update>
+
 <Update label="1.3.4" description="July 24, 2026">
   Clear-before-generate, automatic Max for Live bridge recovery, and a batch of CLI fixes.
 
