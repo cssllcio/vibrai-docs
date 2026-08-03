@@ -80,6 +80,30 @@ The config file lives at `~/Library/Application Support/Claude/claude_desktop_co
 | `VIBRAI_LOG_LEVEL` | `Warning` | Verbosity: `Verbose` / `Debug` / `Information` / `Warning` / `Error` |
 | `VIBRAI_LOG_FILE` | (stderr only) | Write a rolling log to a file |
 
+## Choosing a model
+
+Vibrai's MCP tools are **deferred**: their schemas are not sent to the model up front. The client resolves a tool's schema on demand, immediately before the first call. This keeps a large tool surface from consuming the context window, and it is why Vibrai can expose its full command set without crowding out your session.
+
+The tradeoff is that a client which does not perform that resolution step sees no Vibrai tools at all. The symptom is distinctive: the assistant reports that Vibrai is unavailable or not installed, while `vibrai --version` works on the command line and `get_version` succeeds when you call it directly.
+
+<Note>
+  If you hit that symptom, it is a tool-resolution problem, not an install problem. Re-running the installer will not change it. Raise the reasoning effort, or switch to a more capable model, and try the same request again.
+</Note>
+
+### Recommended setup
+
+| Work | Model | Effort |
+|---|---|---|
+| Exploring, playback, simple edits | Sonnet 5 | default |
+| `apply_genre`, `generate`, arrangement and automation | Sonnet 5 or Opus 5 | `high` |
+| Long agentic sessions, debugging the bridge | Opus 5 | `high` or `xhigh` |
+
+The effort default is `high`, so most setups need no change. Lower settings scope work more tightly to what was literally asked. That suits a quick lookup, but tends to under-serve Vibrai's multi-step workflows — applying a genre, generating an arrangement, and writing automation each involve a chain of tool calls whose earlier steps constrain the later ones.
+
+<Warning>
+  Treat the table as a starting point, not a hard floor. Behaviour on deferred tools varies by client and by release, and a combination that works for one workflow may not carry to another. If tools resolve reliably for you at a lower tier, stay there.
+</Warning>
+
 ## Load the device into your Live set
 
 The package installer already copied `vibrai.amxd` into your Ableton **User Library**. To use it:
