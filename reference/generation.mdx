@@ -14,7 +14,7 @@ Generate or plan a composition from a .vibrai project file.
 Generate clips and arrangement from a .vibrai project file
 
 ```bash
-vibrai generate --project <PATH> --force --clear-first --dry-run --seed <VALUE> --allow-skip --with-instruments --stock-only --on-existing-tracks <MODE> --keep-empty-clips --session-only --swing <PCT> --humanize <PCT> --ornaments <PCT> --dropout <PCT> --gate <PCT> --bass-motion <PROFILE> --kick-relation <MODE> --number-tracks --no-number-tracks
+vibrai generate --project <PATH> --force --clear-first --dry-run --seed <VALUE> --allow-skip --with-instruments --stock-only --on-existing-tracks <MODE> --keep-empty-clips --session-only --swing <PCT> --humanize <PCT> --ornaments <PCT> --dropout <PCT> --gate <PCT> --bass-motion <PROFILE> --kick-relation <MODE> --native-randomization --number-tracks --no-number-tracks
 ```
 
 <ParamField path="--project">
@@ -71,6 +71,9 @@ vibrai generate --project <PATH> --force --clear-first --dry-run --seed <VALUE> 
 <ParamField path="--kick-relation">
   How the bass sits against the kick: lock (snap onto it), dodge (push off it), free (ignore it). Overrides genre default.
 </ParamField>
+<ParamField path="--native-randomization">
+  Emit Live's per-note probability/velocity-deviation instead of baking randomization in. The loop then varies on every playback, but the audible result is no longer reproducible from the seed. Omit to inherit the genre's setting.
+</ParamField>
 <ParamField path="--number-tracks">
   Prefix track names with Ableton's '#' auto-numbering token for this run.
 </ParamField>
@@ -83,7 +86,7 @@ vibrai generate --project <PATH> --force --clear-first --dry-run --seed <VALUE> 
 Plan a composition from a .vibrai project file without writing to Live
 
 ```bash
-vibrai plan --project <PATH> --seed <VALUE> --keep-empty-clips --swing <PCT> --humanize <PCT> --ornaments <PCT> --dropout <PCT> --gate <PCT> --bass-motion <PROFILE> --kick-relation <MODE>
+vibrai plan --project <PATH> --seed <VALUE> --keep-empty-clips --swing <PCT> --humanize <PCT> --ornaments <PCT> --dropout <PCT> --gate <PCT> --bass-motion <PROFILE> --kick-relation <MODE> --native-randomization
 ```
 
 <ParamField path="--project">
@@ -116,6 +119,9 @@ vibrai plan --project <PATH> --seed <VALUE> --keep-empty-clips --swing <PCT> --h
 <ParamField path="--kick-relation">
   How the bass sits against the kick: lock (snap onto it), dodge (push off it), free (ignore it). Overrides genre default.
 </ParamField>
+<ParamField path="--native-randomization">
+  Emit Live's per-note probability/velocity-deviation instead of baking randomization in. The loop then varies on every playback, but the audible result is no longer reproducible from the seed. Omit to inherit the genre's setting.
+</ParamField>
 
 ## MCP tools
 
@@ -135,6 +141,7 @@ Plan a composition from a .vibrai file without writing to Live. Returns a slim s
     "ornament_density": "<Nullable`1>",
     "dropout": "<Nullable`1>",
     "gate": "<Nullable`1>",
+    "native_randomization": "<Nullable`1>",
     "bass_motion": "<String>",
     "kick_relation": "<String>"
   }
@@ -165,6 +172,9 @@ Plan a composition from a .vibrai file without writing to Live. Returns a slim s
 <ParamField path="gate" type="Nullable`1">
   Note articulation length 0-100 (10 extreme staccato, 100 full value/legato); overrides genre/preset default
 </ParamField>
+<ParamField path="native_randomization" type="Nullable`1">
+  Emit Live's per-note probability/velocity-deviation instead of baking randomization in. The loop then varies on every playback, but the audible result is no longer reproducible from the seed. Null inherits the genre setting.
+</ParamField>
 <ParamField path="bass_motion" type="String">
   Bass motion profile: root, root_fifth, octave_pump, arpeggiated, walking, pedal; overrides the genre default
 </ParamField>
@@ -193,6 +203,7 @@ Plan + render a composition into Live's session view and arrangement view. force
     "ornament_density": "<Nullable`1>",
     "dropout": "<Nullable`1>",
     "gate": "<Nullable`1>",
+    "native_randomization": "<Nullable`1>",
     "bass_motion": "<String>",
     "kick_relation": "<String>",
     "number_tracks": "<Nullable`1>",
@@ -240,6 +251,9 @@ Plan + render a composition into Live's session view and arrangement view. force
 </ParamField>
 <ParamField path="gate" type="Nullable`1">
   Note articulation length 0-100 (10 extreme staccato, 100 full value/legato); overrides genre/preset default
+</ParamField>
+<ParamField path="native_randomization" type="Nullable`1">
+  Emit Live's per-note probability/velocity-deviation instead of baking randomization in. The loop then varies on every playback, but the audible result is no longer reproducible from the seed. Null inherits the genre setting.
 </ParamField>
 <ParamField path="bass_motion" type="String">
   Bass motion profile: root, root_fifth, octave_pump, arpeggiated, walking, pedal; overrides the genre default

@@ -39,7 +39,7 @@ vibrai note set <track> <scene> --json-data <JSON> --file <PATH>
   Scene handle (scn_7) OR 1-based number (1, 2, …) OR ordinal (first, second, …)
 </ParamField>
 <ParamField path="--json-data">
-  Notes as a JSON array of note objects. Each note: &#123;"pitch": 0-127 or "C4", "start_time": beats, "duration": beats (>0), "velocity": 0-127 or "mf"}. Optional: pressure, slide, pitch_bend. Example: --json-data '[&#123;"pitch":60,"start_time":0,"duration":0.25,"velocity":100}]'
+  Notes as a JSON array of note objects. Each note: &#123;"pitch": 0-127 or "C4", "start_time": beats, "duration": beats (>0), "velocity": 0-127 or "mf"}. Optional: mute (bool), probability (0.0-1.0), velocity_deviation, release_velocity, note_id (read-only). pressure/slide/pitch_bend are accepted but NOT stored — Live does not carry per-note expression in the note object. Example: --json-data '[&#123;"pitch":60,"start_time":0,"duration":0.25,"velocity":100}]'
 </ParamField>
 <ParamField path="--file">
   Path to a JSON file containing the same note array as --json-data.
@@ -60,7 +60,31 @@ vibrai note add <track> <scene> --json-data <JSON> --file <PATH>
   Scene handle (scn_7) OR 1-based number (1, 2, …) OR ordinal (first, second, …)
 </ParamField>
 <ParamField path="--json-data">
-  Notes as a JSON array of note objects. Each note: &#123;"pitch": 0-127 or "C4", "start_time": beats, "duration": beats (>0), "velocity": 0-127 or "mf"}. Optional: pressure, slide, pitch_bend. Example: --json-data '[&#123;"pitch":60,"start_time":0,"duration":0.25,"velocity":100}]'
+  Notes as a JSON array of note objects. Each note: &#123;"pitch": 0-127 or "C4", "start_time": beats, "duration": beats (>0), "velocity": 0-127 or "mf"}. Optional: mute (bool), probability (0.0-1.0), velocity_deviation, release_velocity, note_id (read-only). pressure/slide/pitch_bend are accepted but NOT stored — Live does not carry per-note expression in the note object. Example: --json-data '[&#123;"pitch":60,"start_time":0,"duration":0.25,"velocity":100}]'
+</ParamField>
+<ParamField path="--file">
+  Path to a JSON file containing the same note array as --json-data.
+</ParamField>
+
+### `note modify`
+
+Edit or delete specific notes by note_id
+
+```bash
+vibrai note modify <track> <scene> --remove <NOTE_ID> --json-data <JSON> --file <PATH>
+```
+
+<ParamField path="track" required>
+  Track handle (trk_42) OR 1-based number (1, 2, …) OR ordinal (first, second, …)
+</ParamField>
+<ParamField path="scene" required>
+  Scene handle (scn_7) OR 1-based number (1, 2, …) OR ordinal (first, second, …)
+</ParamField>
+<ParamField path="--remove">
+  note_id to delete from the clip, as reported by 'vibrai note list --json'. Repeatable.
+</ParamField>
+<ParamField path="--json-data">
+  Notes as a JSON array of note objects. Each note: &#123;"pitch": 0-127 or "C4", "start_time": beats, "duration": beats (>0), "velocity": 0-127 or "mf"}. Optional: mute (bool), probability (0.0-1.0), velocity_deviation, release_velocity, note_id (read-only). pressure/slide/pitch_bend are accepted but NOT stored — Live does not carry per-note expression in the note object. Example: --json-data '[&#123;"pitch":60,"start_time":0,"duration":0.25,"velocity":100}]'
 </ParamField>
 <ParamField path="--file">
   Path to a JSON file containing the same note array as --json-data.
@@ -135,7 +159,7 @@ Replace all notes in a clip with the given list. Each note is an object with exa
   Scene handle from list_scenes, e.g. "scn_7". Copy verbatim.
 </ParamField>
 <ParamField path="notes" type="NoteEvent[]" required>
-  Notes to write (replaces all existing). Each note object: pitch (integer 0-127 or note name e.g. "C4", required), start_time (number, beats from clip start, required), duration (number, beats, must be > 0, required), velocity (integer 0-127 or dynamic e.g. "mf", required), pressure/slide/pitch_bend (integer or null, optional, MPE). Field names are exact — "start_time", not "start".
+  Notes to write (replaces all existing). Each note object: pitch (integer 0-127 or note name e.g. "C4", required), start_time (number, beats from clip start, required), duration (number, beats, must be > 0, required), velocity (integer 0-127 or dynamic e.g. "mf", required), mute (boolean, optional), probability (number 0.0-1.0, optional — chance Live plays the note on a given pass), velocity_deviation (number, optional — range Live randomizes velocity within), release_velocity (integer 0-127, optional), note_id (string, read-only — assigned by Live, echo it back to address a note). pressure/slide/pitch_bend are accepted but NOT stored — Live does not carry per-note expression in the note object. Field names are exact — "start_time", not "start".
 </ParamField>
 
 ### `add_notes`
@@ -160,7 +184,36 @@ Append notes to a clip without removing existing notes. Each note is an object w
   Scene handle from list_scenes, e.g. "scn_7". Copy verbatim.
 </ParamField>
 <ParamField path="notes" type="NoteEvent[]" required>
-  Notes to append. Each note object: pitch (integer 0-127 or note name e.g. "C4", required), start_time (number, beats from clip start, required), duration (number, beats, must be > 0, required), velocity (integer 0-127 or dynamic e.g. "mf", required), pressure/slide/pitch_bend (integer or null, optional, MPE). Field names are exact — "start_time", not "start".
+  Notes to append. Each note object: pitch (integer 0-127 or note name e.g. "C4", required), start_time (number, beats from clip start, required), duration (number, beats, must be > 0, required), velocity (integer 0-127 or dynamic e.g. "mf", required), mute (boolean, optional), probability (number 0.0-1.0, optional — chance Live plays the note on a given pass), velocity_deviation (number, optional — range Live randomizes velocity within), release_velocity (integer 0-127, optional), note_id (string, read-only — assigned by Live, echo it back to address a note). pressure/slide/pitch_bend are accepted but NOT stored — Live does not carry per-note expression in the note object. Field names are exact — "start_time", not "start".
+</ParamField>
+
+### `modify_notes`
+
+Edit or delete specific notes by note_id, without rewriting the clip. Get ids from list_notes. Pass `modify` with notes carrying their note_id and the values you want, and/or `remove` with ids to delete. At least one is required. Ids are validated first — an unknown id changes NOTHING, so a partial apply cannot leave the clip in a state you did not ask for. Prefer this over write_notes when changing a few notes in a large clip.
+
+```json
+{
+  "tool": "modify_notes",
+  "arguments": {
+    "track": "<String>",
+    "scene": "<String>",
+    "modify": "<NoteEvent[]>",
+    "remove": "<String[]>"
+  }
+}
+```
+
+<ParamField path="track" type="String" required>
+  Track handle from list_tracks, e.g. "trk_42". Copy verbatim.
+</ParamField>
+<ParamField path="scene" type="String" required>
+  Scene handle from list_scenes, e.g. "scn_7". Copy verbatim.
+</ParamField>
+<ParamField path="modify" type="NoteEvent[]">
+  Notes to change. Each MUST carry a note_id from list_notes. Each note object: pitch (integer 0-127 or note name e.g. "C4", required), start_time (number, beats from clip start, required), duration (number, beats, must be > 0, required), velocity (integer 0-127 or dynamic e.g. "mf", required), mute (boolean, optional), probability (number 0.0-1.0, optional — chance Live plays the note on a given pass), velocity_deviation (number, optional — range Live randomizes velocity within), release_velocity (integer 0-127, optional), note_id (string, read-only — assigned by Live, echo it back to address a note). pressure/slide/pitch_bend are accepted but NOT stored — Live does not carry per-note expression in the note object. Field names are exact — "start_time", not "start".
+</ParamField>
+<ParamField path="remove" type="String[]">
+  note_id values to delete from the clip.
 </ParamField>
 
 ### `remap_pitch`

@@ -91,6 +91,66 @@ vibrai track rename [track] [name] --liveset-id <ID> --number-tracks --no-number
   Disable '#' track auto-numbering for this run (overrides env / project setting).
 </ParamField>
 
+### `track mixer`
+
+Show a track's volume, pan, mute/solo/arm and sends
+
+```bash
+vibrai track mixer <track>
+```
+
+<ParamField path="track" required>
+  Track handle (trk_42) OR 1-based number (1, 2, …) OR ordinal (first, second, …).
+</ParamField>
+
+### `track set-mixer`
+
+Set a track's volume, pan, mute/solo/arm or sends
+
+```bash
+vibrai track set-mixer <track> --volume <DB> --volume-raw <VALUE> --pan <VALUE> --mute --solo --arm --send <NAME=DB>
+```
+
+<ParamField path="track" required>
+  Track handle (trk_42) OR 1-based number (1, 2, …) OR ordinal (first, second, …).
+</ParamField>
+<ParamField path="--volume">
+  Volume in dB, e.g. -6. Maximum +6. Mutually exclusive with --volume-raw.
+</ParamField>
+<ParamField path="--volume-raw">
+  Volume as Live's normalized 0.0-1.0 (0.85 is unity). Mutually exclusive with --volume.
+</ParamField>
+<ParamField path="--pan">
+  Pan, -1.0 (hard left) to 1.0 (hard right).
+</ParamField>
+<ParamField path="--mute">
+  Mute or unmute the track.
+</ParamField>
+<ParamField path="--solo">
+  Solo or unsolo. Solo is additive — Live does not clear other soloed tracks.
+</ParamField>
+<ParamField path="--arm">
+  Arm or disarm for recording. Group, return and master tracks cannot be armed.
+</ParamField>
+<ParamField path="--send">
+  Send level as return_name=dB, e.g. --send A-Reverb=-12. Repeatable. See 'vibrai mix returns' for the available names.
+</ParamField>
+
+### `track set-color`
+
+Set a track's colour by Live palette index
+
+```bash
+vibrai track set-color <track> <color-index>
+```
+
+<ParamField path="track" required>
+  Track handle (trk_42) OR 1-based number (1, 2, …) OR ordinal (first, second, …).
+</ParamField>
+<ParamField path="color-index" required>
+  Live colour palette index, 0-69.
+</ParamField>
+
 ## MCP tools
 
 ### `list_tracks`
@@ -188,4 +248,167 @@ Rename a track. Address it by its liveset_id handle from list_tracks (e.g. trk_4
 </ParamField>
 <ParamField path="number_tracks" type="Nullable`1">
   Prefix the name with Ableton's '#' auto-numbering token. Null inherits VIBRAI_NUMBER_TRACKS.
+</ParamField>
+
+### `get_track_mixer`
+
+Read a track's mixer state: volume (both dB and Live's raw 0.0-1.0), pan, mute, solo, arm, and every send with its return-track name. Address the track by its liveset_id handle from list_tracks (e.g. trk_42).
+
+```json
+{
+  "tool": "get_track_mixer",
+  "arguments": {
+    "liveset_id": "<String>"
+  }
+}
+```
+
+<ParamField path="liveset_id" type="String" required>
+  Track handle from list_tracks, e.g. "trk_42". Copy verbatim; not a position number.
+</ParamField>
+
+### `set_track_mixer`
+
+Set any subset of a track's mixer state. Omitted fields are left untouched. Volume takes EITHER volume_db (preferred, e.g. -6) OR volume_raw (Live's 0.0-1.0) — passing both is an error. A fader runs to +6 dB (unity at raw 0.85); a send runs to 0 dB. Sends are addressed by return-track name as "name=dB" pairs, e.g. ["A-Reverb=-12"]. Returns the post-write state, so the reported volume is what actually landed rather than what was requested.
+
+```json
+{
+  "tool": "set_track_mixer",
+  "arguments": {
+    "liveset_id": "<String>",
+    "volume_db": "<Nullable`1>",
+    "volume_raw": "<Nullable`1>",
+    "pan": "<Nullable`1>",
+    "mute": "<Nullable`1>",
+    "solo": "<Nullable`1>",
+    "arm": "<Nullable`1>",
+    "sends": "<String[]>"
+  }
+}
+```
+
+<ParamField path="liveset_id" type="String" required>
+  Track handle from list_tracks, e.g. "trk_42". Copy verbatim; not a position number.
+</ParamField>
+<ParamField path="volume_db" type="Nullable`1">
+  Volume in dB, e.g. -6.0. Maximum +6. Mutually exclusive with volume_raw.
+</ParamField>
+<ParamField path="volume_raw" type="Nullable`1">
+  Volume as Live's normalized 0.0-1.0 (0.85 is unity). Mutually exclusive with volume_db.
+</ParamField>
+<ParamField path="pan" type="Nullable`1">
+  Pan, -1.0 (hard left) to 1.0 (hard right).
+</ParamField>
+<ParamField path="mute" type="Nullable`1">
+  Mute the track.
+</ParamField>
+<ParamField path="solo" type="Nullable`1">
+  Solo the track. Solo is additive — Live does not clear other soloed tracks.
+</ParamField>
+<ParamField path="arm" type="Nullable`1">
+  Arm the track for recording. Group, return and master tracks cannot be armed.
+</ParamField>
+<ParamField path="sends" type="String[]">
+  Send levels as "return_name=dB" pairs, e.g. ["A-Reverb=-12", "B-Delay=-18"]. Use list_returns to see the available names.
+</ParamField>
+
+### `apply_mix`
+
+Apply a whole mix in one call, keyed by part type. Each entry is "part_type=dB" (e.g. "bass=-6"), optionally with pan and sends: "pad=-12:pan=-0.3:send=A-Reverb=-9". Resolves part types to tracks via the loaded project when there is one (exact), or track-name hints when there isn't (heuristic) — the result reports which path ran. Part types with no matching track come back as warnings, not errors.
+
+```json
+{
+  "tool": "apply_mix",
+  "arguments": {
+    "parts": "<String[]>",
+    "project_path": "<String>"
+  }
+}
+```
+
+<ParamField path="parts" type="String[]" required>
+  Mix entries, e.g. ["bass=-6", "lead=-3", "pad=-12:send=A-Reverb=-9"].
+</ParamField>
+<ParamField path="project_path" type="String">
+  Path to the .vibrai project to bind part types against (defaults to Untitled.vibrai in the working directory). When no project is found, binding falls back to track-name hints and says so.
+</ParamField>
+
+### `list_returns`
+
+List the set's return tracks with their index and name. These names are what set_track_mixer and apply_mix accept in their sends arguments.
+
+```json
+{
+  "tool": "list_returns",
+  "arguments": {}
+}
+```
+
+
+
+### `set_track_color`
+
+Set a track's colour by Live palette index. Address the track by its liveset_id handle from list_tracks (e.g. trk_42). Colour-coding a set by part type or by section makes a 12-track project legible at a glance.
+
+```json
+{
+  "tool": "set_track_color",
+  "arguments": {
+    "liveset_id": "<String>",
+    "color_index": "<Int32>"
+  }
+}
+```
+
+<ParamField path="liveset_id" type="String" required>
+  Track handle from list_tracks, e.g. "trk_42". Copy verbatim; not a position number.
+</ParamField>
+<ParamField path="color_index" type="Int32" required>
+  Live colour palette index, 0-69.
+</ParamField>
+
+### `set_scene_color`
+
+Set a scene's colour by Live palette index. Address the scene by its liveset_id handle from list_scenes (e.g. scn_7). Section-coloured scenes make the session view readable.
+
+```json
+{
+  "tool": "set_scene_color",
+  "arguments": {
+    "liveset_id": "<String>",
+    "color_index": "<Int32>"
+  }
+}
+```
+
+<ParamField path="liveset_id" type="String" required>
+  Scene handle from list_scenes, e.g. "scn_7". Copy verbatim; not a position number.
+</ParamField>
+<ParamField path="color_index" type="Int32" required>
+  Live colour palette index, 0-69.
+</ParamField>
+
+### `set_clip_color`
+
+Set a session clip's colour by Live palette index. The clip is addressed by its track handle and its 1-based scene number, matching list_clips. For arrangement clips use set_arrangement_clip_props instead.
+
+```json
+{
+  "tool": "set_clip_color",
+  "arguments": {
+    "liveset_id": "<String>",
+    "scene": "<Int32>",
+    "color_index": "<Int32>"
+  }
+}
+```
+
+<ParamField path="liveset_id" type="String" required>
+  Track handle from list_tracks, e.g. "trk_42". Copy verbatim; not a position number.
+</ParamField>
+<ParamField path="scene" type="Int32" required>
+  1-based scene number, matching list_clips.
+</ParamField>
+<ParamField path="color_index" type="Int32" required>
+  Live colour palette index, 0-69.
 </ParamField>

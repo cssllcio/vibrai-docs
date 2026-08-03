@@ -64,6 +64,21 @@ vibrai scene rename <scene> <name>
   New scene name
 </ParamField>
 
+### `scene set-color`
+
+Set a scene's colour by Live palette index
+
+```bash
+vibrai scene set-color <scene> <color-index>
+```
+
+<ParamField path="scene" required>
+  Scene handle (scn_7) OR 1-based number (1, 2, …) OR ordinal (first, second, …).
+</ParamField>
+<ParamField path="color-index" required>
+  Live colour palette index, 0-69.
+</ParamField>
+
 ### `scene play`
 
 Fire (play) a scene by its handle.
