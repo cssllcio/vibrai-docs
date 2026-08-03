@@ -50,6 +50,7 @@
           "reference/performance",
           "reference/arrangement",
           "reference/genre",
+          "reference/phrase",
           "reference/install",
           "reference/generation",
           "reference/capture",
@@ -58,7 +59,8 @@
           "reference/update",
           "reference/uninstall",
           "reference/session",
-          "reference/skill-package"
+          "reference/skill-package",
+          "reference/docs"
         ]
       },
       {

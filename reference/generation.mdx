@@ -14,7 +14,7 @@ Generate or plan a composition from a .vibrai project file.
 Generate clips and arrangement from a .vibrai project file
 
 ```bash
-vibrai generate --project <PATH> --force --dry-run --seed <VALUE> --allow-skip --with-instruments --stock-only --on-existing-tracks <MODE> --keep-empty-clips --session-only --swing <PCT> --humanize <PCT> --ornaments <PCT> --dropout <PCT> --number-tracks --no-number-tracks
+vibrai generate --project <PATH> --force --clear-first --dry-run --seed <VALUE> --allow-skip --with-instruments --stock-only --on-existing-tracks <MODE> --keep-empty-clips --session-only --swing <PCT> --humanize <PCT> --ornaments <PCT> --dropout <PCT> --gate <PCT> --bass-motion <PROFILE> --kick-relation <MODE> --number-tracks --no-number-tracks
 ```
 
 <ParamField path="--project">
@@ -22,6 +22,9 @@ vibrai generate --project <PATH> --force --dry-run --seed <VALUE> --allow-skip -
 </ParamField>
 <ParamField path="--force">
   Overwrite existing session clips and arrangement content in project tracks
+</ParamField>
+<ParamField path="--clear-first">
+  Delete all Vibrai-generated tracks (same rule/order as 'vibrai project clear --yes') before planning and rendering — a clean slate so this run's composition doesn't stack on top of a previous, different project's tracks. Never touches Audio/Return/Master tracks or MIDI tracks whose Part Type is Other (user/template tracks). Skipped entirely under --dry-run (which never calls the bridge).
 </ParamField>
 <ParamField path="--dry-run">
   Plan only — do not call the bridge
@@ -59,6 +62,15 @@ vibrai generate --project <PATH> --force --dry-run --seed <VALUE> --allow-skip -
 <ParamField path="--dropout">
   Tension-section note thinning 0-100. Overrides genre/preset default.
 </ParamField>
+<ParamField path="--gate">
+  Note articulation length 0-100 (10 = extreme staccato, 100 = full value/legato). Overrides genre/preset default.
+</ParamField>
+<ParamField path="--bass-motion">
+  Bass motion profile: root, root_fifth, octave_pump, arpeggiated, walking, pedal. Overrides genre default.
+</ParamField>
+<ParamField path="--kick-relation">
+  How the bass sits against the kick: lock (snap onto it), dodge (push off it), free (ignore it). Overrides genre default.
+</ParamField>
 <ParamField path="--number-tracks">
   Prefix track names with Ableton's '#' auto-numbering token for this run.
 </ParamField>
@@ -71,7 +83,7 @@ vibrai generate --project <PATH> --force --dry-run --seed <VALUE> --allow-skip -
 Plan a composition from a .vibrai project file without writing to Live
 
 ```bash
-vibrai plan --project <PATH> --seed <VALUE> --keep-empty-clips --swing <PCT> --humanize <PCT> --ornaments <PCT> --dropout <PCT>
+vibrai plan --project <PATH> --seed <VALUE> --keep-empty-clips --swing <PCT> --humanize <PCT> --ornaments <PCT> --dropout <PCT> --gate <PCT> --bass-motion <PROFILE> --kick-relation <MODE>
 ```
 
 <ParamField path="--project">
@@ -95,6 +107,15 @@ vibrai plan --project <PATH> --seed <VALUE> --keep-empty-clips --swing <PCT> --h
 <ParamField path="--dropout">
   Tension-section note thinning 0-100. Overrides genre/preset default.
 </ParamField>
+<ParamField path="--gate">
+  Note articulation length 0-100 (10 = extreme staccato, 100 = full value/legato). Overrides genre/preset default.
+</ParamField>
+<ParamField path="--bass-motion">
+  Bass motion profile: root, root_fifth, octave_pump, arpeggiated, walking, pedal. Overrides genre default.
+</ParamField>
+<ParamField path="--kick-relation">
+  How the bass sits against the kick: lock (snap onto it), dodge (push off it), free (ignore it). Overrides genre default.
+</ParamField>
 
 ## MCP tools
 
@@ -112,7 +133,10 @@ Plan a composition from a .vibrai file without writing to Live. Returns a slim s
     "swing": "<Nullable`1>",
     "humanize": "<Nullable`1>",
     "ornament_density": "<Nullable`1>",
-    "dropout": "<Nullable`1>"
+    "dropout": "<Nullable`1>",
+    "gate": "<Nullable`1>",
+    "bass_motion": "<String>",
+    "kick_relation": "<String>"
   }
 }
 ```
@@ -138,10 +162,19 @@ Plan a composition from a .vibrai file without writing to Live. Returns a slim s
 <ParamField path="dropout" type="Nullable`1">
   Tension-section note thinning 0-100; overrides genre/preset default
 </ParamField>
+<ParamField path="gate" type="Nullable`1">
+  Note articulation length 0-100 (10 extreme staccato, 100 full value/legato); overrides genre/preset default
+</ParamField>
+<ParamField path="bass_motion" type="String">
+  Bass motion profile: root, root_fifth, octave_pump, arpeggiated, walking, pedal; overrides the genre default
+</ParamField>
+<ParamField path="kick_relation" type="String">
+  How the bass sits against the kick: lock, dodge, free; overrides the genre default
+</ParamField>
 
 ### `generate`
 
-Plan + render a composition into Live's session view and arrangement view. force=true is required only when append re-renders onto an existing part track whose target slots are non-empty; replace implies consent and never requires force. By default, fails fast when any ArrangementAutomationEntry cannot be resolved against the live device tree; pass allow_skip=true to log warnings and continue. Track ids in the summary (session_clips, arrangement_placements, instruments, current_tracks) are 1-based, matching list_tracks and load_device.
+Plan + render a composition into Live's session view and arrangement view. force=true is required only when append re-renders onto an existing part track whose target slots are non-empty; replace implies consent and never requires force. By default, fails fast when any ArrangementAutomationEntry cannot be resolved against the live device tree; pass allow_skip=true to log warnings and continue. Track ids in the summary (session_clips, arrangement_placements, instruments, current_tracks) are 1-based, matching list_tracks and load_device. Call `get_skill` first to load the Vibrai operational playbook.
 
 ```json
 {
@@ -159,8 +192,12 @@ Plan + render a composition into Live's session view and arrangement view. force
     "humanize": "<Nullable`1>",
     "ornament_density": "<Nullable`1>",
     "dropout": "<Nullable`1>",
+    "gate": "<Nullable`1>",
+    "bass_motion": "<String>",
+    "kick_relation": "<String>",
     "number_tracks": "<Nullable`1>",
-    "session_only": "<Boolean>"
+    "session_only": "<Boolean>",
+    "clear_first": "<Boolean>"
   }
 }
 ```
@@ -201,9 +238,21 @@ Plan + render a composition into Live's session view and arrangement view. force
 <ParamField path="dropout" type="Nullable`1">
   Tension-section note thinning 0-100; overrides genre/preset default
 </ParamField>
+<ParamField path="gate" type="Nullable`1">
+  Note articulation length 0-100 (10 extreme staccato, 100 full value/legato); overrides genre/preset default
+</ParamField>
+<ParamField path="bass_motion" type="String">
+  Bass motion profile: root, root_fifth, octave_pump, arpeggiated, walking, pedal; overrides the genre default
+</ParamField>
+<ParamField path="kick_relation" type="String">
+  How the bass sits against the kick: lock, dodge, free; overrides the genre default
+</ParamField>
 <ParamField path="number_tracks" type="Nullable`1">
   Prefix track names with Ableton's '#' auto-numbering token for this render (overrides env / project setting). Null inherits.
 </ParamField>
 <ParamField path="session_only" type="Boolean">
   Write clips to the Session grid only; skip Arrangement placement. Use with play_song to drive the song from Session view.
+</ParamField>
+<ParamField path="clear_first" type="Boolean">
+  Delete all Vibrai-generated tracks (same rule/order as clear_project with confirm=true, or 'vibrai project clear --yes') before planning and rendering — a clean slate so this run's composition doesn't stack on top of a previous, different project's tracks. Never touches Audio/Return/Master tracks, group/folder tracks, or MIDI tracks whose part type is 'other' (user/template tracks).
 </ParamField>

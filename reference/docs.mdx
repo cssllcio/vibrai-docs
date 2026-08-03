@@ -1,0 +1,58 @@
+---
+title: "Documentation"
+description: "Read the Vibrai agent skill (the operational playbook: preflight, core workflows, hard rules) and the full command reference — whole, or one section at a time."
+---
+
+{/* GENERATED — do not edit by hand. Regenerate with `npm run generate:reference`. */}
+
+Read the Vibrai agent skill (the operational playbook: preflight, core workflows, hard rules) and the full command reference — whole, or one section at a time.
+
+## Command line
+
+### `llms`
+
+Print the LLM-ready command reference (whole, one section, or the section list)
+
+```bash
+vibrai llms --section <NAME> --list-sections
+```
+
+<ParamField path="--section">
+  Print only this reference section — a name or unique prefix from --list-sections (e.g. genre)
+</ParamField>
+<ParamField path="--list-sections">
+  List the reference section names, one per line
+</ParamField>
+
+### `skill print`
+
+Print the Vibrai SKILL.md to stdout
+
+```bash
+vibrai skill print
+```
+
+
+
+## MCP tools
+
+### `get_skill`
+
+Get the Vibrai agent skill and/or command reference — the operational playbook and exhaustive tool documentation. Call with no arguments on first use to load the playbook plus the list of reference sections; then call with doc="reference" and a section name for argument-level detail on one capability. Read-only, no side effects.
+
+```json
+{
+  "tool": "get_skill",
+  "arguments": {
+    "doc": "<String>",
+    "section": "<String>"
+  }
+}
+```
+
+<ParamField path="doc" type="String">
+  Which document: "skill" for the operational playbook, "reference" for the command reference. Omit to get the skill plus the list of reference sections.
+</ParamField>
+<ParamField path="section" type="String">
+  Reference section to return, e.g. "Genre" or "Automation" — a name or unique prefix from reference_sections. Only used with doc="reference"; omit for the whole reference (large).
+</ParamField>

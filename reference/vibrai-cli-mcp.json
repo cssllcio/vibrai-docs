@@ -1,6 +1,6 @@
 {
-  "engineVersion": "1.3.4.0",
-  "generatedAt": "2026-07-25T12:45:56Z",
+  "engineVersion": "1.4.0.0",
+  "generatedAt": "2026-08-03T01:37:04Z",
   "features": [
     {
       "id": "transport",
@@ -214,12 +214,12 @@
         "tools": [
           {
             "name": "list_tracks",
-            "description": "List all tracks in the current Live set. Track \u0060id\u0060 is 1-based. \u0060midi_index\u0060 is the ordinal among MIDI tracks only (also 1-based), or null for audio tracks.",
+            "description": "List all tracks in the current Live set. Track \u0060id\u0060 is 1-based. \u0060midi_index\u0060 is the ordinal among playable MIDI tracks only (also 1-based), or null for audio and group tracks. \u0060is_group\u0060 marks a group (folder) track \u2014 it holds no clips, so never target it for generation; \u0060group_id\u0060 is the parent group\u0027s handle (null at top level); \u0060fold_state\u0060 is 1 when a group is collapsed.",
             "parameters": []
           },
           {
             "name": "get_track",
-            "description": "Get a single track by its liveset_id handle from list_tracks (e.g. trk_42). Returns the same shape as list_tracks (1-based \u0060id\u0060/\u0060midi_index\u0060). Errors TRACK_NOT_FOUND if no such track exists.",
+            "description": "Get a single track by its liveset_id handle from list_tracks (e.g. trk_42). Returns the same shape as list_tracks (1-based \u0060id\u0060/\u0060midi_index\u0060, plus \u0060is_group\u0060/\u0060group_id\u0060/\u0060fold_state\u0060). Errors TRACK_NOT_FOUND if no such track exists.",
             "parameters": [
               {
                 "name": "liveset_id",
@@ -255,7 +255,7 @@
           },
           {
             "name": "delete_track",
-            "description": "Delete a track by its liveset_id handle from list_tracks (e.g. trk_42). Remaining tracks keep their handles. Destructive \u2014 no undo. Errors: TRACK_NOT_FOUND, CANNOT_DELETE_LAST_TRACK.",
+            "description": "Delete a track by its liveset_id handle from list_tracks (e.g. trk_42). If the target is a group track, Live removes every track inside it \u2014 the result lists them in removed_children. Remaining tracks keep their handles. Destructive \u2014 no undo. Errors: TRACK_NOT_FOUND, CANNOT_DELETE_LAST_TRACK.",
             "parameters": [
               {
                 "name": "liveset_id",
@@ -1797,13 +1797,13 @@
                 "name": "--json-data",
                 "valueName": "JSON",
                 "default": null,
-                "description": "Notes as JSON array"
+                "description": "Notes as a JSON array of note objects. Each note: {\u0022pitch\u0022: 0-127 or \u0022C4\u0022, \u0022start_time\u0022: beats, \u0022duration\u0022: beats (\u003E0), \u0022velocity\u0022: 0-127 or \u0022mf\u0022}. Optional: pressure, slide, pitch_bend. Example: --json-data \u0027[{\u0022pitch\u0022:60,\u0022start_time\u0022:0,\u0022duration\u0022:0.25,\u0022velocity\u0022:100}]\u0027"
               },
               {
                 "name": "--file",
                 "valueName": "PATH",
                 "default": null,
-                "description": "Path to JSON file containing notes array"
+                "description": "Path to a JSON file containing the same note array as --json-data."
               }
             ]
           },
@@ -1827,13 +1827,13 @@
                 "name": "--json-data",
                 "valueName": "JSON",
                 "default": null,
-                "description": "Notes as JSON array"
+                "description": "Notes as a JSON array of note objects. Each note: {\u0022pitch\u0022: 0-127 or \u0022C4\u0022, \u0022start_time\u0022: beats, \u0022duration\u0022: beats (\u003E0), \u0022velocity\u0022: 0-127 or \u0022mf\u0022}. Optional: pressure, slide, pitch_bend. Example: --json-data \u0027[{\u0022pitch\u0022:60,\u0022start_time\u0022:0,\u0022duration\u0022:0.25,\u0022velocity\u0022:100}]\u0027"
               },
               {
                 "name": "--file",
                 "valueName": "PATH",
                 "default": null,
-                "description": "Path to JSON file containing notes array"
+                "description": "Path to a JSON file containing the same note array as --json-data."
               }
             ]
           },
@@ -1898,7 +1898,7 @@
           },
           {
             "name": "write_notes",
-            "description": "Replace all notes in a clip with the given list.",
+            "description": "Replace all notes in a clip with the given list. Each note is an object with exact field names \u2014 \u0027start_time\u0027, not \u0027start\u0027. Returns how many notes were requested vs. actually written.",
             "parameters": [
               {
                 "name": "track",
@@ -1916,13 +1916,13 @@
                 "name": "notes",
                 "type": "NoteEvent[]",
                 "required": true,
-                "description": "Notes to write (replaces all existing)."
+                "description": "Notes to write (replaces all existing). Each note object: pitch (integer 0-127 or note name e.g. \u0022C4\u0022, required), start_time (number, beats from clip start, required), duration (number, beats, must be \u003E 0, required), velocity (integer 0-127 or dynamic e.g. \u0022mf\u0022, required), pressure/slide/pitch_bend (integer or null, optional, MPE). Field names are exact \u2014 \u0022start_time\u0022, not \u0022start\u0022."
               }
             ]
           },
           {
             "name": "add_notes",
-            "description": "Append notes to a clip without removing existing notes.",
+            "description": "Append notes to a clip without removing existing notes. Each note is an object with exact field names \u2014 \u0027start_time\u0027, not \u0027start\u0027. Returns how many notes were requested vs. actually written.",
             "parameters": [
               {
                 "name": "track",
@@ -1940,7 +1940,7 @@
                 "name": "notes",
                 "type": "NoteEvent[]",
                 "required": true,
-                "description": "Notes to append."
+                "description": "Notes to append. Each note object: pitch (integer 0-127 or note name e.g. \u0022C4\u0022, required), start_time (number, beats from clip start, required), duration (number, beats, must be \u003E 0, required), velocity (integer 0-127 or dynamic e.g. \u0022mf\u0022, required), pressure/slide/pitch_bend (integer or null, optional, MPE). Field names are exact \u2014 \u0022start_time\u0022, not \u0022start\u0022."
               }
             ]
           },
@@ -2667,7 +2667,7 @@
                 "name": "--yes",
                 "valueName": null,
                 "default": null,
-                "description": "Confirm deletion of Vibrai-generated tracks (MIDI tracks whose Part Type is not Other \u2014 see \u0027vibrai project clear\u0027 docs). Without this, lists the tracks that would be deleted and exits non-zero."
+                "description": "Confirm deletion of Vibrai-generated tracks. Deletion targets MIDI tracks that are not group/folder tracks and whose part type (inferred from the track\u0027s current name, not stored) is not \u0027other\u0027. Because part type is name-inferred, a user track like \u0027My Bass\u0027 may be selected. Without this flag, lists the tracks that would be deleted and exits non-zero."
               }
             ]
           }
@@ -2677,7 +2677,7 @@
         "tools": [
           {
             "name": "init_project",
-            "description": "Create a new .vibrai YAML file at the given absolute path. Without \u0060demo\u0060, writes a minimal 2-section / 1-part boilerplate. With \u0060demo: true\u0060, writes an opinionated 3-section / 2-part starter that exercises variation, per-section scale overrides, naming, and both generator types. Track IDs are probed from the bridge (first N MIDI tracks) and each probed binding records the track\u0027s current name (part \u0060track_name\u0060) so \u0060generate\u0060 reuses those tracks; if the bridge is unreachable, falls back to track 1 (and 2 for demo) with no binding. Set number_tracks=true to persist Ableton \u0027#\u0027 track auto-numbering into the new project\u0027s Defaults. Refuses with PROJECT_EXISTS if a file already exists at \u0060path\u0060 \u2014 pass force=true to overwrite it.",
+            "description": "Create a new .vibrai YAML file at the given absolute path. Without \u0060demo\u0060, writes a minimal 2-section / 1-part boilerplate. With \u0060demo: true\u0060, writes an opinionated 3-section / 2-part starter that exercises variation, per-section scale overrides, naming, and both generator types. Track IDs are probed from the bridge (first N MIDI tracks, skipping group/folder tracks) and each probed binding records the track\u0027s current name (part \u0060track_name\u0060) so \u0060generate\u0060 reuses those tracks; if the bridge is unreachable, falls back to track 1 (and 2 for demo) with no binding. Set number_tracks=true to persist Ableton \u0027#\u0027 track auto-numbering into the new project\u0027s Defaults. Refuses with PROJECT_EXISTS if a file already exists at \u0060path\u0060 \u2014 pass force=true to overwrite it.",
             "parameters": [
               {
                 "name": "path",
@@ -2773,7 +2773,7 @@
           },
           {
             "name": "clear_project",
-            "description": "Delete every Vibrai-generated track from the current Live set \u2014 a clean slate before rendering a different composition into the same set (the fix for successive generate runs of different projects stacking tracks after each other). Selection rule: MIDI tracks whose part type is not \u0027other\u0027 \u2014 the same stamp LiveRenderer writes on every track it creates; a user\u0027s own tracks, template tracks, and Audio/Return/Master tracks are never touched. Deletes highest-index-first, one at a time. Destructive \u2014 requires confirm=true (parity with the CLI\u0027s \u0060project clear --yes\u0060); without it, errors listing exactly what would be deleted and changes nothing. When nothing is Vibrai-generated, succeeds trivially without requiring confirm.",
+            "description": "Delete every Vibrai-generated track from the current Live set \u2014 a clean slate before rendering a different composition into the same set (the fix for successive generate runs of different projects stacking tracks after each other). Selection rule: MIDI tracks that are not group/folder tracks and whose part type \u2014 inferred from the track\u0027s current name on every read, not a stamp stored on the track \u2014 is not \u0027other\u0027; a user\u0027s own tracks, template tracks, group tracks, and Audio/Return/Master tracks are never touched. Because the part type is name-inferred, a user track whose name happens to match a part keyword (e.g. \u0022My Bass\u0022) can also be selected. Deletes highest-index-first, one at a time. Destructive \u2014 requires confirm=true (parity with the CLI\u0027s \u0060project clear --yes\u0060); without it, errors listing exactly what would be deleted and changes nothing. When nothing is Vibrai-generated, succeeds trivially without requiring confirm.",
             "parameters": [
               {
                 "name": "confirm",
@@ -3399,7 +3399,7 @@
                 "name": "--faithful",
                 "valueName": null,
                 "default": null,
-                "description": "Also embed literal note phrases (writes format v3 with playback support)"
+                "description": "Also embed literal note phrases (writes format v4 with playback support)"
               },
               {
                 "name": "--source",
@@ -3427,7 +3427,7 @@
         "tools": [
           {
             "name": "list_genres",
-            "description": "List installed genre libraries. Returns each genre\u0027s name (slug; other tools accept either the slug or the display name), display name, sub-genres, default BPM, and preset count. Embedded resources ship with Vibrai; users can override or add entries via ~/.vibrai/genres/\u003Cname\u003E.vibraigenre.",
+            "description": "List installed genre libraries. Returns each genre\u0027s name (slug; other tools accept either the slug or the display name), display name, sub-genres, default BPM, and preset count. Embedded resources ship with Vibrai; users can override or add entries via ~/.vibrai/genres/\u003Cname\u003E.vibraigenre. Call \u0060get_skill\u0060 first to load the Vibrai operational playbook.",
             "parameters": []
           },
           {
@@ -3444,7 +3444,7 @@
           },
           {
             "name": "apply_genre",
-            "description": "Materialize a genre\u002Bpreset into a .vibrai project at the given path. Destructive: overwrites sections, parts, templates, arrangement.blueprint, and generation \u2014 requires confirm=true (parity with the CLI\u0027s \u0060genre apply --yes\u0060); refuses without modifying the project otherwise. Preserves meta.name, meta.als_path, and Defaults.NumberTracks from the existing project if present (number_tracks omitted). Note: the \u0060preset_id\u0060 parameter was renamed to \u0060preset\u0060 for CLI/MCP naming parity; update any callers.",
+            "description": "Materialize a genre\u002Bpreset into a .vibrai project at the given path. Destructive: overwrites sections, parts, templates, arrangement.blueprint, and generation \u2014 requires confirm=true (parity with the CLI\u0027s \u0060genre apply --yes\u0060); refuses without modifying the project otherwise. Preserves meta.name, meta.als_path, and Defaults.NumberTracks from the existing project if present (number_tracks omitted). Note: the \u0060preset_id\u0060 parameter was renamed to \u0060preset\u0060 for CLI/MCP naming parity; update any callers. Call \u0060get_skill\u0060 first to load the Vibrai operational playbook.",
             "parameters": [
               {
                 "name": "genre",
@@ -3480,7 +3480,7 @@
           },
           {
             "name": "extract_genre",
-            "description": "Extract a genre from the open Live set into a .vibraigenre file. Reads tempo, scale, tracks, clips, notes, and envelopes; classifies tracks into parts (report shows each decision); detects sections; and writes a generative genre usable by apply_genre. Set faithful=true to also embed literal note phrases (format v3) so regeneration seeds from the source riffs. Set into_genre=\u003Cuser genre\u003E to append this set as a new preset instead of creating a file. Re-run with part_overrides to correct classifications \u2014 extraction never mutates the Live set.",
+            "description": "Extract a genre from the open Live set into a .vibraigenre file. Reads tempo, scale, tracks, clips, notes, and envelopes; classifies tracks into parts (report shows each decision); detects sections; and writes a generative genre usable by apply_genre. Set faithful=true to also embed literal note phrases so regeneration seeds from the source riffs. Set into_genre=\u003Cuser genre\u003E to append this set as a new preset instead of creating a file. Re-run with part_overrides to correct classifications \u2014 extraction never mutates the Live set.",
             "parameters": [
               {
                 "name": "name",
@@ -3510,7 +3510,7 @@
                 "name": "faithful",
                 "type": "Boolean",
                 "required": false,
-                "description": "Also embed literal note phrases (writes format v3 with playback support)."
+                "description": "Also embed literal note phrases (writes format v4 with playback support)."
               },
               {
                 "name": "source",
@@ -3529,6 +3529,142 @@
                 "type": "Boolean",
                 "required": false,
                 "description": "Overwrite an existing target file."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "phrase",
+      "title": "Phrase",
+      "description": "Inspect and prune the literal note phrases that genre extraction harvests from a Live set (the genre file\u0027s phrase block, introduced in v3). A phrase replays verbatim in the section it was captured from, and is re-fitted to the chords of any other section that has no phrase of its own, so a riff harvested from two sections carries across a whole song. Vibrai never authors phrase content \u2014 extraction is the only author. Curation is list plus remove on both surfaces; removal requires explicit confirmation because it rewrites the genre file irreversibly, and built-in stock genres are read-only.",
+      "cli": {
+        "branch": "phrase",
+        "commands": [
+          {
+            "name": "phrase list",
+            "description": "List harvested phrases in a genre library",
+            "arguments": [
+              {
+                "name": "genre",
+                "required": true,
+                "description": "Genre id or name to list phrases from"
+              }
+            ],
+            "options": [
+              {
+                "name": "--preset",
+                "valueName": "PRESET",
+                "default": null,
+                "description": "Only phrases belonging to this preset id"
+              },
+              {
+                "name": "--part",
+                "valueName": "ORDINAL",
+                "default": null,
+                "description": "Only phrases for this part ordinal (as shown in the Part# column)"
+              }
+            ]
+          },
+          {
+            "name": "phrase remove",
+            "description": "Remove one harvested phrase from a user genre",
+            "arguments": [
+              {
+                "name": "genre",
+                "required": true,
+                "description": "User genre to remove a phrase from (stock genres are read-only)"
+              }
+            ],
+            "options": [
+              {
+                "name": "--preset",
+                "valueName": "PRESET",
+                "default": null,
+                "description": "Preset id the phrase belongs to"
+              },
+              {
+                "name": "--part",
+                "valueName": "ORDINAL",
+                "default": "0",
+                "description": "Part ordinal, as shown in \u0060vibrai phrase list\u0060"
+              },
+              {
+                "name": "--section",
+                "valueName": "SECTION",
+                "default": null,
+                "description": "Section name the phrase was captured from"
+              },
+              {
+                "name": "--confirm",
+                "valueName": null,
+                "default": null,
+                "description": "Required. Removing a phrase rewrites the .vibraigenre file and cannot be undone"
+              }
+            ]
+          }
+        ]
+      },
+      "mcp": {
+        "tools": [
+          {
+            "name": "list_phrases",
+            "description": "List the literal note phrases a genre carries (harvested by extract_genre with faithful=true). Returns a bare array of rows, matching list_genres/list_genre_presets and the CLI\u0027s \u0060phrase list --json\u0060. Each row reports the preset, part type and ordinal, source section, that section\u0027s tension, bar count, and note count. A phrase plays back verbatim in its own section, and is re-fitted to the chords of any other section that has none of its own. An empty tension means the phrase predates the tension field and is treated as a wildcard: eligible for playback in any section, but never preferred over a phrase whose tension matches the section.",
+            "parameters": [
+              {
+                "name": "genre",
+                "type": "String",
+                "required": false,
+                "description": "Genre id or name to list phrases from."
+              },
+              {
+                "name": "preset",
+                "type": "String",
+                "required": false,
+                "description": "Only phrases belonging to this preset id."
+              },
+              {
+                "name": "part_ordinal",
+                "type": "Nullable\u00601",
+                "required": false,
+                "description": "Only phrases for this part ordinal."
+              }
+            ]
+          },
+          {
+            "name": "remove_phrase",
+            "description": "Remove one harvested phrase from a USER genre file. Requires confirm=true \u2014 this rewrites the .vibraigenre on disk and cannot be undone. Built-in stock genres are read-only and are rejected. Identify the phrase with the preset, part_ordinal, and section shown by list_phrases.",
+            "parameters": [
+              {
+                "name": "genre",
+                "type": "String",
+                "required": false,
+                "description": "User genre to remove a phrase from."
+              },
+              {
+                "name": "preset",
+                "type": "String",
+                "required": false,
+                "description": "Preset id the phrase belongs to."
+              },
+              {
+                "name": "part_ordinal",
+                "type": "Int32",
+                "required": false,
+                "description": "Part ordinal, as shown by list_phrases."
+              },
+              {
+                "name": "section",
+                "type": "String",
+                "required": false,
+                "description": "Section name the phrase was captured from."
+              },
+              {
+                "name": "confirm",
+                "type": "Boolean",
+                "required": false,
+                "description": "Must be true. Guards an irreversible rewrite of the genre file."
               }
             ]
           }
@@ -3557,13 +3693,13 @@
                 "name": "--source",
                 "valueName": "PATH",
                 "default": null,
-                "description": "[[advanced]] Override the source directory (test/debug use)."
+                "description": "[advanced] Override the source directory (test/debug use)."
               },
               {
                 "name": "--dest",
                 "valueName": "PATH",
                 "default": null,
-                "description": "[[advanced]] Override the destination directory (test/debug use)."
+                "description": "[advanced] Override the destination directory (test/debug use)."
               },
               {
                 "name": "--user",
@@ -3588,13 +3724,13 @@
                 "name": "--source",
                 "valueName": "PATH",
                 "default": null,
-                "description": "[[advanced]] Override the source directory (test/debug use)."
+                "description": "[advanced] Override the source directory (test/debug use)."
               },
               {
                 "name": "--dest",
                 "valueName": "PATH",
                 "default": null,
-                "description": "[[advanced]] Override the destination directory (test/debug use)."
+                "description": "[advanced] Override the destination directory (test/debug use)."
               },
               {
                 "name": "--user",
@@ -3613,13 +3749,13 @@
                 "name": "--source",
                 "valueName": "PATH",
                 "default": null,
-                "description": "[[advanced]] Override the source directory (test/debug use)."
+                "description": "[advanced] Override the source directory (test/debug use)."
               },
               {
                 "name": "--dest",
                 "valueName": "PATH",
                 "default": null,
-                "description": "[[advanced]] Override the destination directory (test/debug use)."
+                "description": "[advanced] Override the destination directory (test/debug use)."
               },
               {
                 "name": "--user",
@@ -3836,6 +3972,24 @@
                 "description": "Tension-section note thinning 0-100. Overrides genre/preset default."
               },
               {
+                "name": "--gate",
+                "valueName": "PCT",
+                "default": null,
+                "description": "Note articulation length 0-100 (10 = extreme staccato, 100 = full value/legato). Overrides genre/preset default."
+              },
+              {
+                "name": "--bass-motion",
+                "valueName": "PROFILE",
+                "default": null,
+                "description": "Bass motion profile: root, root_fifth, octave_pump, arpeggiated, walking, pedal. Overrides genre default."
+              },
+              {
+                "name": "--kick-relation",
+                "valueName": "MODE",
+                "default": null,
+                "description": "How the bass sits against the kick: lock (snap onto it), dodge (push off it), free (ignore it). Overrides genre default."
+              },
+              {
                 "name": "--number-tracks",
                 "valueName": null,
                 "default": null,
@@ -3895,6 +4049,24 @@
                 "valueName": "PCT",
                 "default": null,
                 "description": "Tension-section note thinning 0-100. Overrides genre/preset default."
+              },
+              {
+                "name": "--gate",
+                "valueName": "PCT",
+                "default": null,
+                "description": "Note articulation length 0-100 (10 = extreme staccato, 100 = full value/legato). Overrides genre/preset default."
+              },
+              {
+                "name": "--bass-motion",
+                "valueName": "PROFILE",
+                "default": null,
+                "description": "Bass motion profile: root, root_fifth, octave_pump, arpeggiated, walking, pedal. Overrides genre default."
+              },
+              {
+                "name": "--kick-relation",
+                "valueName": "MODE",
+                "default": null,
+                "description": "How the bass sits against the kick: lock (snap onto it), dodge (push off it), free (ignore it). Overrides genre default."
               }
             ]
           }
@@ -3947,12 +4119,30 @@
                 "type": "Nullable\u00601",
                 "required": false,
                 "description": "Tension-section note thinning 0-100; overrides genre/preset default"
+              },
+              {
+                "name": "gate",
+                "type": "Nullable\u00601",
+                "required": false,
+                "description": "Note articulation length 0-100 (10 extreme staccato, 100 full value/legato); overrides genre/preset default"
+              },
+              {
+                "name": "bass_motion",
+                "type": "String",
+                "required": false,
+                "description": "Bass motion profile: root, root_fifth, octave_pump, arpeggiated, walking, pedal; overrides the genre default"
+              },
+              {
+                "name": "kick_relation",
+                "type": "String",
+                "required": false,
+                "description": "How the bass sits against the kick: lock, dodge, free; overrides the genre default"
               }
             ]
           },
           {
             "name": "generate",
-            "description": "Plan \u002B render a composition into Live\u0027s session view and arrangement view. force=true is required only when append re-renders onto an existing part track whose target slots are non-empty; replace implies consent and never requires force. By default, fails fast when any ArrangementAutomationEntry cannot be resolved against the live device tree; pass allow_skip=true to log warnings and continue. Track ids in the summary (session_clips, arrangement_placements, instruments, current_tracks) are 1-based, matching list_tracks and load_device.",
+            "description": "Plan \u002B render a composition into Live\u0027s session view and arrangement view. force=true is required only when append re-renders onto an existing part track whose target slots are non-empty; replace implies consent and never requires force. By default, fails fast when any ArrangementAutomationEntry cannot be resolved against the live device tree; pass allow_skip=true to log warnings and continue. Track ids in the summary (session_clips, arrangement_placements, instruments, current_tracks) are 1-based, matching list_tracks and load_device. Call \u0060get_skill\u0060 first to load the Vibrai operational playbook.",
             "parameters": [
               {
                 "name": "project_path",
@@ -4027,6 +4217,24 @@
                 "description": "Tension-section note thinning 0-100; overrides genre/preset default"
               },
               {
+                "name": "gate",
+                "type": "Nullable\u00601",
+                "required": false,
+                "description": "Note articulation length 0-100 (10 extreme staccato, 100 full value/legato); overrides genre/preset default"
+              },
+              {
+                "name": "bass_motion",
+                "type": "String",
+                "required": false,
+                "description": "Bass motion profile: root, root_fifth, octave_pump, arpeggiated, walking, pedal; overrides the genre default"
+              },
+              {
+                "name": "kick_relation",
+                "type": "String",
+                "required": false,
+                "description": "How the bass sits against the kick: lock, dodge, free; overrides the genre default"
+              },
+              {
                 "name": "number_tracks",
                 "type": "Nullable\u00601",
                 "required": false,
@@ -4042,7 +4250,7 @@
                 "name": "clear_first",
                 "type": "Boolean",
                 "required": false,
-                "description": "Delete all Vibrai-generated tracks (same rule/order as clear_project with confirm=true, or \u0027vibrai project clear --yes\u0027) before planning and rendering \u2014 a clean slate so this run\u0027s composition doesn\u0027t stack on top of a previous, different project\u0027s tracks. Never touches Audio/Return/Master tracks or MIDI tracks whose part type is \u0027other\u0027 (user/template tracks)."
+                "description": "Delete all Vibrai-generated tracks (same rule/order as clear_project with confirm=true, or \u0027vibrai project clear --yes\u0027) before planning and rendering \u2014 a clean slate so this run\u0027s composition doesn\u0027t stack on top of a previous, different project\u0027s tracks. Never touches Audio/Return/Master tracks, group/folder tracks, or MIDI tracks whose part type is \u0027other\u0027 (user/template tracks)."
               }
             ]
           }
@@ -4215,7 +4423,7 @@
         "tools": [
           {
             "name": "get_version",
-            "description": "Get the running Vibrai.Mcp server version (assembly) and the M4L bridge version (package.json), plus a best-effort license block (status, features_enabled, days_remaining). Bridge version is best-effort: if the bridge is unreachable or times out, the response still includes the MCP version with a bridge_status indicating the failure.",
+            "description": "Get the running Vibrai.Mcp server version (assembly) and the M4L bridge version (package.json), plus a best-effort license block (status, features_enabled, days_remaining). Bridge probes are best-effort and always classified: bridge_status and python_bridge_status read \u0022ok\u0022 (with probe timings) on success or a failure kind (unreachable/timed_out/error, unavailable) without ever hanging. When both bridges are healthy, note explains that a tool call hanging alongside a successful probe indicates an MCP client-transport fault, not a bridge problem.",
             "parameters": []
           }
         ]
@@ -4252,6 +4460,12 @@
                 "description": "Reinstall the latest release even if already up to date."
               },
               {
+                "name": "--discard-backup",
+                "valueName": null,
+                "default": null,
+                "description": "Delete the rollback backup kept by the last update and reclaim the space (~180 MB). Forfeits --rollback until the next update."
+              },
+              {
                 "name": "--rollback",
                 "valueName": null,
                 "default": null,
@@ -4284,6 +4498,12 @@
                 "type": "Boolean",
                 "required": false,
                 "description": "Roll back to the previously installed CLI binary and MCP server binary, if present (default false)."
+              },
+              {
+                "name": "discard_backup",
+                "type": "Boolean",
+                "required": false,
+                "description": "Delete the rollback backup the last update kept and reclaim the space (~180 MB). Forfeits rollback until the next update writes a new backup. Default false."
               },
               {
                 "name": "confirm",
@@ -4354,7 +4574,7 @@
                 "name": "--program-files-only",
                 "valueName": null,
                 "default": null,
-                "description": "[[advanced]] Internal flag used when re-execing under sudo \u2014 not for direct use."
+                "description": "[advanced] Internal flag used when re-execing under sudo \u2014 not for direct use."
               }
             ]
           }
@@ -4593,6 +4813,63 @@
                 "type": "String",
                 "required": false,
                 "description": "Output zip path. Defaults to ./vibrai-skill.zip in the current directory."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "docs",
+      "title": "Documentation",
+      "description": "Read the Vibrai agent skill (the operational playbook: preflight, core workflows, hard rules) and the full command reference \u2014 whole, or one section at a time.",
+      "cli": {
+        "branch": "llms",
+        "commands": [
+          {
+            "name": "llms",
+            "description": "Print the LLM-ready command reference (whole, one section, or the section list)",
+            "arguments": [],
+            "options": [
+              {
+                "name": "--section",
+                "valueName": "NAME",
+                "default": null,
+                "description": "Print only this reference section \u2014 a name or unique prefix from --list-sections (e.g. genre)"
+              },
+              {
+                "name": "--list-sections",
+                "valueName": null,
+                "default": null,
+                "description": "List the reference section names, one per line"
+              }
+            ]
+          },
+          {
+            "name": "skill print",
+            "description": "Print the Vibrai SKILL.md to stdout",
+            "arguments": [],
+            "options": []
+          }
+        ]
+      },
+      "mcp": {
+        "tools": [
+          {
+            "name": "get_skill",
+            "description": "Get the Vibrai agent skill and/or command reference \u2014 the operational playbook and exhaustive tool documentation. Call with no arguments on first use to load the playbook plus the list of reference sections; then call with doc=\u0022reference\u0022 and a section name for argument-level detail on one capability. Read-only, no side effects.",
+            "parameters": [
+              {
+                "name": "doc",
+                "type": "String",
+                "required": false,
+                "description": "Which document: \u0022skill\u0022 for the operational playbook, \u0022reference\u0022 for the command reference. Omit to get the skill plus the list of reference sections."
+              },
+              {
+                "name": "section",
+                "type": "String",
+                "required": false,
+                "description": "Reference section to return, e.g. \u0022Genre\u0022 or \u0022Automation\u0022 \u2014 a name or unique prefix from reference_sections. Only used with doc=\u0022reference\u0022; omit for the whole reference (large)."
               }
             ]
           }

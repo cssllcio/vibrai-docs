@@ -100,7 +100,7 @@ vibrai genre extract --name <DISPLAY> --out <DIR> --into <GENRE> --preset-name <
   Name of the preset this set becomes (defaults to the set name)
 </ParamField>
 <ParamField path="--faithful">
-  Also embed literal note phrases (writes format v3 with playback support)
+  Also embed literal note phrases (writes format v4 with playback support)
 </ParamField>
 <ParamField path="--source" default="auto">
   auto|arrangement|session — auto uses the arrangement when it has clips, else the session
@@ -116,7 +116,7 @@ vibrai genre extract --name <DISPLAY> --out <DIR> --into <GENRE> --preset-name <
 
 ### `list_genres`
 
-List installed genre libraries. Returns each genre's name (slug; other tools accept either the slug or the display name), display name, sub-genres, default BPM, and preset count. Embedded resources ship with Vibrai; users can override or add entries via ~/.vibrai/genres/&lt;name>.vibraigenre.
+List installed genre libraries. Returns each genre's name (slug; other tools accept either the slug or the display name), display name, sub-genres, default BPM, and preset count. Embedded resources ship with Vibrai; users can override or add entries via ~/.vibrai/genres/&lt;name>.vibraigenre. Call `get_skill` first to load the Vibrai operational playbook.
 
 ```json
 {
@@ -146,7 +146,7 @@ List presets in a genre library. Each entry has id (use with apply_genre / init_
 
 ### `apply_genre`
 
-Materialize a genre+preset into a .vibrai project at the given path. Destructive: overwrites sections, parts, templates, arrangement.blueprint, and generation — requires confirm=true (parity with the CLI's `genre apply --yes`); refuses without modifying the project otherwise. Preserves meta.name, meta.als_path, and Defaults.NumberTracks from the existing project if present (number_tracks omitted). Note: the `preset_id` parameter was renamed to `preset` for CLI/MCP naming parity; update any callers.
+Materialize a genre+preset into a .vibrai project at the given path. Destructive: overwrites sections, parts, templates, arrangement.blueprint, and generation — requires confirm=true (parity with the CLI's `genre apply --yes`); refuses without modifying the project otherwise. Preserves meta.name, meta.als_path, and Defaults.NumberTracks from the existing project if present (number_tracks omitted). Note: the `preset_id` parameter was renamed to `preset` for CLI/MCP naming parity; update any callers. Call `get_skill` first to load the Vibrai operational playbook.
 
 ```json
 {
@@ -179,7 +179,7 @@ Materialize a genre+preset into a .vibrai project at the given path. Destructive
 
 ### `extract_genre`
 
-Extract a genre from the open Live set into a .vibraigenre file. Reads tempo, scale, tracks, clips, notes, and envelopes; classifies tracks into parts (report shows each decision); detects sections; and writes a generative genre usable by apply_genre. Set faithful=true to also embed literal note phrases (format v3) so regeneration seeds from the source riffs. Set into_genre=&lt;user genre> to append this set as a new preset instead of creating a file. Re-run with part_overrides to correct classifications — extraction never mutates the Live set.
+Extract a genre from the open Live set into a .vibraigenre file. Reads tempo, scale, tracks, clips, notes, and envelopes; classifies tracks into parts (report shows each decision); detects sections; and writes a generative genre usable by apply_genre. Set faithful=true to also embed literal note phrases so regeneration seeds from the source riffs. Set into_genre=&lt;user genre> to append this set as a new preset instead of creating a file. Re-run with part_overrides to correct classifications — extraction never mutates the Live set.
 
 ```json
 {
@@ -210,7 +210,7 @@ Extract a genre from the open Live set into a .vibraigenre file. Reads tempo, sc
   Name of the preset this set becomes. Defaults to the set name.
 </ParamField>
 <ParamField path="faithful" type="Boolean">
-  Also embed literal note phrases (writes format v3 with playback support).
+  Also embed literal note phrases (writes format v4 with playback support).
 </ParamField>
 <ParamField path="source" type="String">
   auto|arrangement|session — auto uses the arrangement when it has clips, else the session.

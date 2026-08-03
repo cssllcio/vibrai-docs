@@ -14,7 +14,7 @@ Check for and apply self-updates to the Vibrai CLI, MCP server, Max-for-Live dev
 Check for and install the latest Vibrai release (CLI + MCP server + M4L device + Python remote script)
 
 ```bash
-vibrai update --check --yes --force --rollback
+vibrai update --check --yes --force --discard-backup --rollback
 ```
 
 <ParamField path="--check">
@@ -25,6 +25,9 @@ vibrai update --check --yes --force --rollback
 </ParamField>
 <ParamField path="--force">
   Reinstall the latest release even if already up to date.
+</ParamField>
+<ParamField path="--discard-backup">
+  Delete the rollback backup kept by the last update and reclaim the space (~180 MB). Forfeits --rollback until the next update.
 </ParamField>
 <ParamField path="--rollback">
   Restore the previously installed CLI binary (and MCP server binary, if present) from backup.
@@ -43,6 +46,7 @@ Check for and optionally install the latest Vibrai release. By default (apply=fa
     "apply": "<Boolean>",
     "force": "<Boolean>",
     "rollback": "<Boolean>",
+    "discard_backup": "<Boolean>",
     "confirm": "<Boolean>"
   }
 }
@@ -56,6 +60,9 @@ Check for and optionally install the latest Vibrai release. By default (apply=fa
 </ParamField>
 <ParamField path="rollback" type="Boolean">
   Roll back to the previously installed CLI binary and MCP server binary, if present (default false).
+</ParamField>
+<ParamField path="discard_backup" type="Boolean">
+  Delete the rollback backup the last update kept and reclaim the space (~180 MB). Forfeits rollback until the next update writes a new backup. Default false.
 </ParamField>
 <ParamField path="confirm" type="Boolean">
   Confirm the binary swap (CLI --yes equivalent). Must be true when apply=true; confirm with the user first.

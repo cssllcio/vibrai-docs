@@ -14,7 +14,7 @@ Initialize, load, save, and inspect Vibrai project files.
 Initialize a new .vibrai project file
 
 ```bash
-vibrai project init --name <NAME> --project <PATH> --demo --genre <NAME> --preset <PRESET> --number-tracks
+vibrai project init --name <NAME> --project <PATH> --demo --genre <NAME> --preset <PRESET> --number-tracks --force
 ```
 
 <ParamField path="--name">
@@ -34,6 +34,9 @@ vibrai project init --name <NAME> --project <PATH> --demo --genre <NAME> --prese
 </ParamField>
 <ParamField path="--number-tracks">
   Persist Ableton '#' track auto-numbering into the new project.
+</ParamField>
+<ParamField path="--force">
+  Overwrite the file at --project if it already exists (without this, init refuses rather than destroying an existing project)
 </ParamField>
 
 ### `project load`
@@ -87,11 +90,23 @@ vibrai project config --project <PATH> --number-tracks <BOOL>
   Persist Ableton '#' track auto-numbering: true or false.
 </ParamField>
 
+### `project clear`
+
+Delete all Vibrai-generated tracks from the Live set (clean slate before a new generate)
+
+```bash
+vibrai project clear --yes
+```
+
+<ParamField path="--yes">
+  Confirm deletion of Vibrai-generated tracks. Deletion targets MIDI tracks that are not group/folder tracks and whose part type (inferred from the track's current name, not stored) is not 'other'. Because part type is name-inferred, a user track like 'My Bass' may be selected. Without this flag, lists the tracks that would be deleted and exits non-zero.
+</ParamField>
+
 ## MCP tools
 
 ### `init_project`
 
-Create a new .vibrai YAML file at the given absolute path. Without `demo`, writes a minimal 2-section / 1-part boilerplate. With `demo: true`, writes an opinionated 3-section / 2-part starter that exercises variation, per-section scale overrides, naming, and both generator types. Track IDs are probed from the bridge (first N MIDI tracks) and each probed binding records the track's current name (part `track_name`) so `generate` reuses those tracks; if the bridge is unreachable, falls back to track 1 (and 2 for demo) with no binding. Set number_tracks=true to persist Ableton '#' track auto-numbering into the new project's Defaults.
+Create a new .vibrai YAML file at the given absolute path. Without `demo`, writes a minimal 2-section / 1-part boilerplate. With `demo: true`, writes an opinionated 3-section / 2-part starter that exercises variation, per-section scale overrides, naming, and both generator types. Track IDs are probed from the bridge (first N MIDI tracks, skipping group/folder tracks) and each probed binding records the track's current name (part `track_name`) so `generate` reuses those tracks; if the bridge is unreachable, falls back to track 1 (and 2 for demo) with no binding. Set number_tracks=true to persist Ableton '#' track auto-numbering into the new project's Defaults. Refuses with PROJECT_EXISTS if a file already exists at `path` — pass force=true to overwrite it.
 
 ```json
 {
@@ -100,7 +115,8 @@ Create a new .vibrai YAML file at the given absolute path. Without `demo`, write
     "path": "<String>",
     "name": "<String>",
     "demo": "<Boolean>",
-    "number_tracks": "<Boolean>"
+    "number_tracks": "<Boolean>",
+    "force": "<Boolean>"
   }
 }
 ```
@@ -116,6 +132,9 @@ Create a new .vibrai YAML file at the given absolute path. Without `demo`, write
 </ParamField>
 <ParamField path="number_tracks" type="Boolean">
   Persist Ableton '#' track auto-numbering into the new project.
+</ParamField>
+<ParamField path="force" type="Boolean">
+  Overwrite an existing file at `path`. Without this, init refuses rather than destroying an existing project.
 </ParamField>
 
 ### `load_project`
@@ -192,4 +211,21 @@ Edit project-level preferences in an existing .vibrai file. Currently: number_tr
 </ParamField>
 <ParamField path="number_tracks" type="Boolean" required>
   Persist Ableton '#' track auto-numbering (true) or disable it (false).
+</ParamField>
+
+### `clear_project`
+
+Delete every Vibrai-generated track from the current Live set — a clean slate before rendering a different composition into the same set (the fix for successive generate runs of different projects stacking tracks after each other). Selection rule: MIDI tracks that are not group/folder tracks and whose part type — inferred from the track's current name on every read, not a stamp stored on the track — is not 'other'; a user's own tracks, template tracks, group tracks, and Audio/Return/Master tracks are never touched. Because the part type is name-inferred, a user track whose name happens to match a part keyword (e.g. "My Bass") can also be selected. Deletes highest-index-first, one at a time. Destructive — requires confirm=true (parity with the CLI's `project clear --yes`); without it, errors listing exactly what would be deleted and changes nothing. When nothing is Vibrai-generated, succeeds trivially without requiring confirm.
+
+```json
+{
+  "tool": "clear_project",
+  "arguments": {
+    "confirm": "<Boolean>"
+  }
+}
+```
+
+<ParamField path="confirm" type="Boolean">
+  Confirm the destructive delete (CLI --yes equivalent). Must be true to proceed when there is anything to clear; confirm with the user first.
 </ParamField>
