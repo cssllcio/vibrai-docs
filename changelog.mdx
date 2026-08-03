@@ -4,6 +4,42 @@ description: "New features, improvements, and fixes in Vibrai."
 rss: true
 ---
 
+<Update label="1.5.0" description="August 3, 2026">
+  You can mix your set, colour it, and change a single note — three things Vibrai simply could not do before.
+
+  ## Before you upgrade
+
+  **Project files move to a new version.** Your `.vibrai` files gain the extra note information described below, and older files upgrade automatically the first time Vibrai opens them. The one thing to know: a project saved by this version and then opened by an **older** Vibrai loses that extra information. If you share project files with someone on an older version, upgrade together.
+
+  ## A real mixer
+
+  Vibrai could write notes but never touch your mix. Now it can set volume, pan, mute, solo, arm and sends on any track — and apply a whole mix in one go, keyed by part type. "Bass up two, pads back, more reverb on the lead" becomes a single instruction rather than a pass through Live's mixer by hand.
+
+  Ask what returns your set has and Vibrai will list them, so you know the names your sends can point at.
+
+  ## Colour
+
+  Tracks, scenes, session clips and arrangement clips can all take a colour from Live's palette, and arrangement clips can be renamed. A generated set arrives looking like something you laid out on purpose instead of a wall of identical grey blocks.
+
+  ## Change one note, not the whole clip
+
+  Editing a clip used to mean rewriting every note in it. You can now change or delete specific notes and leave the rest alone. Vibrai checks the notes exist before it changes anything, so a mistake stops the edit rather than half-applying it.
+
+  Notes also carry more of what Live actually knows about them — how likely a note is to play, how much its velocity varies, how hard it is released, and whether it is muted. Vibrai used to discard all of that on read.
+
+  ## Loops that vary as they play
+
+  Turn on native randomization and Vibrai hands the variation to Live instead of baking it into the notes, so a loop plays slightly differently each time round rather than repeating identically. It is off by default: you are trading exact repeatability for movement. Timing jitter stays baked in either way — Live has no per-note timing setting for Vibrai to hand over.
+
+  ## Fixes
+
+  - **Group tracks no longer confuse Vibrai — or cost you a track.** Vibrai predated Live's group tracks and treated a group as an ordinary MIDI track. Generating into a set containing groups could delete the last real track in it, or place new tracks one slot too far right. Capturing a set produced a phantom part for the group that matched nothing you could play. Groups are now recognised everywhere Vibrai reads your set.
+  - **Updating no longer fills your disk.** Every update left roughly 182 MB of old binaries behind and never removed them, so upgrading a few times quietly cost a gigabyte. The backup is now disclosed and reclaimable.
+  - **A mistyped option is refused instead of ignored.** Misspelling an optional setting used to be dropped silently, so a command looked like it worked while doing something other than what you asked.
+  - **Long note writes survive a slow moment.** Writing more than fifty notes at once could leave a clip holding only some of them if Live stalled part-way through.
+  - **Genre files that cannot migrate cleanly now say so** instead of migrating wrongly — for files built by merging extractions recorded in different keys.
+</Update>
+
 <Update label="1.4.0" description="August 1, 2026">
   Your tracks sound better — and they sound different. Melodic parts get real rhythm and memory, bass finally moves, and harvested phrases become reusable.
 
