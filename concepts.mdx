@@ -84,3 +84,58 @@ sections:
 ```
 
 Scale overrides follow a **Part &gt; Section &gt; Global** precedence, resolved field-by-field. A Part can override only the root note while inheriting the Section's scale name. This lets a single section set a key for all its parts while one part (say, the arp) plays in a different mode.
+
+## Harvested phrases
+
+Generators synthesize notes. **Harvested phrases** are the alternative: literal MIDI you played, lifted out of your own Live set and replayed.
+
+Vibrai never authors phrase content. The only way one enters a genre is `vibrai genre extract --faithful`, which captures a phrase per part per section from the set you have open.
+
+A harvested phrase reaches a section two ways:
+
+- **In the section it was captured from**, it replays **verbatim** — the notes you played, transposed only by the scale root. That capture is ground truth, so nothing adjusts it.
+- **In a section that has no phrase of its own**, the part borrows one from elsewhere and **re-fits it to that section's chords**: each note shifts by the root offset of the chord window it lands in, so intervals inside a window stay intact and the riff tracks the harmony.
+
+The re-fit is what makes harvesting worth doing. A set with two recorded sections yields two phrases, and a genre has six to twelve — without borrowing, your riff would be absent from most of the song.
+
+Two details worth knowing:
+
+- **Drum phrases are pooled but never re-fitted.** A drum pitch is a pad identity, not a scale degree, so shifting it by a chord root would turn a kick into a tom.
+- **A phrase carries the tension of the section it came from**, and borrowing prefers a matching tension. Phrases captured before that field existed show as `any` — still eligible anywhere, just never preferred over a real match.
+
+### Curating a harvest
+
+Extraction is indiscriminate, so `phrase list` shows you what it took and `phrase remove` drops a capture that did not survive contact with the rest of the song.
+
+<Steps>
+  <Step title="Harvest the open set">
+    ```bash
+    vibrai genre extract --name "My Warehouse" --faithful
+    ```
+  </Step>
+  <Step title="See what it captured">
+    ```bash
+    vibrai phrase list my_warehouse
+    ```
+
+    Each row reports the preset, part type and ordinal, the source section, that section's tension, bar count, and note count.
+  </Step>
+  <Step title="Drop a capture you do not want">
+    ```bash
+    vibrai phrase remove my_warehouse --preset my_warehouse_1 --part 2 --section main --confirm
+    ```
+
+    `--confirm` is required — this rewrites the genre file and cannot be undone. Built-in genres are read-only and rejected.
+  </Step>
+  <Step title="Regenerate and listen">
+    ```bash
+    vibrai generate --seed 4242
+    ```
+  </Step>
+</Steps>
+
+<Tip>
+  Generated notes pass through the genre's style modifiers — swing, humanize, ornaments, dropout — which vary per bar and can mask what a phrase is doing. To hear the phrase layer on its own, generate with `--swing 0 --humanize 0 --ornaments 0 --dropout 0`.
+</Tip>
+
+Both operations exist on the MCP surface as `list_phrases` and `remove_phrase`. See [Phrase](/reference/phrase) for the full parameter reference.

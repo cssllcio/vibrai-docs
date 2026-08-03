@@ -39,10 +39,10 @@ vibrai note set <track> <scene> --json-data <JSON> --file <PATH>
   Scene handle (scn_7) OR 1-based number (1, 2, …) OR ordinal (first, second, …)
 </ParamField>
 <ParamField path="--json-data">
-  Notes as JSON array
+  Notes as a JSON array of note objects. Each note: &#123;"pitch": 0-127 or "C4", "start_time": beats, "duration": beats (>0), "velocity": 0-127 or "mf"}. Optional: pressure, slide, pitch_bend. Example: --json-data '[&#123;"pitch":60,"start_time":0,"duration":0.25,"velocity":100}]'
 </ParamField>
 <ParamField path="--file">
-  Path to JSON file containing notes array
+  Path to a JSON file containing the same note array as --json-data.
 </ParamField>
 
 ### `note add`
@@ -60,10 +60,10 @@ vibrai note add <track> <scene> --json-data <JSON> --file <PATH>
   Scene handle (scn_7) OR 1-based number (1, 2, …) OR ordinal (first, second, …)
 </ParamField>
 <ParamField path="--json-data">
-  Notes as JSON array
+  Notes as a JSON array of note objects. Each note: &#123;"pitch": 0-127 or "C4", "start_time": beats, "duration": beats (>0), "velocity": 0-127 or "mf"}. Optional: pressure, slide, pitch_bend. Example: --json-data '[&#123;"pitch":60,"start_time":0,"duration":0.25,"velocity":100}]'
 </ParamField>
 <ParamField path="--file">
-  Path to JSON file containing notes array
+  Path to a JSON file containing the same note array as --json-data.
 </ParamField>
 
 ### `note remap`
@@ -115,7 +115,7 @@ List all notes in a clip.
 
 ### `write_notes`
 
-Replace all notes in a clip with the given list.
+Replace all notes in a clip with the given list. Each note is an object with exact field names — 'start_time', not 'start'. Returns how many notes were requested vs. actually written.
 
 ```json
 {
@@ -135,12 +135,12 @@ Replace all notes in a clip with the given list.
   Scene handle from list_scenes, e.g. "scn_7". Copy verbatim.
 </ParamField>
 <ParamField path="notes" type="NoteEvent[]" required>
-  Notes to write (replaces all existing).
+  Notes to write (replaces all existing). Each note object: pitch (integer 0-127 or note name e.g. "C4", required), start_time (number, beats from clip start, required), duration (number, beats, must be > 0, required), velocity (integer 0-127 or dynamic e.g. "mf", required), pressure/slide/pitch_bend (integer or null, optional, MPE). Field names are exact — "start_time", not "start".
 </ParamField>
 
 ### `add_notes`
 
-Append notes to a clip without removing existing notes.
+Append notes to a clip without removing existing notes. Each note is an object with exact field names — 'start_time', not 'start'. Returns how many notes were requested vs. actually written.
 
 ```json
 {
@@ -160,7 +160,7 @@ Append notes to a clip without removing existing notes.
   Scene handle from list_scenes, e.g. "scn_7". Copy verbatim.
 </ParamField>
 <ParamField path="notes" type="NoteEvent[]" required>
-  Notes to append.
+  Notes to append. Each note object: pitch (integer 0-127 or note name e.g. "C4", required), start_time (number, beats from clip start, required), duration (number, beats, must be > 0, required), velocity (integer 0-127 or dynamic e.g. "mf", required), pressure/slide/pitch_bend (integer or null, optional, MPE). Field names are exact — "start_time", not "start".
 </ParamField>
 
 ### `remap_pitch`

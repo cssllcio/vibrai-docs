@@ -235,7 +235,7 @@ Apply a Vibrai PartType tag to a browser item. Accepts an exact uri or a name su
 
 ### `untag_instrument`
 
-Remove a Vibrai PartType tag from a browser item. If the item ends with no tags at all (recognized + extra both empty), the record is dropped from the tag store. Errors: INSTRUMENT_NOT_FOUND, MULTIPLE_MATCHES, INVALID_PART_TYPE.
+Remove a Vibrai PartType tag from a browser item. If the item ends with no tags at all (recognized + extra both empty), the record is dropped from the tag store. Untagging is idempotent, so check the response before reporting success: `removed` is true ONLY when the store actually changed, and `outcome` says which of no_record / tag_not_present / tag_removed / record_cleared happened. Errors: INSTRUMENT_NOT_FOUND, MULTIPLE_MATCHES, INVALID_PART_TYPE.
 
 ```json
 {

@@ -1,0 +1,112 @@
+---
+title: "Phrase"
+description: "Inspect and prune the literal note phrases that genre extraction harvests from a Live set (the genre file's phrase block, introduced in v3). A phrase replays verbatim in the section it was captured from, and is re-fitted to the chords of any other section that has no phrase of its own, so a riff harvested from two sections carries across a whole song. Vibrai never authors phrase content — extraction is the only author. Curation is list plus remove on both surfaces; removal requires explicit confirmation because it rewrites the genre file irreversibly, and built-in stock genres are read-only."
+---
+
+{/* GENERATED — do not edit by hand. Regenerate with `npm run generate:reference`. */}
+
+Inspect and prune the literal note phrases that genre extraction harvests from a Live set (the genre file's phrase block, introduced in v3). A phrase replays verbatim in the section it was captured from, and is re-fitted to the chords of any other section that has no phrase of its own, so a riff harvested from two sections carries across a whole song. Vibrai never authors phrase content — extraction is the only author. Curation is list plus remove on both surfaces; removal requires explicit confirmation because it rewrites the genre file irreversibly, and built-in stock genres are read-only.
+
+## Command line
+
+### `phrase list`
+
+List harvested phrases in a genre library
+
+```bash
+vibrai phrase list <genre> --preset <PRESET> --part <ORDINAL>
+```
+
+<ParamField path="genre" required>
+  Genre id or name to list phrases from
+</ParamField>
+<ParamField path="--preset">
+  Only phrases belonging to this preset id
+</ParamField>
+<ParamField path="--part">
+  Only phrases for this part ordinal (as shown in the Part# column)
+</ParamField>
+
+### `phrase remove`
+
+Remove one harvested phrase from a user genre
+
+```bash
+vibrai phrase remove <genre> --preset <PRESET> --part <ORDINAL> --section <SECTION> --confirm
+```
+
+<ParamField path="genre" required>
+  User genre to remove a phrase from (stock genres are read-only)
+</ParamField>
+<ParamField path="--preset">
+  Preset id the phrase belongs to
+</ParamField>
+<ParamField path="--part" default="0">
+  Part ordinal, as shown in `vibrai phrase list`
+</ParamField>
+<ParamField path="--section">
+  Section name the phrase was captured from
+</ParamField>
+<ParamField path="--confirm">
+  Required. Removing a phrase rewrites the .vibraigenre file and cannot be undone
+</ParamField>
+
+## MCP tools
+
+### `list_phrases`
+
+List the literal note phrases a genre carries (harvested by extract_genre with faithful=true). Returns a bare array of rows, matching list_genres/list_genre_presets and the CLI's `phrase list --json`. Each row reports the preset, part type and ordinal, source section, that section's tension, bar count, and note count. A phrase plays back verbatim in its own section, and is re-fitted to the chords of any other section that has none of its own. An empty tension means the phrase predates the tension field and is treated as a wildcard: eligible for playback in any section, but never preferred over a phrase whose tension matches the section.
+
+```json
+{
+  "tool": "list_phrases",
+  "arguments": {
+    "genre": "<String>",
+    "preset": "<String>",
+    "part_ordinal": "<Nullable`1>"
+  }
+}
+```
+
+<ParamField path="genre" type="String">
+  Genre id or name to list phrases from.
+</ParamField>
+<ParamField path="preset" type="String">
+  Only phrases belonging to this preset id.
+</ParamField>
+<ParamField path="part_ordinal" type="Nullable`1">
+  Only phrases for this part ordinal.
+</ParamField>
+
+### `remove_phrase`
+
+Remove one harvested phrase from a USER genre file. Requires confirm=true — this rewrites the .vibraigenre on disk and cannot be undone. Built-in stock genres are read-only and are rejected. Identify the phrase with the preset, part_ordinal, and section shown by list_phrases.
+
+```json
+{
+  "tool": "remove_phrase",
+  "arguments": {
+    "genre": "<String>",
+    "preset": "<String>",
+    "part_ordinal": "<Int32>",
+    "section": "<String>",
+    "confirm": "<Boolean>"
+  }
+}
+```
+
+<ParamField path="genre" type="String">
+  User genre to remove a phrase from.
+</ParamField>
+<ParamField path="preset" type="String">
+  Preset id the phrase belongs to.
+</ParamField>
+<ParamField path="part_ordinal" type="Int32">
+  Part ordinal, as shown by list_phrases.
+</ParamField>
+<ParamField path="section" type="String">
+  Section name the phrase was captured from.
+</ParamField>
+<ParamField path="confirm" type="Boolean">
+  Must be true. Guards an irreversible rewrite of the genre file.
+</ParamField>

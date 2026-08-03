@@ -95,7 +95,7 @@ vibrai track rename [track] [name] --liveset-id <ID> --number-tracks --no-number
 
 ### `list_tracks`
 
-List all tracks in the current Live set. Track `id` is 1-based. `midi_index` is the ordinal among MIDI tracks only (also 1-based), or null for audio tracks.
+List all tracks in the current Live set. Track `id` is 1-based. `midi_index` is the ordinal among playable MIDI tracks only (also 1-based), or null for audio and group tracks. `is_group` marks a group (folder) track — it holds no clips, so never target it for generation; `group_id` is the parent group's handle (null at top level); `fold_state` is 1 when a group is collapsed.
 
 ```json
 {
@@ -108,7 +108,7 @@ List all tracks in the current Live set. Track `id` is 1-based. `midi_index` is 
 
 ### `get_track`
 
-Get a single track by its liveset_id handle from list_tracks (e.g. trk_42). Returns the same shape as list_tracks (1-based `id`/`midi_index`). Errors TRACK_NOT_FOUND if no such track exists.
+Get a single track by its liveset_id handle from list_tracks (e.g. trk_42). Returns the same shape as list_tracks (1-based `id`/`midi_index`, plus `is_group`/`group_id`/`fold_state`). Errors TRACK_NOT_FOUND if no such track exists.
 
 ```json
 {
@@ -150,7 +150,7 @@ Create a new MIDI track of the given part type. Returns the created track with a
 
 ### `delete_track`
 
-Delete a track by its liveset_id handle from list_tracks (e.g. trk_42). Remaining tracks keep their handles. Destructive — no undo. Errors: TRACK_NOT_FOUND, CANNOT_DELETE_LAST_TRACK.
+Delete a track by its liveset_id handle from list_tracks (e.g. trk_42). If the target is a group track, Live removes every track inside it — the result lists them in removed_children. Remaining tracks keep their handles. Destructive — no undo. Errors: TRACK_NOT_FOUND, CANNOT_DELETE_LAST_TRACK.
 
 ```json
 {

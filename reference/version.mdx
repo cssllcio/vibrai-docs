@@ -23,7 +23,7 @@ vibrai version
 
 ### `get_version`
 
-Get the running Vibrai.Mcp server version (assembly) and the M4L bridge version (package.json), plus a best-effort license block (status, features_enabled, days_remaining). Bridge version is best-effort: if the bridge is unreachable or times out, the response still includes the MCP version with a bridge_status indicating the failure.
+Get the running Vibrai.Mcp server version (assembly) and the M4L bridge version (package.json), plus a best-effort license block (status, features_enabled, days_remaining). Bridge probes are best-effort and always classified: bridge_status and python_bridge_status read "ok" (with probe timings) on success or a failure kind (unreachable/timed_out/error, unavailable) without ever hanging. When both bridges are healthy, note explains that a tool call hanging alongside a successful probe indicates an MCP client-transport fault, not a bridge problem.
 
 ```json
 {
