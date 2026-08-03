@@ -36,6 +36,7 @@
         "pages": [
           "reference/transport",
           "reference/track",
+          "reference/mix",
           "reference/device",
           "reference/stock",
           "reference/drums",

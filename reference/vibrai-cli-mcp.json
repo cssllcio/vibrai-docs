@@ -1,6 +1,6 @@
 {
   "engineVersion": "1.4.0.0",
-  "generatedAt": "2026-08-03T01:37:04Z",
+  "generatedAt": "2026-08-03T04:08:10Z",
   "features": [
     {
       "id": "transport",
@@ -207,6 +207,90 @@
                 "description": "Disable \u0027#\u0027 track auto-numbering for this run (overrides env / project setting)."
               }
             ]
+          },
+          {
+            "name": "track mixer",
+            "description": "Show a track\u0027s volume, pan, mute/solo/arm and sends",
+            "arguments": [
+              {
+                "name": "track",
+                "required": true,
+                "description": "Track handle (trk_42) OR 1-based number (1, 2, \u2026) OR ordinal (first, second, \u2026)."
+              }
+            ],
+            "options": []
+          },
+          {
+            "name": "track set-mixer",
+            "description": "Set a track\u0027s volume, pan, mute/solo/arm or sends",
+            "arguments": [
+              {
+                "name": "track",
+                "required": true,
+                "description": "Track handle (trk_42) OR 1-based number (1, 2, \u2026) OR ordinal (first, second, \u2026)."
+              }
+            ],
+            "options": [
+              {
+                "name": "--volume",
+                "valueName": "DB",
+                "default": null,
+                "description": "Volume in dB, e.g. -6. Maximum \u002B6. Mutually exclusive with --volume-raw."
+              },
+              {
+                "name": "--volume-raw",
+                "valueName": "VALUE",
+                "default": null,
+                "description": "Volume as Live\u0027s normalized 0.0-1.0 (0.85 is unity). Mutually exclusive with --volume."
+              },
+              {
+                "name": "--pan",
+                "valueName": "VALUE",
+                "default": null,
+                "description": "Pan, -1.0 (hard left) to 1.0 (hard right)."
+              },
+              {
+                "name": "--mute",
+                "valueName": null,
+                "default": null,
+                "description": "Mute or unmute the track."
+              },
+              {
+                "name": "--solo",
+                "valueName": null,
+                "default": null,
+                "description": "Solo or unsolo. Solo is additive \u2014 Live does not clear other soloed tracks."
+              },
+              {
+                "name": "--arm",
+                "valueName": null,
+                "default": null,
+                "description": "Arm or disarm for recording. Group, return and master tracks cannot be armed."
+              },
+              {
+                "name": "--send",
+                "valueName": "NAME=DB",
+                "default": null,
+                "description": "Send level as return_name=dB, e.g. --send A-Reverb=-12. Repeatable. See \u0027vibrai mix returns\u0027 for the available names."
+              }
+            ]
+          },
+          {
+            "name": "track set-color",
+            "description": "Set a track\u0027s colour by Live palette index",
+            "arguments": [
+              {
+                "name": "track",
+                "required": true,
+                "description": "Track handle (trk_42) OR 1-based number (1, 2, \u2026) OR ordinal (first, second, \u2026)."
+              },
+              {
+                "name": "color-index",
+                "required": true,
+                "description": "Live colour palette index, 0-69."
+              }
+            ],
+            "options": []
           }
         ]
       },
@@ -288,6 +372,283 @@
                 "description": "Prefix the name with Ableton\u0027s \u0027#\u0027 auto-numbering token. Null inherits VIBRAI_NUMBER_TRACKS."
               }
             ]
+          },
+          {
+            "name": "get_track_mixer",
+            "description": "Read a track\u0027s mixer state: volume (both dB and Live\u0027s raw 0.0-1.0), pan, mute, solo, arm, and every send with its return-track name. Address the track by its liveset_id handle from list_tracks (e.g. trk_42).",
+            "parameters": [
+              {
+                "name": "liveset_id",
+                "type": "String",
+                "required": true,
+                "description": "Track handle from list_tracks, e.g. \u0022trk_42\u0022. Copy verbatim; not a position number."
+              }
+            ]
+          },
+          {
+            "name": "set_track_mixer",
+            "description": "Set any subset of a track\u0027s mixer state. Omitted fields are left untouched. Volume takes EITHER volume_db (preferred, e.g. -6) OR volume_raw (Live\u0027s 0.0-1.0) \u2014 passing both is an error. A fader runs to \u002B6 dB (unity at raw 0.85); a send runs to 0 dB. Sends are addressed by return-track name as \u0022name=dB\u0022 pairs, e.g. [\u0022A-Reverb=-12\u0022]. Returns the post-write state, so the reported volume is what actually landed rather than what was requested.",
+            "parameters": [
+              {
+                "name": "liveset_id",
+                "type": "String",
+                "required": true,
+                "description": "Track handle from list_tracks, e.g. \u0022trk_42\u0022. Copy verbatim; not a position number."
+              },
+              {
+                "name": "volume_db",
+                "type": "Nullable\u00601",
+                "required": false,
+                "description": "Volume in dB, e.g. -6.0. Maximum \u002B6. Mutually exclusive with volume_raw."
+              },
+              {
+                "name": "volume_raw",
+                "type": "Nullable\u00601",
+                "required": false,
+                "description": "Volume as Live\u0027s normalized 0.0-1.0 (0.85 is unity). Mutually exclusive with volume_db."
+              },
+              {
+                "name": "pan",
+                "type": "Nullable\u00601",
+                "required": false,
+                "description": "Pan, -1.0 (hard left) to 1.0 (hard right)."
+              },
+              {
+                "name": "mute",
+                "type": "Nullable\u00601",
+                "required": false,
+                "description": "Mute the track."
+              },
+              {
+                "name": "solo",
+                "type": "Nullable\u00601",
+                "required": false,
+                "description": "Solo the track. Solo is additive \u2014 Live does not clear other soloed tracks."
+              },
+              {
+                "name": "arm",
+                "type": "Nullable\u00601",
+                "required": false,
+                "description": "Arm the track for recording. Group, return and master tracks cannot be armed."
+              },
+              {
+                "name": "sends",
+                "type": "String[]",
+                "required": false,
+                "description": "Send levels as \u0022return_name=dB\u0022 pairs, e.g. [\u0022A-Reverb=-12\u0022, \u0022B-Delay=-18\u0022]. Use list_returns to see the available names."
+              }
+            ]
+          },
+          {
+            "name": "apply_mix",
+            "description": "Apply a whole mix in one call, keyed by part type. Each entry is \u0022part_type=dB\u0022 (e.g. \u0022bass=-6\u0022), optionally with pan and sends: \u0022pad=-12:pan=-0.3:send=A-Reverb=-9\u0022. Resolves part types to tracks via the loaded project when there is one (exact), or track-name hints when there isn\u0027t (heuristic) \u2014 the result reports which path ran. Part types with no matching track come back as warnings, not errors.",
+            "parameters": [
+              {
+                "name": "parts",
+                "type": "String[]",
+                "required": true,
+                "description": "Mix entries, e.g. [\u0022bass=-6\u0022, \u0022lead=-3\u0022, \u0022pad=-12:send=A-Reverb=-9\u0022]."
+              },
+              {
+                "name": "project_path",
+                "type": "String",
+                "required": false,
+                "description": "Path to the .vibrai project to bind part types against (defaults to Untitled.vibrai in the working directory). When no project is found, binding falls back to track-name hints and says so."
+              }
+            ]
+          },
+          {
+            "name": "list_returns",
+            "description": "List the set\u0027s return tracks with their index and name. These names are what set_track_mixer and apply_mix accept in their sends arguments.",
+            "parameters": []
+          },
+          {
+            "name": "set_track_color",
+            "description": "Set a track\u0027s colour by Live palette index. Address the track by its liveset_id handle from list_tracks (e.g. trk_42). Colour-coding a set by part type or by section makes a 12-track project legible at a glance.",
+            "parameters": [
+              {
+                "name": "liveset_id",
+                "type": "String",
+                "required": true,
+                "description": "Track handle from list_tracks, e.g. \u0022trk_42\u0022. Copy verbatim; not a position number."
+              },
+              {
+                "name": "color_index",
+                "type": "Int32",
+                "required": true,
+                "description": "Live colour palette index, 0-69."
+              }
+            ]
+          },
+          {
+            "name": "set_scene_color",
+            "description": "Set a scene\u0027s colour by Live palette index. Address the scene by its liveset_id handle from list_scenes (e.g. scn_7). Section-coloured scenes make the session view readable.",
+            "parameters": [
+              {
+                "name": "liveset_id",
+                "type": "String",
+                "required": true,
+                "description": "Scene handle from list_scenes, e.g. \u0022scn_7\u0022. Copy verbatim; not a position number."
+              },
+              {
+                "name": "color_index",
+                "type": "Int32",
+                "required": true,
+                "description": "Live colour palette index, 0-69."
+              }
+            ]
+          },
+          {
+            "name": "set_clip_color",
+            "description": "Set a session clip\u0027s colour by Live palette index. The clip is addressed by its track handle and its 1-based scene number, matching list_clips. For arrangement clips use set_arrangement_clip_props instead.",
+            "parameters": [
+              {
+                "name": "liveset_id",
+                "type": "String",
+                "required": true,
+                "description": "Track handle from list_tracks, e.g. \u0022trk_42\u0022. Copy verbatim; not a position number."
+              },
+              {
+                "name": "scene",
+                "type": "Int32",
+                "required": true,
+                "description": "1-based scene number, matching list_clips."
+              },
+              {
+                "name": "color_index",
+                "type": "Int32",
+                "required": true,
+                "description": "Live colour palette index, 0-69."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "mix",
+      "title": "Mixing",
+      "description": "Set-wide mixing: return tracks and bulk mix application.",
+      "cli": {
+        "branch": "mix",
+        "commands": [
+          {
+            "name": "mix returns",
+            "description": "List the set\u0027s return tracks (the names --send accepts)",
+            "arguments": [],
+            "options": []
+          },
+          {
+            "name": "mix apply",
+            "description": "Apply a whole mix at once, keyed by part type",
+            "arguments": [],
+            "options": [
+              {
+                "name": "--part",
+                "valueName": "SPEC",
+                "default": null,
+                "description": "Mix entry as part_type=dB, optionally with pan and sends: pad=-12:pan=-0.3:send=A-Reverb=-9. Repeatable."
+              },
+              {
+                "name": "--project",
+                "valueName": "PATH",
+                "default": null,
+                "description": "Path to the .vibrai project to bind part types against (defaults to Untitled.vibrai in the working directory). Without one, binding falls back to track-name hints."
+              }
+            ]
+          }
+        ]
+      },
+      "mcp": {
+        "tools": [
+          {
+            "name": "get_track_mixer",
+            "description": "Read a track\u0027s mixer state: volume (both dB and Live\u0027s raw 0.0-1.0), pan, mute, solo, arm, and every send with its return-track name. Address the track by its liveset_id handle from list_tracks (e.g. trk_42).",
+            "parameters": [
+              {
+                "name": "liveset_id",
+                "type": "String",
+                "required": true,
+                "description": "Track handle from list_tracks, e.g. \u0022trk_42\u0022. Copy verbatim; not a position number."
+              }
+            ]
+          },
+          {
+            "name": "set_track_mixer",
+            "description": "Set any subset of a track\u0027s mixer state. Omitted fields are left untouched. Volume takes EITHER volume_db (preferred, e.g. -6) OR volume_raw (Live\u0027s 0.0-1.0) \u2014 passing both is an error. A fader runs to \u002B6 dB (unity at raw 0.85); a send runs to 0 dB. Sends are addressed by return-track name as \u0022name=dB\u0022 pairs, e.g. [\u0022A-Reverb=-12\u0022]. Returns the post-write state, so the reported volume is what actually landed rather than what was requested.",
+            "parameters": [
+              {
+                "name": "liveset_id",
+                "type": "String",
+                "required": true,
+                "description": "Track handle from list_tracks, e.g. \u0022trk_42\u0022. Copy verbatim; not a position number."
+              },
+              {
+                "name": "volume_db",
+                "type": "Nullable\u00601",
+                "required": false,
+                "description": "Volume in dB, e.g. -6.0. Maximum \u002B6. Mutually exclusive with volume_raw."
+              },
+              {
+                "name": "volume_raw",
+                "type": "Nullable\u00601",
+                "required": false,
+                "description": "Volume as Live\u0027s normalized 0.0-1.0 (0.85 is unity). Mutually exclusive with volume_db."
+              },
+              {
+                "name": "pan",
+                "type": "Nullable\u00601",
+                "required": false,
+                "description": "Pan, -1.0 (hard left) to 1.0 (hard right)."
+              },
+              {
+                "name": "mute",
+                "type": "Nullable\u00601",
+                "required": false,
+                "description": "Mute the track."
+              },
+              {
+                "name": "solo",
+                "type": "Nullable\u00601",
+                "required": false,
+                "description": "Solo the track. Solo is additive \u2014 Live does not clear other soloed tracks."
+              },
+              {
+                "name": "arm",
+                "type": "Nullable\u00601",
+                "required": false,
+                "description": "Arm the track for recording. Group, return and master tracks cannot be armed."
+              },
+              {
+                "name": "sends",
+                "type": "String[]",
+                "required": false,
+                "description": "Send levels as \u0022return_name=dB\u0022 pairs, e.g. [\u0022A-Reverb=-12\u0022, \u0022B-Delay=-18\u0022]. Use list_returns to see the available names."
+              }
+            ]
+          },
+          {
+            "name": "apply_mix",
+            "description": "Apply a whole mix in one call, keyed by part type. Each entry is \u0022part_type=dB\u0022 (e.g. \u0022bass=-6\u0022), optionally with pan and sends: \u0022pad=-12:pan=-0.3:send=A-Reverb=-9\u0022. Resolves part types to tracks via the loaded project when there is one (exact), or track-name hints when there isn\u0027t (heuristic) \u2014 the result reports which path ran. Part types with no matching track come back as warnings, not errors.",
+            "parameters": [
+              {
+                "name": "parts",
+                "type": "String[]",
+                "required": true,
+                "description": "Mix entries, e.g. [\u0022bass=-6\u0022, \u0022lead=-3\u0022, \u0022pad=-12:send=A-Reverb=-9\u0022]."
+              },
+              {
+                "name": "project_path",
+                "type": "String",
+                "required": false,
+                "description": "Path to the .vibrai project to bind part types against (defaults to Untitled.vibrai in the working directory). When no project is found, binding falls back to track-name hints and says so."
+              }
+            ]
+          },
+          {
+            "name": "list_returns",
+            "description": "List the set\u0027s return tracks with their index and name. These names are what set_track_mixer and apply_mix accept in their sends arguments.",
+            "parameters": []
           }
         ]
       }
@@ -1377,6 +1738,28 @@
             "options": []
           },
           {
+            "name": "clip set-color",
+            "description": "Set a session clip\u0027s colour by Live palette index",
+            "arguments": [
+              {
+                "name": "track",
+                "required": true,
+                "description": "Track handle (trk_42) OR 1-based number (1, 2, \u2026) OR ordinal (first, second, \u2026)."
+              },
+              {
+                "name": "scene",
+                "required": true,
+                "description": "Scene handle (scn_7) OR 1-based number (1, 2, \u2026) OR ordinal (first, second, \u2026)."
+              },
+              {
+                "name": "color-index",
+                "required": true,
+                "description": "Live colour palette index, 0-69."
+              }
+            ],
+            "options": []
+          },
+          {
             "name": "clip envelope get",
             "description": "Read automation envelope(s) on a session-view clip",
             "arguments": [
@@ -1797,7 +2180,7 @@
                 "name": "--json-data",
                 "valueName": "JSON",
                 "default": null,
-                "description": "Notes as a JSON array of note objects. Each note: {\u0022pitch\u0022: 0-127 or \u0022C4\u0022, \u0022start_time\u0022: beats, \u0022duration\u0022: beats (\u003E0), \u0022velocity\u0022: 0-127 or \u0022mf\u0022}. Optional: pressure, slide, pitch_bend. Example: --json-data \u0027[{\u0022pitch\u0022:60,\u0022start_time\u0022:0,\u0022duration\u0022:0.25,\u0022velocity\u0022:100}]\u0027"
+                "description": "Notes as a JSON array of note objects. Each note: {\u0022pitch\u0022: 0-127 or \u0022C4\u0022, \u0022start_time\u0022: beats, \u0022duration\u0022: beats (\u003E0), \u0022velocity\u0022: 0-127 or \u0022mf\u0022}. Optional: mute (bool), probability (0.0-1.0), velocity_deviation, release_velocity, note_id (read-only). pressure/slide/pitch_bend are accepted but NOT stored \u2014 Live does not carry per-note expression in the note object. Example: --json-data \u0027[{\u0022pitch\u0022:60,\u0022start_time\u0022:0,\u0022duration\u0022:0.25,\u0022velocity\u0022:100}]\u0027"
               },
               {
                 "name": "--file",
@@ -1827,7 +2210,43 @@
                 "name": "--json-data",
                 "valueName": "JSON",
                 "default": null,
-                "description": "Notes as a JSON array of note objects. Each note: {\u0022pitch\u0022: 0-127 or \u0022C4\u0022, \u0022start_time\u0022: beats, \u0022duration\u0022: beats (\u003E0), \u0022velocity\u0022: 0-127 or \u0022mf\u0022}. Optional: pressure, slide, pitch_bend. Example: --json-data \u0027[{\u0022pitch\u0022:60,\u0022start_time\u0022:0,\u0022duration\u0022:0.25,\u0022velocity\u0022:100}]\u0027"
+                "description": "Notes as a JSON array of note objects. Each note: {\u0022pitch\u0022: 0-127 or \u0022C4\u0022, \u0022start_time\u0022: beats, \u0022duration\u0022: beats (\u003E0), \u0022velocity\u0022: 0-127 or \u0022mf\u0022}. Optional: mute (bool), probability (0.0-1.0), velocity_deviation, release_velocity, note_id (read-only). pressure/slide/pitch_bend are accepted but NOT stored \u2014 Live does not carry per-note expression in the note object. Example: --json-data \u0027[{\u0022pitch\u0022:60,\u0022start_time\u0022:0,\u0022duration\u0022:0.25,\u0022velocity\u0022:100}]\u0027"
+              },
+              {
+                "name": "--file",
+                "valueName": "PATH",
+                "default": null,
+                "description": "Path to a JSON file containing the same note array as --json-data."
+              }
+            ]
+          },
+          {
+            "name": "note modify",
+            "description": "Edit or delete specific notes by note_id",
+            "arguments": [
+              {
+                "name": "track",
+                "required": true,
+                "description": "Track handle (trk_42) OR 1-based number (1, 2, \u2026) OR ordinal (first, second, \u2026)"
+              },
+              {
+                "name": "scene",
+                "required": true,
+                "description": "Scene handle (scn_7) OR 1-based number (1, 2, \u2026) OR ordinal (first, second, \u2026)"
+              }
+            ],
+            "options": [
+              {
+                "name": "--remove",
+                "valueName": "NOTE_ID",
+                "default": null,
+                "description": "note_id to delete from the clip, as reported by \u0027vibrai note list --json\u0027. Repeatable."
+              },
+              {
+                "name": "--json-data",
+                "valueName": "JSON",
+                "default": null,
+                "description": "Notes as a JSON array of note objects. Each note: {\u0022pitch\u0022: 0-127 or \u0022C4\u0022, \u0022start_time\u0022: beats, \u0022duration\u0022: beats (\u003E0), \u0022velocity\u0022: 0-127 or \u0022mf\u0022}. Optional: mute (bool), probability (0.0-1.0), velocity_deviation, release_velocity, note_id (read-only). pressure/slide/pitch_bend are accepted but NOT stored \u2014 Live does not carry per-note expression in the note object. Example: --json-data \u0027[{\u0022pitch\u0022:60,\u0022start_time\u0022:0,\u0022duration\u0022:0.25,\u0022velocity\u0022:100}]\u0027"
               },
               {
                 "name": "--file",
@@ -1916,7 +2335,7 @@
                 "name": "notes",
                 "type": "NoteEvent[]",
                 "required": true,
-                "description": "Notes to write (replaces all existing). Each note object: pitch (integer 0-127 or note name e.g. \u0022C4\u0022, required), start_time (number, beats from clip start, required), duration (number, beats, must be \u003E 0, required), velocity (integer 0-127 or dynamic e.g. \u0022mf\u0022, required), pressure/slide/pitch_bend (integer or null, optional, MPE). Field names are exact \u2014 \u0022start_time\u0022, not \u0022start\u0022."
+                "description": "Notes to write (replaces all existing). Each note object: pitch (integer 0-127 or note name e.g. \u0022C4\u0022, required), start_time (number, beats from clip start, required), duration (number, beats, must be \u003E 0, required), velocity (integer 0-127 or dynamic e.g. \u0022mf\u0022, required), mute (boolean, optional), probability (number 0.0-1.0, optional \u2014 chance Live plays the note on a given pass), velocity_deviation (number, optional \u2014 range Live randomizes velocity within), release_velocity (integer 0-127, optional), note_id (string, read-only \u2014 assigned by Live, echo it back to address a note). pressure/slide/pitch_bend are accepted but NOT stored \u2014 Live does not carry per-note expression in the note object. Field names are exact \u2014 \u0022start_time\u0022, not \u0022start\u0022."
               }
             ]
           },
@@ -1940,7 +2359,37 @@
                 "name": "notes",
                 "type": "NoteEvent[]",
                 "required": true,
-                "description": "Notes to append. Each note object: pitch (integer 0-127 or note name e.g. \u0022C4\u0022, required), start_time (number, beats from clip start, required), duration (number, beats, must be \u003E 0, required), velocity (integer 0-127 or dynamic e.g. \u0022mf\u0022, required), pressure/slide/pitch_bend (integer or null, optional, MPE). Field names are exact \u2014 \u0022start_time\u0022, not \u0022start\u0022."
+                "description": "Notes to append. Each note object: pitch (integer 0-127 or note name e.g. \u0022C4\u0022, required), start_time (number, beats from clip start, required), duration (number, beats, must be \u003E 0, required), velocity (integer 0-127 or dynamic e.g. \u0022mf\u0022, required), mute (boolean, optional), probability (number 0.0-1.0, optional \u2014 chance Live plays the note on a given pass), velocity_deviation (number, optional \u2014 range Live randomizes velocity within), release_velocity (integer 0-127, optional), note_id (string, read-only \u2014 assigned by Live, echo it back to address a note). pressure/slide/pitch_bend are accepted but NOT stored \u2014 Live does not carry per-note expression in the note object. Field names are exact \u2014 \u0022start_time\u0022, not \u0022start\u0022."
+              }
+            ]
+          },
+          {
+            "name": "modify_notes",
+            "description": "Edit or delete specific notes by note_id, without rewriting the clip. Get ids from list_notes. Pass \u0060modify\u0060 with notes carrying their note_id and the values you want, and/or \u0060remove\u0060 with ids to delete. At least one is required. Ids are validated first \u2014 an unknown id changes NOTHING, so a partial apply cannot leave the clip in a state you did not ask for. Prefer this over write_notes when changing a few notes in a large clip.",
+            "parameters": [
+              {
+                "name": "track",
+                "type": "String",
+                "required": true,
+                "description": "Track handle from list_tracks, e.g. \u0022trk_42\u0022. Copy verbatim."
+              },
+              {
+                "name": "scene",
+                "type": "String",
+                "required": true,
+                "description": "Scene handle from list_scenes, e.g. \u0022scn_7\u0022. Copy verbatim."
+              },
+              {
+                "name": "modify",
+                "type": "NoteEvent[]",
+                "required": false,
+                "description": "Notes to change. Each MUST carry a note_id from list_notes. Each note object: pitch (integer 0-127 or note name e.g. \u0022C4\u0022, required), start_time (number, beats from clip start, required), duration (number, beats, must be \u003E 0, required), velocity (integer 0-127 or dynamic e.g. \u0022mf\u0022, required), mute (boolean, optional), probability (number 0.0-1.0, optional \u2014 chance Live plays the note on a given pass), velocity_deviation (number, optional \u2014 range Live randomizes velocity within), release_velocity (integer 0-127, optional), note_id (string, read-only \u2014 assigned by Live, echo it back to address a note). pressure/slide/pitch_bend are accepted but NOT stored \u2014 Live does not carry per-note expression in the note object. Field names are exact \u2014 \u0022start_time\u0022, not \u0022start\u0022."
+              },
+              {
+                "name": "remove",
+                "type": "String[]",
+                "required": false,
+                "description": "note_id values to delete from the clip."
               }
             ]
           },
@@ -2945,6 +3394,23 @@
             "options": []
           },
           {
+            "name": "scene set-color",
+            "description": "Set a scene\u0027s colour by Live palette index",
+            "arguments": [
+              {
+                "name": "scene",
+                "required": true,
+                "description": "Scene handle (scn_7) OR 1-based number (1, 2, \u2026) OR ordinal (first, second, \u2026)."
+              },
+              {
+                "name": "color-index",
+                "required": true,
+                "description": "Live colour palette index, 0-69."
+              }
+            ],
+            "options": []
+          },
+          {
             "name": "scene play",
             "description": "Fire (play) a scene by its handle.",
             "arguments": [
@@ -3145,6 +3611,36 @@
             ]
           },
           {
+            "name": "arrangement set-props",
+            "description": "Rename or recolour an arrangement clip",
+            "arguments": [
+              {
+                "name": "track",
+                "required": true,
+                "description": "Track handle (trk_42) OR 1-based number (1, 2, \u2026) OR ordinal (first, second, \u2026)."
+              },
+              {
+                "name": "clip",
+                "required": true,
+                "description": "1-based clip number from \u0027vibrai arrangement get-clips\u0027."
+              }
+            ],
+            "options": [
+              {
+                "name": "--name",
+                "valueName": "NAME",
+                "default": null,
+                "description": "New clip name. Omit to leave unchanged."
+              },
+              {
+                "name": "--color-index",
+                "valueName": "INDEX",
+                "default": null,
+                "description": "Live colour palette index, 0-69. Omit to leave unchanged."
+              }
+            ]
+          },
+          {
             "name": "arrangement delete",
             "description": "Delete a single arrangement clip at (track, start-beat)",
             "arguments": [
@@ -3265,6 +3761,36 @@
             "name": "clear_arrangement_all",
             "description": "Clear all arrangement-view clips across every track.",
             "parameters": []
+          },
+          {
+            "name": "set_arrangement_clip_props",
+            "description": "Rename and/or recolour an arrangement clip. Pass at least one of name or color_index. The clip is addressed by its track handle and its 1-based clip number from get_arrangement_clips. Colours are Live palette indices, not RGB. For session clips use set_clip_name and set_clip_color instead.",
+            "parameters": [
+              {
+                "name": "liveset_id",
+                "type": "String",
+                "required": true,
+                "description": "Track handle from list_tracks, e.g. \u0022trk_42\u0022. Copy verbatim; not a position number."
+              },
+              {
+                "name": "clip",
+                "type": "Int32",
+                "required": true,
+                "description": "1-based clip number from get_arrangement_clips."
+              },
+              {
+                "name": "name",
+                "type": "String",
+                "required": false,
+                "description": "New clip name. Omit to leave unchanged."
+              },
+              {
+                "name": "color_index",
+                "type": "Nullable\u00601",
+                "required": false,
+                "description": "Live colour palette index, 0-69. Omit to leave unchanged."
+              }
+            ]
           }
         ]
       }
@@ -3990,6 +4516,12 @@
                 "description": "How the bass sits against the kick: lock (snap onto it), dodge (push off it), free (ignore it). Overrides genre default."
               },
               {
+                "name": "--native-randomization",
+                "valueName": null,
+                "default": null,
+                "description": "Emit Live\u0027s per-note probability/velocity-deviation instead of baking randomization in. The loop then varies on every playback, but the audible result is no longer reproducible from the seed. Omit to inherit the genre\u0027s setting."
+              },
+              {
                 "name": "--number-tracks",
                 "valueName": null,
                 "default": null,
@@ -4067,6 +4599,12 @@
                 "valueName": "MODE",
                 "default": null,
                 "description": "How the bass sits against the kick: lock (snap onto it), dodge (push off it), free (ignore it). Overrides genre default."
+              },
+              {
+                "name": "--native-randomization",
+                "valueName": null,
+                "default": null,
+                "description": "Emit Live\u0027s per-note probability/velocity-deviation instead of baking randomization in. The loop then varies on every playback, but the audible result is no longer reproducible from the seed. Omit to inherit the genre\u0027s setting."
               }
             ]
           }
@@ -4125,6 +4663,12 @@
                 "type": "Nullable\u00601",
                 "required": false,
                 "description": "Note articulation length 0-100 (10 extreme staccato, 100 full value/legato); overrides genre/preset default"
+              },
+              {
+                "name": "native_randomization",
+                "type": "Nullable\u00601",
+                "required": false,
+                "description": "Emit Live\u0027s per-note probability/velocity-deviation instead of baking randomization in. The loop then varies on every playback, but the audible result is no longer reproducible from the seed. Null inherits the genre setting."
               },
               {
                 "name": "bass_motion",
@@ -4221,6 +4765,12 @@
                 "type": "Nullable\u00601",
                 "required": false,
                 "description": "Note articulation length 0-100 (10 extreme staccato, 100 full value/legato); overrides genre/preset default"
+              },
+              {
+                "name": "native_randomization",
+                "type": "Nullable\u00601",
+                "required": false,
+                "description": "Emit Live\u0027s per-note probability/velocity-deviation instead of baking randomization in. The loop then varies on every playback, but the audible result is no longer reproducible from the seed. Null inherits the genre setting."
               },
               {
                 "name": "bass_motion",

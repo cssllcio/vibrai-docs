@@ -102,6 +102,24 @@ vibrai clip rename <track> <scene> <name>
   New clip name
 </ParamField>
 
+### `clip set-color`
+
+Set a session clip's colour by Live palette index
+
+```bash
+vibrai clip set-color <track> <scene> <color-index>
+```
+
+<ParamField path="track" required>
+  Track handle (trk_42) OR 1-based number (1, 2, …) OR ordinal (first, second, …).
+</ParamField>
+<ParamField path="scene" required>
+  Scene handle (scn_7) OR 1-based number (1, 2, …) OR ordinal (first, second, …).
+</ParamField>
+<ParamField path="color-index" required>
+  Live colour palette index, 0-69.
+</ParamField>
+
 ### `clip envelope get`
 
 Read automation envelope(s) on a session-view clip

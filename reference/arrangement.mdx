@@ -45,6 +45,27 @@ vibrai arrangement place <track> <scene> <start> --no-carry-envelopes --force
   Allow envelope carry even when existing destination-track automation would be clobbered
 </ParamField>
 
+### `arrangement set-props`
+
+Rename or recolour an arrangement clip
+
+```bash
+vibrai arrangement set-props <track> <clip> --name <NAME> --color-index <INDEX>
+```
+
+<ParamField path="track" required>
+  Track handle (trk_42) OR 1-based number (1, 2, …) OR ordinal (first, second, …).
+</ParamField>
+<ParamField path="clip" required>
+  1-based clip number from 'vibrai arrangement get-clips'.
+</ParamField>
+<ParamField path="--name">
+  New clip name. Omit to leave unchanged.
+</ParamField>
+<ParamField path="--color-index">
+  Live colour palette index, 0-69. Omit to leave unchanged.
+</ParamField>
+
 ### `arrangement delete`
 
 Delete a single arrangement clip at (track, start-beat)
@@ -184,3 +205,32 @@ Clear all arrangement-view clips across every track.
 ```
 
 
+
+### `set_arrangement_clip_props`
+
+Rename and/or recolour an arrangement clip. Pass at least one of name or color_index. The clip is addressed by its track handle and its 1-based clip number from get_arrangement_clips. Colours are Live palette indices, not RGB. For session clips use set_clip_name and set_clip_color instead.
+
+```json
+{
+  "tool": "set_arrangement_clip_props",
+  "arguments": {
+    "liveset_id": "<String>",
+    "clip": "<Int32>",
+    "name": "<String>",
+    "color_index": "<Nullable`1>"
+  }
+}
+```
+
+<ParamField path="liveset_id" type="String" required>
+  Track handle from list_tracks, e.g. "trk_42". Copy verbatim; not a position number.
+</ParamField>
+<ParamField path="clip" type="Int32" required>
+  1-based clip number from get_arrangement_clips.
+</ParamField>
+<ParamField path="name" type="String">
+  New clip name. Omit to leave unchanged.
+</ParamField>
+<ParamField path="color_index" type="Nullable`1">
+  Live colour palette index, 0-69. Omit to leave unchanged.
+</ParamField>
