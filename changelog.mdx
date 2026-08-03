@@ -31,6 +31,8 @@ rss: true
 
   ## Fixes
 
+  - **Hand-edited `.vibrai` files are checked now — a file that used to load may be rejected.** Vibrai used to ignore fields it did not recognise when reading notes from a project file. A mistyped `start:` instead of `start_time:` quietly became a playable note in the wrong place, which looked like a generator bug rather than a typo. Those files now fail with the field name, a suggestion, and the line number. Every project file shipped with Vibrai still loads unchanged, but if you hand-edit `.vibrai` files, a mistake that used to pass silently will now stop you.
+
   - **`--clear-first` really does clear.** When every track in a set was made by Vibrai, one track survived with its clips intact — so an old composition kept playing underneath the new one. Live refuses to delete a set's last track, so Vibrai now empties it instead, and tells you it did.
   - **Renders survive a slow Live.** A render could fail outright and leave a half-finished set when Live took too long to accept a batch of notes. Vibrai now checks whether the notes actually arrived and retries only when they did not.
   - **Note data is checked instead of quietly ignored.** Mistyped fields in a note used to be dropped silently, which could pile every note onto the first beat. Bad note data is now rejected with a real error.
