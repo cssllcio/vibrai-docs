@@ -6,7 +6,7 @@ function escapeMdx(s: string): string {
 
 function cliUsage(cmd: CliCommand): string {
   const args = cmd.arguments.map(a => (a.required ? `<${a.name}>` : `[${a.name}]`));
-  const opts = cmd.options.map(o => (o.valueName ? `${o.name} <${o.valueName}>` : o.name));
+  const opts = cmd.options.map(o => (o.value_name ? `${o.name} <${o.value_name}>` : o.name));
   return ['vibrai', cmd.name, ...args, ...opts].join(' ');
 }
 

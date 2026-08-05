@@ -7,7 +7,7 @@ const track: Feature = {
   cli: { branch: 'track', commands: [{
     name: 'track create', description: 'Create a new track',
     arguments: [{ name: 'name', required: true, description: 'Track name' }],
-    options: [{ name: '--type', valueName: 'partType', default: 'Other', description: 'Part type' }],
+    options: [{ name: '--type', value_name: 'partType', default: 'Other', description: 'Part type' }],
   }] },
   mcp: { tools: [{
     name: 'create_track', description: 'Create a track.',
