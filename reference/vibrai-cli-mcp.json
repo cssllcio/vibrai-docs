@@ -1,6 +1,6 @@
 {
-  "engineVersion": "1.4.0.0",
-  "generatedAt": "2026-08-03T04:08:10Z",
+  "engine_version": "1.4.0.0",
+  "generated_at": "2026-08-03T04:08:10Z",
   "features": [
     {
       "id": "transport",
@@ -135,19 +135,19 @@
             "options": [
               {
                 "name": "--type",
-                "valueName": "PARTTYPE",
+                "value_name": "PARTTYPE",
                 "default": "Other",
                 "description": "Part type (Bass, Lead, Melody, etc.)"
               },
               {
                 "name": "--number-tracks",
-                "valueName": null,
+                "value_name": null,
                 "default": null,
                 "description": "Prefix track names with Ableton\u0027s \u0027#\u0027 auto-numbering token for this run."
               },
               {
                 "name": "--no-number-tracks",
-                "valueName": null,
+                "value_name": null,
                 "default": null,
                 "description": "Disable \u0027#\u0027 track auto-numbering for this run (overrides env / project setting)."
               }
@@ -166,7 +166,7 @@
             "options": [
               {
                 "name": "--liveset-id",
-                "valueName": "ID",
+                "value_name": "ID",
                 "default": null,
                 "description": "Stable liveset_id handle (trk_42) from \u0027vibrai track list --json\u0027; equivalent to passing the handle positionally as \u003Ctrack\u003E. Kept for backward compatibility \u2014 takes precedence over the positional value when both are supplied."
               }
@@ -190,19 +190,19 @@
             "options": [
               {
                 "name": "--liveset-id",
-                "valueName": "ID",
+                "value_name": "ID",
                 "default": null,
                 "description": "Stable liveset_id handle (trk_42) from \u0027vibrai track list --json\u0027; equivalent to passing the handle positionally as \u003Ctrack\u003E. Kept for backward compatibility \u2014 takes precedence over the positional value when both are supplied."
               },
               {
                 "name": "--number-tracks",
-                "valueName": null,
+                "value_name": null,
                 "default": null,
                 "description": "Prefix track names with Ableton\u0027s \u0027#\u0027 auto-numbering token for this run."
               },
               {
                 "name": "--no-number-tracks",
-                "valueName": null,
+                "value_name": null,
                 "default": null,
                 "description": "Disable \u0027#\u0027 track auto-numbering for this run (overrides env / project setting)."
               }
@@ -233,43 +233,43 @@
             "options": [
               {
                 "name": "--volume",
-                "valueName": "DB",
+                "value_name": "DB",
                 "default": null,
                 "description": "Volume in dB, e.g. -6. Maximum \u002B6. Mutually exclusive with --volume-raw."
               },
               {
                 "name": "--volume-raw",
-                "valueName": "VALUE",
+                "value_name": "VALUE",
                 "default": null,
                 "description": "Volume as Live\u0027s normalized 0.0-1.0 (0.85 is unity). Mutually exclusive with --volume."
               },
               {
                 "name": "--pan",
-                "valueName": "VALUE",
+                "value_name": "VALUE",
                 "default": null,
                 "description": "Pan, -1.0 (hard left) to 1.0 (hard right)."
               },
               {
                 "name": "--mute",
-                "valueName": null,
+                "value_name": null,
                 "default": null,
                 "description": "Mute or unmute the track."
               },
               {
                 "name": "--solo",
-                "valueName": null,
+                "value_name": null,
                 "default": null,
                 "description": "Solo or unsolo. Solo is additive \u2014 Live does not clear other soloed tracks."
               },
               {
                 "name": "--arm",
-                "valueName": null,
+                "value_name": null,
                 "default": null,
                 "description": "Arm or disarm for recording. Group, return and master tracks cannot be armed."
               },
               {
                 "name": "--send",
-                "valueName": "NAME=DB",
+                "value_name": "NAME=DB",
                 "default": null,
                 "description": "Send level as return_name=dB, e.g. --send A-Reverb=-12. Repeatable. See \u0027vibrai mix returns\u0027 for the available names."
               }
@@ -545,13 +545,13 @@
             "options": [
               {
                 "name": "--part",
-                "valueName": "SPEC",
+                "value_name": "SPEC",
                 "default": null,
                 "description": "Mix entry as part_type=dB, optionally with pan and sends: pad=-12:pan=-0.3:send=A-Reverb=-9. Repeatable."
               },
               {
                 "name": "--project",
-                "valueName": "PATH",
+                "value_name": "PATH",
                 "default": null,
                 "description": "Path to the .vibrai project to bind part types against (defaults to Untitled.vibrai in the working directory). Without one, binding falls back to track-name hints."
               }
@@ -685,7 +685,7 @@
             "options": [
               {
                 "name": "--device",
-                "valueName": "INDEX",
+                "value_name": "INDEX",
                 "default": "0",
                 "description": "Index of the Drum Rack device in the track\u0027s chain (default 0)"
               }
@@ -704,19 +704,19 @@
             "options": [
               {
                 "name": "--path",
-                "valueName": "PATH",
+                "value_name": "PATH",
                 "default": null,
                 "description": "Browser path or URI. Accepts (a) classic stock-device paths like \u0027Instruments/Operator\u0027, (b) preset \u0027.adg\u0027 browser paths like \u0027Drums/F9 TK Menu_ Hat Closed V2.adg\u0027 (auto-resolved to their query: URI), or (c) query: URIs from find_instruments_by_tag/show_instrument, including plug-in URIs from the Plug-Ins browser section."
               },
               {
                 "name": "--part-type",
-                "valueName": "TYPE",
+                "value_name": "TYPE",
                 "default": null,
                 "description": "PartType shorthand (Bass, Pad, Lead, \u2026); resolves through defaults.instruments"
               },
               {
                 "name": "--position",
-                "valueName": "N",
+                "value_name": "N",
                 "default": null,
                 "description": "Insert position in device chain (1-based: 1 = first slot; omit to append)"
               }
@@ -747,13 +747,13 @@
             "options": [
               {
                 "name": "--project",
-                "valueName": "PATH",
+                "value_name": "PATH",
                 "default": null,
                 "description": "Resolve genre-aware defaults against this .vibrai file (defaults to Untitled.vibrai in CWD)"
               },
               {
                 "name": "--stock-only",
-                "valueName": null,
+                "value_name": null,
                 "default": null,
                 "description": "Report the stock-only view: skips explicit defaults.instruments overrides AND tagged instruments."
               }
@@ -783,13 +783,13 @@
             "options": [
               {
                 "name": "--project",
-                "valueName": "PATH",
+                "value_name": "PATH",
                 "default": null,
                 "description": "Path to the .vibrai file whose parts get their default instruments"
               },
               {
                 "name": "--stock-only",
-                "valueName": null,
+                "value_name": null,
                 "default": null,
                 "description": "Resolve instruments from stock content only: skips explicit defaults.instruments overrides AND tagged instruments. For demos/testing without third-party packs."
               }
@@ -948,25 +948,25 @@
             "options": [
               {
                 "name": "--category",
-                "valueName": "CATEGORY",
+                "value_name": "CATEGORY",
                 "default": null,
                 "description": "Filter by category: instrument, drum_kit, audio_effect, midi_effect, unknown. Case-insensitive. Omit = all."
               },
               {
                 "name": "--kind",
-                "valueName": "KIND",
+                "value_name": "KIND",
                 "default": null,
                 "description": "Filter by on-disk shape: device, rack, preset. Case-insensitive. Omit = all."
               },
               {
                 "name": "--search",
-                "valueName": "TEXT",
+                "value_name": "TEXT",
                 "default": null,
                 "description": "Case-insensitive substring matched against name or relative path. Omit = no text filter."
               },
               {
                 "name": "--limit",
-                "valueName": "N",
+                "value_name": "N",
                 "default": null,
                 "description": "Maximum number of items to return. Omit or \u003C= 0 = no cap."
               }
@@ -1020,7 +1020,7 @@
             "options": [
               {
                 "name": "--position",
-                "valueName": "N",
+                "value_name": "N",
                 "default": null,
                 "description": "Insert position in device chain (1-based: 1 = first slot; omit to append)"
               }
@@ -1039,25 +1039,25 @@
             "options": [
               {
                 "name": "--check",
-                "valueName": null,
+                "value_name": null,
                 "default": null,
                 "description": "Run the cross-check only; never writes. Exits non-zero when the derivation rate is below --baseline."
               },
               {
                 "name": "--snapshot",
-                "valueName": "PATH",
+                "value_name": "PATH",
                 "default": null,
                 "description": "Path to the LOM snapshot (instrument-browser.json) to cross-check against (default: the app-support snapshot Vibrai\u0027s remote script writes)"
               },
               {
                 "name": "--output",
-                "valueName": "PATH",
+                "value_name": "PATH",
                 "default": null,
                 "description": "Where to write the seed JSON (default: Vibrai.Engine/Resources/StockLibrary/core-library-suite.json, repo-relative \u2014 run from the repo root)"
               },
               {
                 "name": "--baseline",
-                "valueName": "RATE",
+                "value_name": "RATE",
                 "default": "1",
                 "description": "Minimum derivation rate (0..1) the cross-check must meet to pass (default: 1.0)"
               }
@@ -1172,7 +1172,7 @@
             "options": [
               {
                 "name": "--project",
-                "valueName": "PATH",
+                "value_name": "PATH",
                 "default": null,
                 "description": "Path to the .vibrai file (defaults to Untitled.vibrai in CWD)"
               }
@@ -1191,7 +1191,7 @@
             "options": [
               {
                 "name": "--project",
-                "valueName": "PATH",
+                "value_name": "PATH",
                 "default": null,
                 "description": "Path to the .vibrai file (defaults to Untitled.vibrai in CWD)"
               }
@@ -1210,7 +1210,7 @@
             "options": [
               {
                 "name": "--project",
-                "valueName": "PATH",
+                "value_name": "PATH",
                 "default": null,
                 "description": "Path to the .vibrai file (defaults to Untitled.vibrai in CWD)"
               }
@@ -1223,19 +1223,19 @@
             "options": [
               {
                 "name": "--track",
-                "valueName": "N",
+                "value_name": "N",
                 "default": null,
                 "description": "Track handle (trk_42) OR 1-based number OR ordinal; repeatable to limit the retarget"
               },
               {
                 "name": "--dry-run",
-                "valueName": null,
+                "value_name": null,
                 "default": null,
                 "description": "Preview without remapping or saving"
               },
               {
                 "name": "--project",
-                "valueName": "PATH",
+                "value_name": "PATH",
                 "default": null,
                 "description": "Path to the .vibrai file (defaults to Untitled.vibrai in CWD)"
               }
@@ -1334,61 +1334,61 @@
             "options": [
               {
                 "name": "--search",
-                "valueName": "TEXT",
+                "value_name": "TEXT",
                 "default": null,
                 "description": "Filter by name substring (case-insensitive)"
               },
               {
                 "name": "--path-contains",
-                "valueName": "TEXT",
+                "value_name": "TEXT",
                 "default": null,
                 "description": "Filter by browser path substring (case-insensitive)"
               },
               {
                 "name": "--path-prefix",
-                "valueName": "PREFIX",
+                "value_name": "PREFIX",
                 "default": null,
                 "description": "Only items whose browser path starts with this prefix"
               },
               {
                 "name": "--kind",
-                "valueName": "KIND",
+                "value_name": "KIND",
                 "default": null,
                 "description": "Filter by kind (repeatable): Rack, Device, Preset, Plugin, MidiClip, AudioEffect, MidiEffect. Case-insensitive. Omit = all kinds."
               },
               {
                 "name": "--tagged",
-                "valueName": null,
+                "value_name": null,
                 "default": null,
                 "description": "Only items with at least one user tag"
               },
               {
                 "name": "--untagged",
-                "valueName": null,
+                "value_name": null,
                 "default": null,
                 "description": "Only items without any user tag"
               },
               {
                 "name": "--tag",
-                "valueName": "SUFFIX",
+                "value_name": "SUFFIX",
                 "default": null,
                 "description": "Only items tagged with vibrai:\u003Csuffix\u003E (e.g. --tag bass). Case-insensitive."
               },
               {
                 "name": "--include-extra",
-                "valueName": null,
+                "value_name": null,
                 "default": null,
                 "description": "When used with --tag, also match unrecognized extra-tag suffixes"
               },
               {
                 "name": "--offset",
-                "valueName": "N",
+                "value_name": "N",
                 "default": "0",
                 "description": "Skip this many qualifying results (for pagination, default 0)"
               },
               {
                 "name": "--limit",
-                "valueName": "N",
+                "value_name": "N",
                 "default": "50",
                 "description": "Max results (default 50)"
               }
@@ -1447,19 +1447,19 @@
             "options": [
               {
                 "name": "--prefix",
-                "valueName": "PATH",
+                "value_name": "PATH",
                 "default": null,
                 "description": "Scope suggestions to this browser path prefix (e.g. \u0027Packs/F9 GALAXY\u0027). Omit to scan all items."
               },
               {
                 "name": "--pattern-set",
-                "valueName": "NAME",
+                "value_name": "NAME",
                 "default": null,
                 "description": "Pattern set to use. Only \u0027default\u0027 is supported."
               },
               {
                 "name": "--kind",
-                "valueName": "KIND",
+                "value_name": "KIND",
                 "default": null,
                 "description": "Restrict to these kinds (repeatable). Default: instrument-bearing (Rack, Device, Preset); Plugin and MIDI/FX are excluded. Pass e.g. --kind Plugin or --kind MidiClip to opt back in. Case-insensitive."
               }
@@ -1675,7 +1675,7 @@
             "options": [
               {
                 "name": "--bars",
-                "valueName": "N",
+                "value_name": "N",
                 "default": "4",
                 "description": "Clip length in bars (default: 4)"
               }
@@ -1777,13 +1777,13 @@
             "options": [
               {
                 "name": "--device",
-                "valueName": "ID",
+                "value_name": "ID",
                 "default": null,
                 "description": "Device ID, 1-based position number, or name substring. Provide together with --param, or omit both for a bulk read of every envelope on the clip."
               },
               {
                 "name": "--param",
-                "valueName": "ID",
+                "value_name": "ID",
                 "default": null,
                 "description": "Parameter index (from \u0027vibrai automation params\u0027) or display name. Provide together with --device, or omit both for a bulk read."
               }
@@ -1817,67 +1817,67 @@
             "options": [
               {
                 "name": "--json-data",
-                "valueName": "JSON",
+                "value_name": "JSON",
                 "default": null,
                 "description": "Automation points as JSON array (free-form). Mutually exclusive with --curve."
               },
               {
                 "name": "--file",
-                "valueName": "PATH",
+                "value_name": "PATH",
                 "default": null,
                 "description": "Path to JSON file containing automation points array. Mutually exclusive with --curve."
               },
               {
                 "name": "--curve",
-                "valueName": "SHAPE",
+                "value_name": "SHAPE",
                 "default": null,
                 "description": "Curve shape: LinearUp|LinearDown|ExpUp|ExpDown|Sine|Triangle|SawUp|SawDown|Hold|Wander. Mutually exclusive with --json-data/--file."
               },
               {
                 "name": "--length",
-                "valueName": "BEATS",
+                "value_name": "BEATS",
                 "default": null,
                 "description": "Curve length in beats. Required when --curve is given."
               },
               {
                 "name": "--from",
-                "valueName": "0-1",
+                "value_name": "0-1",
                 "default": null,
                 "description": "Curve start value as a fraction of the parameter\u0027s travel (0 = its min, 1 = its max); scaled to native units at write time. Defaults to 0. For Linear/Exp/Sine/Triangle/Saw/Hold."
               },
               {
                 "name": "--to",
-                "valueName": "0-1",
+                "value_name": "0-1",
                 "default": null,
                 "description": "Curve end value as a fraction of the parameter\u0027s travel (0 = min, 1 = max). Defaults to 1. For Linear/Exp/Sine/Triangle/Saw."
               },
               {
                 "name": "--subdivisions",
-                "valueName": "N",
+                "value_name": "N",
                 "default": null,
                 "description": "Number of teeth (for SawUp/SawDown only). Default 4."
               },
               {
                 "name": "--center",
-                "valueName": "0-1",
+                "value_name": "0-1",
                 "default": null,
                 "description": "Wander center as a fraction of the parameter\u0027s travel. Defaults to 0.5 (midpoint)."
               },
               {
                 "name": "--range",
-                "valueName": "0-1",
+                "value_name": "0-1",
                 "default": null,
                 "description": "Wander deviation amplitude as a fraction of the parameter\u0027s travel (must be \u003E 0 and \u003C= 1)."
               },
               {
                 "name": "--smoothness",
-                "valueName": "0-1",
+                "value_name": "0-1",
                 "default": null,
                 "description": "Wander knot density (0=jittery, 1=lazy drift)."
               },
               {
                 "name": "--seed",
-                "valueName": "INT",
+                "value_name": "INT",
                 "default": null,
                 "description": "Wander RNG seed. Auto-generated if omitted."
               }
@@ -1901,13 +1901,13 @@
             "options": [
               {
                 "name": "--device",
-                "valueName": "ID",
+                "value_name": "ID",
                 "default": null,
                 "description": "Device ID, 1-based position number, or name substring. Provide together with --param, or omit both to clear every envelope on the clip."
               },
               {
                 "name": "--param",
-                "valueName": "ID",
+                "value_name": "ID",
                 "default": null,
                 "description": "Parameter index or display name. Provide together with --device, or omit both to clear every envelope on the clip."
               }
@@ -2178,13 +2178,13 @@
             "options": [
               {
                 "name": "--json-data",
-                "valueName": "JSON",
+                "value_name": "JSON",
                 "default": null,
                 "description": "Notes as a JSON array of note objects. Each note: {\u0022pitch\u0022: 0-127 or \u0022C4\u0022, \u0022start_time\u0022: beats, \u0022duration\u0022: beats (\u003E0), \u0022velocity\u0022: 0-127 or \u0022mf\u0022}. Optional: mute (bool), probability (0.0-1.0), velocity_deviation, release_velocity, note_id (read-only). pressure/slide/pitch_bend are accepted but NOT stored \u2014 Live does not carry per-note expression in the note object. Example: --json-data \u0027[{\u0022pitch\u0022:60,\u0022start_time\u0022:0,\u0022duration\u0022:0.25,\u0022velocity\u0022:100}]\u0027"
               },
               {
                 "name": "--file",
-                "valueName": "PATH",
+                "value_name": "PATH",
                 "default": null,
                 "description": "Path to a JSON file containing the same note array as --json-data."
               }
@@ -2208,13 +2208,13 @@
             "options": [
               {
                 "name": "--json-data",
-                "valueName": "JSON",
+                "value_name": "JSON",
                 "default": null,
                 "description": "Notes as a JSON array of note objects. Each note: {\u0022pitch\u0022: 0-127 or \u0022C4\u0022, \u0022start_time\u0022: beats, \u0022duration\u0022: beats (\u003E0), \u0022velocity\u0022: 0-127 or \u0022mf\u0022}. Optional: mute (bool), probability (0.0-1.0), velocity_deviation, release_velocity, note_id (read-only). pressure/slide/pitch_bend are accepted but NOT stored \u2014 Live does not carry per-note expression in the note object. Example: --json-data \u0027[{\u0022pitch\u0022:60,\u0022start_time\u0022:0,\u0022duration\u0022:0.25,\u0022velocity\u0022:100}]\u0027"
               },
               {
                 "name": "--file",
-                "valueName": "PATH",
+                "value_name": "PATH",
                 "default": null,
                 "description": "Path to a JSON file containing the same note array as --json-data."
               }
@@ -2238,19 +2238,19 @@
             "options": [
               {
                 "name": "--remove",
-                "valueName": "NOTE_ID",
+                "value_name": "NOTE_ID",
                 "default": null,
                 "description": "note_id to delete from the clip, as reported by \u0027vibrai note list --json\u0027. Repeatable."
               },
               {
                 "name": "--json-data",
-                "valueName": "JSON",
+                "value_name": "JSON",
                 "default": null,
                 "description": "Notes as a JSON array of note objects. Each note: {\u0022pitch\u0022: 0-127 or \u0022C4\u0022, \u0022start_time\u0022: beats, \u0022duration\u0022: beats (\u003E0), \u0022velocity\u0022: 0-127 or \u0022mf\u0022}. Optional: mute (bool), probability (0.0-1.0), velocity_deviation, release_velocity, note_id (read-only). pressure/slide/pitch_bend are accepted but NOT stored \u2014 Live does not carry per-note expression in the note object. Example: --json-data \u0027[{\u0022pitch\u0022:60,\u0022start_time\u0022:0,\u0022duration\u0022:0.25,\u0022velocity\u0022:100}]\u0027"
               },
               {
                 "name": "--file",
-                "valueName": "PATH",
+                "value_name": "PATH",
                 "default": null,
                 "description": "Path to a JSON file containing the same note array as --json-data."
               }
@@ -2269,25 +2269,25 @@
             "options": [
               {
                 "name": "--from",
-                "valueName": "PITCH",
+                "value_name": "PITCH",
                 "default": null,
                 "description": "Source MIDI pitch 0-127 (only notes at this pitch move)"
               },
               {
                 "name": "--to",
-                "valueName": "PITCH",
+                "value_name": "PITCH",
                 "default": null,
                 "description": "Target MIDI pitch 0-127"
               },
               {
                 "name": "--scope",
-                "valueName": "SCOPE",
+                "value_name": "SCOPE",
                 "default": null,
                 "description": "session, arrangement, or both (default both)"
               },
               {
                 "name": "--scene",
-                "valueName": "N",
+                "value_name": "N",
                 "default": null,
                 "description": "Scene handle (scn_7) OR 1-based number OR ordinal, to limit to one session clip; requires --scope session"
               }
@@ -2481,25 +2481,25 @@
             "options": [
               {
                 "name": "--from",
-                "valueName": "BAR.BEAT|BEATS",
+                "value_name": "BAR.BEAT|BEATS",
                 "default": null,
                 "description": "Optional window start: bar.beat (e.g. \u002717.1\u0027) or raw beats. Provide together with --length, or omit both."
               },
               {
                 "name": "--length",
-                "valueName": "BEATS",
+                "value_name": "BEATS",
                 "default": null,
                 "description": "Optional window length in beats. Provide together with --from, or omit both."
               },
               {
                 "name": "--device",
-                "valueName": "ID",
+                "value_name": "ID",
                 "default": null,
                 "description": "Optional device filter (id / 1-based position / name substring)"
               },
               {
                 "name": "--param",
-                "valueName": "ID",
+                "value_name": "ID",
                 "default": null,
                 "description": "Optional parameter filter: parameter id as authored (index or display name \u2014 match what you wrote; \u0027vibrai automation params\u0027 shows both)"
               }
@@ -2528,97 +2528,97 @@
             "options": [
               {
                 "name": "--device",
-                "valueName": "ID",
+                "value_name": "ID",
                 "default": null,
                 "description": "Device ID, 1-based position number, or name substring. Required for the single-envelope form (--curve or --json-data/--file); unused with --envelopes."
               },
               {
                 "name": "--param",
-                "valueName": "ID",
+                "value_name": "ID",
                 "default": null,
                 "description": "Parameter index from \u0027vibrai automation params\u0027, or the param name (e.g., \u0022Cutoff\u0022). Required for the single-envelope form; unused with --envelopes."
               },
               {
                 "name": "--curve",
-                "valueName": "SHAPE",
+                "value_name": "SHAPE",
                 "default": null,
                 "description": "Curve shape: LinearUp|LinearDown|ExpUp|ExpDown|Sine|Triangle|SawUp|SawDown|Hold|Wander. Curve length is the \u003Clength\u003E argument. Mutually exclusive with --json-data/--file/--envelopes."
               },
               {
                 "name": "--from",
-                "valueName": "0-1",
+                "value_name": "0-1",
                 "default": null,
                 "description": "Curve start value as a fraction of the parameter\u0027s travel (0 = its min, 1 = its max); scaled to native units at write time. Defaults to 0. For Linear/Exp/Sine/Triangle/Saw/Hold."
               },
               {
                 "name": "--to",
-                "valueName": "0-1",
+                "value_name": "0-1",
                 "default": null,
                 "description": "Curve end value as a fraction of the parameter\u0027s travel (0 = min, 1 = max). Defaults to 1. For Linear/Exp/Sine/Triangle/Saw."
               },
               {
                 "name": "--subdivisions",
-                "valueName": "N",
+                "value_name": "N",
                 "default": null,
                 "description": "Number of teeth (for SawUp/SawDown only). Default 4."
               },
               {
                 "name": "--center",
-                "valueName": "0-1",
+                "value_name": "0-1",
                 "default": null,
                 "description": "Wander center as a fraction of the parameter\u0027s travel. Defaults to 0.5 (midpoint)."
               },
               {
                 "name": "--range",
-                "valueName": "0-1",
+                "value_name": "0-1",
                 "default": null,
                 "description": "Wander deviation amplitude as a fraction of the parameter\u0027s travel (must be \u003E 0 and \u003C= 1)."
               },
               {
                 "name": "--smoothness",
-                "valueName": "0-1",
+                "value_name": "0-1",
                 "default": null,
                 "description": "Wander knot density (0=jittery, 1=lazy drift)."
               },
               {
                 "name": "--seed",
-                "valueName": "INT",
+                "value_name": "INT",
                 "default": null,
                 "description": "Wander RNG seed. Auto-generated if omitted."
               },
               {
                 "name": "--json-data",
-                "valueName": "JSON",
+                "value_name": "JSON",
                 "default": null,
                 "description": "Automation points as a JSON array (free-form). Mutually exclusive with --curve/--envelopes."
               },
               {
                 "name": "--file",
-                "valueName": "PATH",
+                "value_name": "PATH",
                 "default": null,
                 "description": "Path to a JSON file containing an automation points array. Mutually exclusive with --curve/--envelopes."
               },
               {
                 "name": "--envelopes",
-                "valueName": "PATH",
+                "value_name": "PATH",
                 "default": null,
                 "description": "Path to a JSON file: an array of envelope entries (multi-envelope write). Each entry has a flat \u0060target\u0060 \u2014 device_id\u002Bparam_id (a device parameter) OR rack_kind\u002Bmacro_index (a rack macro; inferred, no \u0060kind\u0060 field) \u2014 plus \u0060points\u0060 or \u0060curve_spec\u0060. Supports macro targets, unlike the single-envelope form. Mutually exclusive with --curve/--json-data/--file."
               },
               {
                 "name": "--replace",
-                "valueName": null,
+                "value_name": null,
                 "default": null,
                 "description": "Deliver exactly this set, dropping ledger-known envelopes in the window."
               },
               {
                 "name": "--no-create-clip",
-                "valueName": null,
+                "value_name": null,
                 "default": null,
                 "description": "Skip clip-less gaps instead of filling them with envelope-bearing curve-slice clips (default: fill \u2014 a skipped gap is an audible reset to the dial value; the lane does not interpolate)."
               },
               {
                 "name": "--force",
-                "valueName": null,
+                "value_name": null,
                 "default": null,
                 "description": "Allow a window whose edge lands mid-clip (rewrites the whole clip). Without this, a mid-clip window is refused."
               }
@@ -2637,25 +2637,25 @@
             "options": [
               {
                 "name": "--device",
-                "valueName": "ID",
+                "value_name": "ID",
                 "default": null,
                 "description": "Optional device filter (id / 1-based position / name substring)"
               },
               {
                 "name": "--param",
-                "valueName": "ID",
+                "value_name": "ID",
                 "default": null,
                 "description": "Optional parameter filter: parameter id as authored (index or display name \u2014 match what you wrote; \u0027vibrai automation params\u0027 shows both)"
               },
               {
                 "name": "--from",
-                "valueName": "BAR.BEAT|BEATS",
+                "value_name": "BAR.BEAT|BEATS",
                 "default": null,
                 "description": "Optional window start: bar.beat or raw beats. Provide together with --length, or omit both."
               },
               {
                 "name": "--length",
-                "valueName": "BEATS",
+                "value_name": "BEATS",
                 "default": null,
                 "description": "Optional window length in beats. Provide together with --from, or omit both."
               }
@@ -2668,85 +2668,85 @@
             "options": [
               {
                 "name": "--part",
-                "valueName": "ID",
+                "value_name": "ID",
                 "default": null,
                 "description": "Part id (the Id of an entry in the project\u0027s Parts list)"
               },
               {
                 "name": "--slot",
-                "valueName": "KEY",
+                "value_name": "KEY",
                 "default": null,
                 "description": "Symbolic slot key (e.g. \u0022cutoff\u0022, \u0022resonance\u0022, \u0022macro_3\u0022, \u0022synth_cutoff\u0022). Use \u0027vibrai automation slots \u003Cpart-type\u003E\u0027 to list supported keys."
               },
               {
                 "name": "--curve",
-                "valueName": "CURVE",
+                "value_name": "CURVE",
                 "default": null,
                 "description": "LinearUp | LinearDown | ExpUp | ExpDown | Sine | Triangle | SawUp | SawDown | Hold | Wander (default LinearUp)"
               },
               {
                 "name": "--sections",
-                "valueName": "CSV|ALL",
+                "value_name": "CSV|ALL",
                 "default": null,
                 "description": "Comma-separated section ids, or \u0027all\u0027 for every section"
               },
               {
                 "name": "--project",
-                "valueName": "PATH",
+                "value_name": "PATH",
                 "default": null,
                 "description": "Path to .vibrai file (default: Untitled.vibrai in CWD)"
               },
               {
                 "name": "--in-memory",
-                "valueName": null,
+                "value_name": null,
                 "default": null,
                 "description": "Mutate but do not save (preview mode)"
               },
               {
                 "name": "--from",
-                "valueName": "0-1",
+                "value_name": "0-1",
                 "default": null,
                 "description": "Curve start value (overrides the default 0 or 1 for the chosen shape)."
               },
               {
                 "name": "--to",
-                "valueName": "0-1",
+                "value_name": "0-1",
                 "default": null,
                 "description": "Curve end value."
               },
               {
                 "name": "--subdivisions",
-                "valueName": "N",
+                "value_name": "N",
                 "default": null,
                 "description": "Saw teeth (default 4)."
               },
               {
                 "name": "--center",
-                "valueName": "0-1",
+                "value_name": "0-1",
                 "default": null,
                 "description": "Wander center value."
               },
               {
                 "name": "--range",
-                "valueName": "0-1",
+                "value_name": "0-1",
                 "default": null,
                 "description": "Wander deviation amplitude, 0-1 (must be \u003E 0)."
               },
               {
                 "name": "--smoothness",
-                "valueName": "0-1",
+                "value_name": "0-1",
                 "default": null,
                 "description": "Wander knot density."
               },
               {
                 "name": "--seed",
-                "valueName": "INT",
+                "value_name": "INT",
                 "default": null,
                 "description": "Wander RNG seed (auto if omitted)."
               },
               {
                 "name": "--apply-to-live",
-                "valueName": null,
+                "value_name": null,
                 "default": null,
                 "description": "Also push the applied slots into the running Live set via the safe bouncer. Requires an existing populated arrangement; slots without a clip at the section are skipped."
               }
@@ -3007,43 +3007,43 @@
             "options": [
               {
                 "name": "--name",
-                "valueName": "NAME",
+                "value_name": "NAME",
                 "default": null,
                 "description": "Project name (default: basename of --project, or \u0022Untitled\u0022)"
               },
               {
                 "name": "--project",
-                "valueName": "PATH",
+                "value_name": "PATH",
                 "default": null,
                 "description": "Path to .vibrai file (default: Untitled.vibrai in CWD; auto-uniquified to Untitled-2.vibrai, etc. if it already exists)"
               },
               {
                 "name": "--demo",
-                "valueName": null,
+                "value_name": null,
                 "default": null,
                 "description": "Write opinionated demo content (3 sections, 2 parts, exercises variation \u002B scale overrides \u002B naming) instead of the boilerplate"
               },
               {
                 "name": "--genre",
-                "valueName": "NAME",
+                "value_name": "NAME",
                 "default": null,
                 "description": "Seed from a genre library by id or display name (run \u0027vibrai genre list\u0027)"
               },
               {
                 "name": "--preset",
-                "valueName": "PRESET",
+                "value_name": "PRESET",
                 "default": null,
                 "description": "Preset id or display name within --genre (default: first preset alphabetically)"
               },
               {
                 "name": "--number-tracks",
-                "valueName": null,
+                "value_name": null,
                 "default": null,
                 "description": "Persist Ableton \u0027#\u0027 track auto-numbering into the new project."
               },
               {
                 "name": "--force",
-                "valueName": null,
+                "value_name": null,
                 "default": null,
                 "description": "Overwrite the file at --project if it already exists (without this, init refuses rather than destroying an existing project)"
               }
@@ -3056,7 +3056,7 @@
             "options": [
               {
                 "name": "--project",
-                "valueName": "PATH",
+                "value_name": "PATH",
                 "default": null,
                 "description": "Path to .vibrai file (default: Untitled.vibrai in CWD)"
               }
@@ -3069,7 +3069,7 @@
             "options": [
               {
                 "name": "--project",
-                "valueName": "PATH",
+                "value_name": "PATH",
                 "default": null,
                 "description": "Path to .vibrai file (default: Untitled.vibrai in CWD)"
               }
@@ -3082,7 +3082,7 @@
             "options": [
               {
                 "name": "--project",
-                "valueName": "PATH",
+                "value_name": "PATH",
                 "default": null,
                 "description": "Path to .vibrai file (default: Untitled.vibrai in CWD)"
               }
@@ -3095,13 +3095,13 @@
             "options": [
               {
                 "name": "--project",
-                "valueName": "PATH",
+                "value_name": "PATH",
                 "default": null,
                 "description": "Path to .vibrai file (default: Untitled.vibrai in CWD)"
               },
               {
                 "name": "--number-tracks",
-                "valueName": "BOOL",
+                "value_name": "BOOL",
                 "default": null,
                 "description": "Persist Ableton \u0027#\u0027 track auto-numbering: true or false."
               }
@@ -3114,7 +3114,7 @@
             "options": [
               {
                 "name": "--yes",
-                "valueName": null,
+                "value_name": null,
                 "default": null,
                 "description": "Confirm deletion of Vibrai-generated tracks. Deletion targets MIDI tracks that are not group/folder tracks and whose part type (inferred from the track\u0027s current name, not stored) is not \u0027other\u0027. Because part type is name-inferred, a user track like \u0027My Bass\u0027 may be selected. Without this flag, lists the tracks that would be deleted and exits non-zero."
               }
@@ -3346,19 +3346,19 @@
             "options": [
               {
                 "name": "--at",
-                "valueName": "SCENE",
+                "value_name": "SCENE",
                 "default": null,
                 "description": "Optional scene number to insert at (1-based: 1, 2, \u2026 or first, second, \u2026); omit to append. Mutually exclusive with --after/--before."
               },
               {
                 "name": "--after",
-                "valueName": "SCENE",
+                "value_name": "SCENE",
                 "default": null,
                 "description": "Insert the new scene AFTER this scene \u2014 handle (scn_7) OR 1-based number OR ordinal. Mutually exclusive with --at/--before."
               },
               {
                 "name": "--before",
-                "valueName": "SCENE",
+                "value_name": "SCENE",
                 "default": null,
                 "description": "Insert the new scene BEFORE this scene \u2014 handle (scn_7) OR 1-based number OR ordinal. Mutually exclusive with --at/--after."
               }
@@ -3514,13 +3514,13 @@
             "options": [
               {
                 "name": "--loop",
-                "valueName": null,
+                "value_name": null,
                 "default": null,
                 "description": "Repeat the song until stopped (Ctrl-C)."
               },
               {
                 "name": "--stop",
-                "valueName": null,
+                "value_name": null,
                 "default": null,
                 "description": "Stop a performance already running (in this or another Vibrai process) instead of starting one."
               }
@@ -3598,13 +3598,13 @@
             "options": [
               {
                 "name": "--no-carry-envelopes",
-                "valueName": null,
+                "value_name": null,
                 "default": null,
                 "description": "Skip session-clip envelope carry (default: envelopes carry as track-lane automation)"
               },
               {
                 "name": "--force",
-                "valueName": null,
+                "value_name": null,
                 "default": null,
                 "description": "Allow envelope carry even when existing destination-track automation would be clobbered"
               }
@@ -3628,13 +3628,13 @@
             "options": [
               {
                 "name": "--name",
-                "valueName": "NAME",
+                "value_name": "NAME",
                 "default": null,
                 "description": "New clip name. Omit to leave unchanged."
               },
               {
                 "name": "--color-index",
-                "valueName": "INDEX",
+                "value_name": "INDEX",
                 "default": null,
                 "description": "Live colour palette index, 0-69. Omit to leave unchanged."
               }
@@ -3833,7 +3833,7 @@
             "options": [
               {
                 "name": "--out",
-                "valueName": "DIR",
+                "value_name": "DIR",
                 "default": null,
                 "description": "Output directory (defaults to ~/.vibrai/genres)"
               }
@@ -3862,31 +3862,31 @@
             "options": [
               {
                 "name": "--genre",
-                "valueName": "NAME",
+                "value_name": "NAME",
                 "default": null,
                 "description": "(deprecated) Use positional \u003Cgenre\u003E instead. Will be removed in the next minor release."
               },
               {
                 "name": "--preset",
-                "valueName": "ID",
+                "value_name": "ID",
                 "default": null,
                 "description": "(deprecated) Use positional \u003Cpreset\u003E instead. Will be removed in the next minor release."
               },
               {
                 "name": "--yes",
-                "valueName": null,
+                "value_name": null,
                 "default": null,
                 "description": "Confirm destructive overwrite of sections / parts / templates / arrangement / generation"
               },
               {
                 "name": "--number-tracks",
-                "valueName": null,
+                "value_name": null,
                 "default": null,
                 "description": "Persist Ableton \u0027#\u0027 track auto-numbering into the project (applied when you later run generate)."
               },
               {
                 "name": "--no-number-tracks",
-                "valueName": null,
+                "value_name": null,
                 "default": null,
                 "description": "Persist \u0027#\u0027 track auto-numbering as OFF in the project (overrides env / an existing setting)."
               }
@@ -3899,49 +3899,49 @@
             "options": [
               {
                 "name": "--name",
-                "valueName": "DISPLAY",
+                "value_name": "DISPLAY",
                 "default": null,
                 "description": "Genre display name; the filename slug derives from it. Defaults to the open Live set\u0027s name."
               },
               {
                 "name": "--out",
-                "valueName": "DIR",
+                "value_name": "DIR",
                 "default": null,
                 "description": "Output directory (defaults to ~/.vibrai/genres so the genre is immediately applicable)"
               },
               {
                 "name": "--into",
-                "valueName": "GENRE",
+                "value_name": "GENRE",
                 "default": null,
                 "description": "Append the set as a new preset to this existing user genre instead of creating a file"
               },
               {
                 "name": "--preset-name",
-                "valueName": "N",
+                "value_name": "N",
                 "default": null,
                 "description": "Name of the preset this set becomes (defaults to the set name)"
               },
               {
                 "name": "--faithful",
-                "valueName": null,
+                "value_name": null,
                 "default": null,
                 "description": "Also embed literal note phrases (writes format v4 with playback support)"
               },
               {
                 "name": "--source",
-                "valueName": "MODE",
+                "value_name": "MODE",
                 "default": "auto",
                 "description": "auto|arrangement|session \u2014 auto uses the arrangement when it has clips, else the session"
               },
               {
                 "name": "--part",
-                "valueName": "OVERRIDE",
+                "value_name": "OVERRIDE",
                 "default": null,
                 "description": "Classification override as \u003CtrackId\u003E:\u003CPartType\u003E, repeatable (track ids as shown in the report)"
               },
               {
                 "name": "--force",
-                "valueName": null,
+                "value_name": null,
                 "default": null,
                 "description": "Overwrite an existing target .vibraigenre"
               }
@@ -4081,13 +4081,13 @@
             "options": [
               {
                 "name": "--preset",
-                "valueName": "PRESET",
+                "value_name": "PRESET",
                 "default": null,
                 "description": "Only phrases belonging to this preset id"
               },
               {
                 "name": "--part",
-                "valueName": "ORDINAL",
+                "value_name": "ORDINAL",
                 "default": null,
                 "description": "Only phrases for this part ordinal (as shown in the Part# column)"
               }
@@ -4106,25 +4106,25 @@
             "options": [
               {
                 "name": "--preset",
-                "valueName": "PRESET",
+                "value_name": "PRESET",
                 "default": null,
                 "description": "Preset id the phrase belongs to"
               },
               {
                 "name": "--part",
-                "valueName": "ORDINAL",
+                "value_name": "ORDINAL",
                 "default": "0",
                 "description": "Part ordinal, as shown in \u0060vibrai phrase list\u0060"
               },
               {
                 "name": "--section",
-                "valueName": "SECTION",
+                "value_name": "SECTION",
                 "default": null,
                 "description": "Section name the phrase was captured from"
               },
               {
                 "name": "--confirm",
-                "valueName": null,
+                "value_name": null,
                 "default": null,
                 "description": "Required. Removing a phrase rewrites the .vibraigenre file and cannot be undone"
               }
@@ -4211,25 +4211,25 @@
             "options": [
               {
                 "name": "--force",
-                "valueName": null,
+                "value_name": null,
                 "default": null,
                 "description": "Overwrite an existing install whose files differ from the source."
               },
               {
                 "name": "--source",
-                "valueName": "PATH",
+                "value_name": "PATH",
                 "default": null,
                 "description": "[advanced] Override the source directory (test/debug use)."
               },
               {
                 "name": "--dest",
-                "valueName": "PATH",
+                "value_name": "PATH",
                 "default": null,
                 "description": "[advanced] Override the destination directory (test/debug use)."
               },
               {
                 "name": "--user",
-                "valueName": "NAME",
+                "value_name": "NAME",
                 "default": null,
                 "description": "Install into \u003Cname\u003E\u0027s home directory instead of the current user\u0027s. Used by the macOS .pkg postinstall to deposit files into the real installing user\u0027s Ableton User Library when running as root."
               }
@@ -4242,25 +4242,25 @@
             "options": [
               {
                 "name": "--force",
-                "valueName": null,
+                "value_name": null,
                 "default": null,
                 "description": "Overwrite an existing install whose files differ from the source."
               },
               {
                 "name": "--source",
-                "valueName": "PATH",
+                "value_name": "PATH",
                 "default": null,
                 "description": "[advanced] Override the source directory (test/debug use)."
               },
               {
                 "name": "--dest",
-                "valueName": "PATH",
+                "value_name": "PATH",
                 "default": null,
                 "description": "[advanced] Override the destination directory (test/debug use)."
               },
               {
                 "name": "--user",
-                "valueName": "NAME",
+                "value_name": "NAME",
                 "default": null,
                 "description": "Install into \u003Cname\u003E\u0027s home directory instead of the current user\u0027s. Used by the macOS .pkg postinstall to deposit files into the real installing user\u0027s Ableton User Library when running as root."
               }
@@ -4273,19 +4273,19 @@
             "options": [
               {
                 "name": "--source",
-                "valueName": "PATH",
+                "value_name": "PATH",
                 "default": null,
                 "description": "[advanced] Override the source directory (test/debug use)."
               },
               {
                 "name": "--dest",
-                "valueName": "PATH",
+                "value_name": "PATH",
                 "default": null,
                 "description": "[advanced] Override the destination directory (test/debug use)."
               },
               {
                 "name": "--user",
-                "valueName": "NAME",
+                "value_name": "NAME",
                 "default": null,
                 "description": "Install into \u003Cname\u003E\u0027s home directory instead of the current user\u0027s. Used by the macOS .pkg postinstall to deposit files into the real installing user\u0027s Ableton User Library when running as root."
               }
@@ -4298,13 +4298,13 @@
             "options": [
               {
                 "name": "--force",
-                "valueName": null,
+                "value_name": null,
                 "default": null,
                 "description": "Overwrite existing installs whose files differ from the source."
               },
               {
                 "name": "--user",
-                "valueName": "NAME",
+                "value_name": "NAME",
                 "default": null,
                 "description": "Install into \u003Cname\u003E\u0027s home directory instead of the current user\u0027s. Used by the macOS .pkg postinstall to deposit files into the real installing user\u0027s Ableton User Library when running as root."
               }
@@ -4409,127 +4409,127 @@
             "options": [
               {
                 "name": "--project",
-                "valueName": "PATH",
+                "value_name": "PATH",
                 "default": null,
                 "description": "Path to .vibrai file (default: Untitled.vibrai in CWD)"
               },
               {
                 "name": "--force",
-                "valueName": null,
+                "value_name": null,
                 "default": null,
                 "description": "Overwrite existing session clips and arrangement content in project tracks"
               },
               {
                 "name": "--clear-first",
-                "valueName": null,
+                "value_name": null,
                 "default": null,
                 "description": "Delete all Vibrai-generated tracks (same rule/order as \u0027vibrai project clear --yes\u0027) before planning and rendering \u2014 a clean slate so this run\u0027s composition doesn\u0027t stack on top of a previous, different project\u0027s tracks. Never touches Audio/Return/Master tracks or MIDI tracks whose Part Type is Other (user/template tracks). Skipped entirely under --dry-run (which never calls the bridge)."
               },
               {
                 "name": "--dry-run",
-                "valueName": null,
+                "value_name": null,
                 "default": null,
                 "description": "Plan only \u2014 do not call the bridge"
               },
               {
                 "name": "--seed",
-                "valueName": "VALUE",
+                "value_name": "VALUE",
                 "default": null,
                 "description": "Override the project\u0027s T2mHash seed for this run"
               },
               {
                 "name": "--allow-skip",
-                "valueName": null,
+                "value_name": null,
                 "default": null,
                 "description": "Continue when arrangement-automation entries cannot be resolved; default fails fast."
               },
               {
                 "name": "--with-instruments",
-                "valueName": null,
+                "value_name": null,
                 "default": null,
                 "description": "After rendering, load each part\u0027s default instrument (drum kits for drum parts) so the song is audible."
               },
               {
                 "name": "--stock-only",
-                "valueName": null,
+                "value_name": null,
                 "default": null,
                 "description": "Resolve instruments from stock content only: skips explicit defaults.instruments overrides AND tagged instruments, using genre stock defaults \u002B built-in generic. For demos/testing without third-party packs."
               },
               {
                 "name": "--on-existing-tracks",
-                "valueName": "MODE",
+                "value_name": "MODE",
                 "default": null,
                 "description": "How to treat existing MIDI tracks: replace (delete them) or append (keep, add after last MIDI track). Default: append. Audio/return tracks are always left in place."
               },
               {
                 "name": "--keep-empty-clips",
-                "valueName": null,
+                "value_name": null,
                 "default": null,
                 "description": "Keep generator-produced clips that resolve to zero notes. By default these are skipped, leaving a gap in both session and arrangement views. Authored literal empty clips are always kept."
               },
               {
                 "name": "--session-only",
-                "valueName": null,
+                "value_name": null,
                 "default": null,
                 "description": "Write clips to the Session grid only; skip Arrangement placement. Use with play-song to drive the song from Session view."
               },
               {
                 "name": "--swing",
-                "valueName": "PCT",
+                "value_name": "PCT",
                 "default": null,
                 "description": "Swing amount 0-100 (0 straight, 100 hard triplet). Overrides genre/preset default."
               },
               {
                 "name": "--humanize",
-                "valueName": "PCT",
+                "value_name": "PCT",
                 "default": null,
                 "description": "Velocity/timing jitter 0-100. Overrides genre/preset default."
               },
               {
                 "name": "--ornaments",
-                "valueName": "PCT",
+                "value_name": "PCT",
                 "default": null,
                 "description": "Grace-note/roll density 0-100. Overrides genre/preset default."
               },
               {
                 "name": "--dropout",
-                "valueName": "PCT",
+                "value_name": "PCT",
                 "default": null,
                 "description": "Tension-section note thinning 0-100. Overrides genre/preset default."
               },
               {
                 "name": "--gate",
-                "valueName": "PCT",
+                "value_name": "PCT",
                 "default": null,
                 "description": "Note articulation length 0-100 (10 = extreme staccato, 100 = full value/legato). Overrides genre/preset default."
               },
               {
                 "name": "--bass-motion",
-                "valueName": "PROFILE",
+                "value_name": "PROFILE",
                 "default": null,
                 "description": "Bass motion profile: root, root_fifth, octave_pump, arpeggiated, walking, pedal. Overrides genre default."
               },
               {
                 "name": "--kick-relation",
-                "valueName": "MODE",
+                "value_name": "MODE",
                 "default": null,
                 "description": "How the bass sits against the kick: lock (snap onto it), dodge (push off it), free (ignore it). Overrides genre default."
               },
               {
                 "name": "--native-randomization",
-                "valueName": null,
+                "value_name": null,
                 "default": null,
                 "description": "Emit Live\u0027s per-note probability/velocity-deviation instead of baking randomization in. The loop then varies on every playback, but the audible result is no longer reproducible from the seed. Omit to inherit the genre\u0027s setting."
               },
               {
                 "name": "--number-tracks",
-                "valueName": null,
+                "value_name": null,
                 "default": null,
                 "description": "Prefix track names with Ableton\u0027s \u0027#\u0027 auto-numbering token for this run."
               },
               {
                 "name": "--no-number-tracks",
-                "valueName": null,
+                "value_name": null,
                 "default": null,
                 "description": "Disable \u0027#\u0027 track auto-numbering for this run (overrides env / project setting)."
               }
@@ -4542,67 +4542,67 @@
             "options": [
               {
                 "name": "--project",
-                "valueName": "PATH",
+                "value_name": "PATH",
                 "default": null,
                 "description": "Path to .vibrai file (default: Untitled.vibrai in CWD)"
               },
               {
                 "name": "--seed",
-                "valueName": "VALUE",
+                "value_name": "VALUE",
                 "default": null,
                 "description": "Override the project\u0027s T2mHash seed for this run"
               },
               {
                 "name": "--keep-empty-clips",
-                "valueName": null,
+                "value_name": null,
                 "default": null,
                 "description": "Keep generator-produced clips that resolve to zero notes. By default these are skipped, leaving a gap in both session and arrangement views. Authored literal empty clips are always kept."
               },
               {
                 "name": "--swing",
-                "valueName": "PCT",
+                "value_name": "PCT",
                 "default": null,
                 "description": "Swing amount 0-100 (0 straight, 100 hard triplet). Overrides genre/preset default."
               },
               {
                 "name": "--humanize",
-                "valueName": "PCT",
+                "value_name": "PCT",
                 "default": null,
                 "description": "Velocity/timing jitter 0-100. Overrides genre/preset default."
               },
               {
                 "name": "--ornaments",
-                "valueName": "PCT",
+                "value_name": "PCT",
                 "default": null,
                 "description": "Grace-note/roll density 0-100. Overrides genre/preset default."
               },
               {
                 "name": "--dropout",
-                "valueName": "PCT",
+                "value_name": "PCT",
                 "default": null,
                 "description": "Tension-section note thinning 0-100. Overrides genre/preset default."
               },
               {
                 "name": "--gate",
-                "valueName": "PCT",
+                "value_name": "PCT",
                 "default": null,
                 "description": "Note articulation length 0-100 (10 = extreme staccato, 100 = full value/legato). Overrides genre/preset default."
               },
               {
                 "name": "--bass-motion",
-                "valueName": "PROFILE",
+                "value_name": "PROFILE",
                 "default": null,
                 "description": "Bass motion profile: root, root_fifth, octave_pump, arpeggiated, walking, pedal. Overrides genre default."
               },
               {
                 "name": "--kick-relation",
-                "valueName": "MODE",
+                "value_name": "MODE",
                 "default": null,
                 "description": "How the bass sits against the kick: lock (snap onto it), dodge (push off it), free (ignore it). Overrides genre default."
               },
               {
                 "name": "--native-randomization",
-                "valueName": null,
+                "value_name": null,
                 "default": null,
                 "description": "Emit Live\u0027s per-note probability/velocity-deviation instead of baking randomization in. The loop then varies on every playback, but the audible result is no longer reproducible from the seed. Omit to inherit the genre\u0027s setting."
               }
@@ -4821,31 +4821,31 @@
             "options": [
               {
                 "name": "--out",
-                "valueName": "PATH",
+                "value_name": "PATH",
                 "default": null,
                 "description": "Output file path. Defaults to Captured.vibrai in CWD."
               },
               {
                 "name": "--force",
-                "valueName": null,
+                "value_name": null,
                 "default": null,
                 "description": "Overwrite the output file if it already exists."
               },
               {
                 "name": "--dry-run",
-                "valueName": null,
+                "value_name": null,
                 "default": null,
                 "description": "Emit the YAML to stdout, do not write a file."
               },
               {
                 "name": "--merge-with",
-                "valueName": "PATH",
+                "value_name": "PATH",
                 "default": null,
                 "description": "Overlay section metadata (category, tension, modifier, variation, scale overrides) AND the first template\u0027s Automation from this prior .vibrai onto the captured project. Sections matched by id, falling back to position. Scene names always come from the captured set."
               },
               {
                 "name": "--no-warn-lossy-automation",
-                "valueName": null,
+                "value_name": null,
                 "default": null,
                 "description": "Suppress the lossy_arrangement_automation warning that capture emits when no --merge-with is provided and the captured arrangement_automation array is empty (the LOM-blind-spot for bouncer-produced envelopes)."
               }
@@ -4993,31 +4993,31 @@
             "options": [
               {
                 "name": "--check",
-                "valueName": null,
+                "value_name": null,
                 "default": null,
                 "description": "Only report whether an update is available; make no changes."
               },
               {
                 "name": "--yes",
-                "valueName": null,
+                "value_name": null,
                 "default": null,
                 "description": "Apply without the confirmation prompt (required for non-interactive use)."
               },
               {
                 "name": "--force",
-                "valueName": null,
+                "value_name": null,
                 "default": null,
                 "description": "Reinstall the latest release even if already up to date."
               },
               {
                 "name": "--discard-backup",
-                "valueName": null,
+                "value_name": null,
                 "default": null,
                 "description": "Delete the rollback backup kept by the last update and reclaim the space (~180 MB). Forfeits --rollback until the next update."
               },
               {
                 "name": "--rollback",
-                "valueName": null,
+                "value_name": null,
                 "default": null,
                 "description": "Restore the previously installed CLI binary (and MCP server binary, if present) from backup."
               }
@@ -5080,49 +5080,49 @@
             "options": [
               {
                 "name": "--purge-data",
-                "valueName": null,
+                "value_name": null,
                 "default": null,
                 "description": "Also remove ~/Library/Application Support/Vibrai (license, sessions, cache)."
               },
               {
                 "name": "--remove-ableton",
-                "valueName": null,
+                "value_name": null,
                 "default": null,
                 "description": "Also remove the Ableton M4L device and Python remote script."
               },
               {
                 "name": "--keep-claude-desktop-entry",
-                "valueName": null,
+                "value_name": null,
                 "default": null,
                 "description": "Skip removing the vibrai entry from Claude Desktop\u0027s config."
               },
               {
                 "name": "--keep-agent-skills",
-                "valueName": null,
+                "value_name": null,
                 "default": null,
                 "description": "Skip removing installed Vibrai Agent Skills from coding-agent config dirs."
               },
               {
                 "name": "--yes",
-                "valueName": null,
+                "value_name": null,
                 "default": null,
                 "description": "Skip the confirmation prompt (required for non-interactive use)."
               },
               {
                 "name": "--dry-run",
-                "valueName": null,
+                "value_name": null,
                 "default": null,
                 "description": "Print what would be removed and exit without removing anything."
               },
               {
                 "name": "--user",
-                "valueName": "NAME",
+                "value_name": "NAME",
                 "default": null,
                 "description": "Target \u003Cname\u003E\u0027s home directory instead of the current user\u0027s."
               },
               {
                 "name": "--program-files-only",
-                "valueName": null,
+                "value_name": null,
                 "default": null,
                 "description": "[advanced] Internal flag used when re-execing under sudo \u2014 not for direct use."
               }
@@ -5197,37 +5197,37 @@
             "options": [
               {
                 "name": "--from",
-                "valueName": "TIMESTAMP",
+                "value_name": "TIMESTAMP",
                 "default": null,
                 "description": "Range start (ISO 8601) \u2014 alternative to a session selector"
               },
               {
                 "name": "--to",
-                "valueName": "TIMESTAMP",
+                "value_name": "TIMESTAMP",
                 "default": null,
                 "description": "Range end (ISO 8601)"
               },
               {
                 "name": "--include-reads",
-                "valueName": null,
+                "value_name": null,
                 "default": null,
                 "description": "Render read-only calls as live commands too"
               },
               {
                 "name": "--format",
-                "valueName": "FORMAT",
+                "value_name": "FORMAT",
                 "default": "script",
                 "description": "Output format: script (default) or jsonl"
               },
               {
                 "name": "--annotate",
-                "valueName": "TEXT",
+                "value_name": "TEXT",
                 "default": null,
                 "description": "Free-text note added to the script header"
               },
               {
                 "name": "--out",
-                "valueName": "PATH",
+                "value_name": "PATH",
                 "default": null,
                 "description": "Write to this path (payload sidecars land next to it); omit to print to stdout"
               }
@@ -5246,7 +5246,7 @@
             "options": [
               {
                 "name": "--note",
-                "valueName": "TEXT",
+                "value_name": "TEXT",
                 "default": null,
                 "description": "Optional free-text note (rendered as a comment on export)"
               }
@@ -5344,7 +5344,7 @@
             "options": [
               {
                 "name": "--to",
-                "valueName": "PATH",
+                "value_name": "PATH",
                 "default": null,
                 "description": "Output zip path. Defaults to ./vibrai-skill.zip in the current directory."
               }
@@ -5383,13 +5383,13 @@
             "options": [
               {
                 "name": "--section",
-                "valueName": "NAME",
+                "value_name": "NAME",
                 "default": null,
                 "description": "Print only this reference section \u2014 a name or unique prefix from --list-sections (e.g. genre)"
               },
               {
                 "name": "--list-sections",
-                "valueName": null,
+                "value_name": null,
                 "default": null,
                 "description": "List the reference section names, one per line"
               }
@@ -5428,10 +5428,10 @@
     }
   ],
   "unpaired": {
-    "cliOnly": [
+    "cli_only": [
       "recipe"
     ],
-    "mcpOnly": [
+    "mcp_only": [
       "OnboardingTools"
     ]
   }
