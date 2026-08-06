@@ -1,0 +1,141 @@
+---
+title: "Onboarding"
+description: "Guided first-run flows: a 60-second demo, a first-song wizard, and a genre-song wizard."
+---
+
+{/* GENERATED — do not edit by hand. Regenerate with `npm run generate:reference`. */}
+
+Guided first-run flows: a 60-second demo, a first-song wizard, and a genre-song wizard.
+
+## Command line
+
+### `start hello-demo`
+
+60-second ambient-techno demo you can hear immediately
+
+```bash
+vibrai start hello-demo
+```
+
+
+
+### `start first-song`
+
+Build a multi-section arrangement from a vibe preset
+
+```bash
+vibrai start first-song --vibe <VIBE> --on-existing-tracks <MODE> --project-dir <DIR> --interactive
+```
+
+<ParamField path="--vibe">
+  Vibe preset to build from (e.g. ambient-techno, lofi-house) — maps to a verified genre+preset pair
+</ParamField>
+<ParamField path="--on-existing-tracks">
+  How to treat existing MIDI tracks, if the wizard's inner genre-song step finds any: replace (delete them) or append (keep, add after). Required only when the Live set already has MIDI tracks.
+</ParamField>
+<ParamField path="--project-dir">
+  Directory the new .vibrai project file is minted into (default: current directory)
+</ParamField>
+<ParamField path="--interactive">
+  Prompt for a choice instead of exiting when input is needed
+</ParamField>
+
+### `start genre-song`
+
+Build an arrangement from the installed genre catalog
+
+```bash
+vibrai start genre-song --genre <GENRE> --sub-genre <SUB_GENRE> --preset <PRESET> --on-existing-tracks <MODE> --project-dir <DIR> --interactive
+```
+
+<ParamField path="--genre">
+  Genre id from the installed catalog (e.g. techno, house, deep_house, downtempo)
+</ParamField>
+<ParamField path="--sub-genre">
+  Narrow presets to this sub-genre before picking one
+</ParamField>
+<ParamField path="--preset">
+  Preset id within the chosen genre (e.g. hypnotic_1)
+</ParamField>
+<ParamField path="--on-existing-tracks">
+  How to treat existing MIDI tracks: replace (delete them) or append (keep, add after last MIDI track). Required only when the Live set already has MIDI tracks.
+</ParamField>
+<ParamField path="--project-dir">
+  Directory the new .vibrai project file is minted into (default: current directory)
+</ParamField>
+<ParamField path="--interactive">
+  Prompt for a choice instead of exiting when input is needed
+</ParamField>
+
+## MCP tools
+
+### `start_hello_demo`
+
+Start the Vibrai 60-second hello demo: spin up an ambient-techno beat in Live's session view in under a minute. Call this when the user asks for a 'hello demo' / 'quick demo' / 'showcase' / wants to hear something fast / says 'show me what Vibrai can do.' Executes the flow directly (tempo, tracks, a clip, notes, an instrument, then fires the clips) and returns a structured result — narrate it. If any step's action is load_device_failed, that track has no instrument and will play silently; tell the user.
+
+```json
+{
+  "tool": "start_hello_demo",
+  "arguments": {}
+}
+```
+
+
+
+### `start_first_song`
+
+Start the Vibrai first-song wizard: build a multi-section arrangement from a vibe preset. Call this when the user asks to 'build a song' / 'make a track' / 'create music with Vibrai' / wants the full guided flow. Executes the flow directly. An omitted or unrecognized vibe returns a needs_input result naming the missing option and listing valid choices — present them to the user and call this tool again with the chosen value. Call `get_skill` first to load the Vibrai operational playbook.
+
+```json
+{
+  "tool": "start_first_song",
+  "arguments": {
+    "vibe": "<String>",
+    "on_existing_tracks": "<String>",
+    "project_directory": "<String>"
+  }
+}
+```
+
+<ParamField path="vibe" type="String">
+  Optional vibe preset. One of: ambient-techno, lofi-house, deep-house, ambient-downtempo, minimal-techno. Omit to receive a needs_input result listing the choices.
+</ParamField>
+<ParamField path="on_existing_tracks" type="String">
+  Optional. How to treat MIDI tracks already in the Live set, if the wizard's inner genre-song step finds any: "replace" deletes the existing MIDI tracks (audio/return tracks untouched) or "append" keeps them and adds the new tracks after the last MIDI track. IMPORTANT: "append" does NOT re-render onto the existing tracks — it creates a DUPLICATE track set — so never guess between the two; ask the user if you don't know which they want. Required only when this tool's needs_input result names on_existing_tracks (i.e. the Live set already has MIDI tracks); omit on a fresh set.
+</ParamField>
+<ParamField path="project_directory" type="String">
+  Optional. Directory the new .vibrai project file is minted into. Omit to use Vibrai's per-user data directory (always writable) rather than this process's working directory.
+</ParamField>
+
+### `start_genre_song`
+
+Start the Vibrai genre-song wizard: build a full arrangement in a genre and sub-genre picked from the installed genre catalog, via the deterministic apply_genre preset path. Call this when the user names a specific genre or sub-genre ('make me a techno track', 'something deep house') — for the vibe-preset flow with no genre named, use start_first_song instead. Executes the flow directly. Any unresolved option (genre, sub_genre, or preset when several match) returns a needs_input result naming it and listing valid choices read live from the installed catalog — present them and call this tool again with the chosen value. Call `get_skill` first to load the Vibrai operational playbook.
+
+```json
+{
+  "tool": "start_genre_song",
+  "arguments": {
+    "genre": "<String>",
+    "sub_genre": "<String>",
+    "preset": "<String>",
+    "on_existing_tracks": "<String>",
+    "project_directory": "<String>"
+  }
+}
+```
+
+<ParamField path="genre" type="String">
+  Optional genre — a slug or display name from the live catalog (list_genres). Omit to receive a needs_input result listing the catalog.
+</ParamField>
+<ParamField path="sub_genre" type="String">
+  Optional sub-genre label from the chosen genre's presets. Omit to receive a needs_input result listing the choices.
+</ParamField>
+<ParamField path="preset" type="String">
+  Optional preset id within the chosen genre/sub-genre (e.g. hypnotic_1). Required only when several presets match; omitting it then returns a needs_input result listing them.
+</ParamField>
+<ParamField path="on_existing_tracks" type="String">
+  Optional. How to treat MIDI tracks already in the Live set: "replace" deletes the existing MIDI tracks (audio/return tracks untouched) or "append" keeps them and adds the new tracks after the last MIDI track. IMPORTANT: "append" does NOT re-render onto the existing tracks — it creates a DUPLICATE track set — so never guess between the two; ask the user if you don't know which they want. Required only when this tool's needs_input result names on_existing_tracks (i.e. the Live set already has MIDI tracks); omit on a fresh set.
+</ParamField>
+<ParamField path="project_directory" type="String">
+  Optional. Directory the new .vibrai project file is minted into. Omit to use Vibrai's per-user data directory (always writable) rather than this process's working directory.
+</ParamField>

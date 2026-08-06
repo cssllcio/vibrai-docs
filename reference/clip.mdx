@@ -84,6 +84,21 @@ vibrai clip fire <track> <scene>
   Scene handle (scn_7) OR 1-based number (1, 2, …) OR ordinal (first, second, …)
 </ParamField>
 
+### `clip stop`
+
+Stop a playing session clip
+
+```bash
+vibrai clip stop <track> <scene>
+```
+
+<ParamField path="track" required>
+  Track handle (trk_42) OR 1-based number (1, 2, …) OR ordinal (first, second, …)
+</ParamField>
+<ParamField path="scene" required>
+  Scene handle (scn_7) OR 1-based number (1, 2, …) OR ordinal (first, second, …)
+</ParamField>
+
 ### `clip rename`
 
 Rename a clip by track and scene handle
@@ -309,6 +324,27 @@ Trigger the clip at the given track and scene (both handles).
 ```json
 {
   "tool": "fire_clip",
+  "arguments": {
+    "track": "<String>",
+    "scene": "<String>"
+  }
+}
+```
+
+<ParamField path="track" type="String" required>
+  Track handle from list_tracks, e.g. "trk_42". Copy verbatim.
+</ParamField>
+<ParamField path="scene" type="String" required>
+  Scene handle from list_scenes, e.g. "scn_7". Copy verbatim.
+</ParamField>
+
+### `stop_clip`
+
+Stop the playing clip at the given track and scene (both handles). The inverse of fire_clip.
+
+```json
+{
+  "tool": "stop_clip",
   "arguments": {
     "track": "<String>",
     "scene": "<String>"

@@ -205,7 +205,7 @@ vibrai automation apply --part <ID> --slot <KEY> --curve <CURVE> --sections <CSV
 
 ### `list_automation_params`
 
-List the automatable parameters of a device on a track.
+List the automatable parameters of a device on a track. Each parameter's `value` is a number in its own `[min_value, max_value]` domain — NOT display units: an Auto Filter's Frequency runs 0..1, where 0.5 reads as 632 Hz. `display_value` (Live's str_for_value) shows what the number means. Quantized parameters (`is_quantized: true`) also carry `value_items`, the ordered label vocabulary the value indexes into (e.g. Filter Type's "Band-pass") — `default_value` is the opposite case: present on continuous parameters, absent (null) on quantized ones, where Live reports no default to reset to. This is the metadata set_device_param / apply_device_params expect you to have read first.
 
 ```json
 {

@@ -54,7 +54,7 @@ vibrai device load <track> --path <PATH> --part-type <TYPE> --position <N>
   PartType shorthand (Bass, Pad, Lead, …); resolves through defaults.instruments
 </ParamField>
 <ParamField path="--position">
-  Insert position in device chain (1-based: 1 = first slot; omit to append)
+  Insert position in device chain (1-based: 1 = first slot). Omit to let Vibrai pick a valid slot for the device family — audio effects append after the instrument, MIDI effects and instruments insert at the head — since Live enforces MIDI effects then instrument then audio effects.
 </ParamField>
 
 ### `device browse`
@@ -117,6 +117,72 @@ vibrai device load-defaults --project <PATH> --stock-only
   Resolve instruments from stock content only: skips explicit defaults.instruments overrides AND tagged instruments. For demos/testing without third-party packs.
 </ParamField>
 
+### `device set-param`
+
+Set one device parameter to a static value (e.g. a filter cutoff)
+
+```bash
+vibrai device set-param <track> <device> <param> [value] --raw <VALUE> --label <VALUE>
+```
+
+<ParamField path="track" required>
+  Track handle (trk_42) OR 1-based number (1, 2, …) OR ordinal (first, second, …).
+</ParamField>
+<ParamField path="device" required>
+  Device ID, 1-based chain position, or a name substring (e.g. "Auto Filter").
+</ParamField>
+<ParamField path="param" required>
+  Parameter name (exact, then case-insensitive) or 0-based index. See 'vibrai automation params'.
+</ParamField>
+<ParamField path="value">
+  A number in the parameter's [min, max] domain (see 'vibrai automation params'), or a label for a quantized parameter (Band-pass). NOT display units: an Auto Filter's Frequency runs 0..1, where 0.5 reads as 632 Hz. Mutually exclusive with --raw and --label.
+</ParamField>
+<ParamField path="--raw">
+  Value as a normalized 0.0-1.0 fraction of the parameter's travel, scaled into its own [min, max] domain — use this when you don't know the native range. Mutually exclusive with the positional value and --label; not accepted on quantized parameters.
+</ParamField>
+<ParamField path="--label">
+  Label for a quantized parameter, e.g. "Band-pass" — an explicit alternative to passing the label as the positional value, needed when the label itself looks numeric (a vocabulary entry like "12" would otherwise be parsed as a native value). Mutually exclusive with the positional value and --raw.
+</ParamField>
+
+### `device apply-params`
+
+Set several parameters on one device at once (all-or-nothing)
+
+```bash
+vibrai device apply-params <track> <device> --set <PARAM=VALUE>
+```
+
+<ParamField path="track" required>
+  Track handle (trk_42) OR 1-based number (1, 2, …) OR ordinal (first, second, …).
+</ParamField>
+<ParamField path="device" required>
+  Device ID, 1-based chain position, or a name substring.
+</ParamField>
+<ParamField path="--set">
+  Parameter assignment, e.g. --set Frequency=0.5. Repeatable. Values are in the parameter's own [min, max] domain, not display units. A quantized parameter takes its label (--set "Filter Type=Band-pass") or its index. Prefix with raw: for a normalized 0-1 fraction of travel, scaled into the parameter's own domain (--set Pitch=raw:0.75).
+</ParamField>
+
+### `device set-state`
+
+Bypass or un-bypass a device
+
+```bash
+vibrai device set-state <track> <device> --enabled --disabled
+```
+
+<ParamField path="track" required>
+  Track handle (trk_42) OR 1-based number (1, 2, …) OR ordinal (first, second, …).
+</ParamField>
+<ParamField path="device" required>
+  Device ID, 1-based chain position, or a name substring.
+</ParamField>
+<ParamField path="--enabled">
+  Activate the device.
+</ParamField>
+<ParamField path="--disabled">
+  Bypass the device.
+</ParamField>
+
 ## MCP tools
 
 ### `load_device`
@@ -145,7 +211,7 @@ Load a stock device, User Library preset, or plug-in (VST3/AU) onto a track. Spe
   PartType shorthand; resolves through defaults.instruments
 </ParamField>
 <ParamField path="position" type="String">
-  Insert position in device chain (1-based: 1 = first slot; omit to append at the end)
+  Insert position in device chain (1-based: 1 = first slot). Omit to let Vibrai pick a valid slot for the device family — audio effects append after the instrument, MIDI effects and instruments insert at the head — since Live enforces MIDI effects then instrument then audio effects.
 </ParamField>
 
 ### `browse_devices`
@@ -188,7 +254,7 @@ Remove a device from a track's top-level device chain by index. v1 scope: top-le
 
 ### `list_devices`
 
-List devices currently loaded on a track in chain order. Returns each device's index, id, name, and class info — pass device_id to list_automation_params / get_automation / write_automation.
+List devices currently loaded on a track in chain order. Returns each device's index, id, name, class info, and current is_active (device.is_active, Live's bypass switch) — pass device_id to list_automation_params / get_automation / write_automation.
 
 ```json
 {
@@ -268,4 +334,91 @@ Load each MIDI part's default instrument from a .vibrai project onto its track, 
 </ParamField>
 <ParamField path="stock_only" type="Boolean">
   Resolve instruments from stock content only: skips explicit defaults.instruments overrides AND tagged instruments. For demos/testing without third-party packs.
+</ParamField>
+
+### `set_device_param`
+
+Set one device parameter to a static value. `value` is a number in the parameter's own [min_value, max_value] domain — NOT display units: an Auto Filter's Frequency runs 0..1, where 0.5 reads as 632 Hz. Call list_automation_params first to see each parameter's range, its current display_value, and its value_items when quantized. Don't know the native range? Pass `value_raw` instead: a normalized [0, 1] number scaled into [min_value, max_value] for you. For a quantized parameter pass `label` ("Band-pass") or its index as `value`. Exactly one of value / value_raw / label. Returns that ONE parameter as Live reports it AFTER the write, including display_value, so you can see what the number meant. For time-varying changes use write_automation.
+
+```json
+{
+  "tool": "set_device_param",
+  "arguments": {
+    "track": "<String>",
+    "device_id": "<String>",
+    "param": "<String>",
+    "value": "<Nullable`1>",
+    "value_raw": "<Nullable`1>",
+    "label": "<String>"
+  }
+}
+```
+
+<ParamField path="track" type="String" required>
+  Track handle from list_tracks, e.g. "trk_42". Copy verbatim.
+</ParamField>
+<ParamField path="device_id" type="String" required>
+  Device ID or 1-based position number or name substring
+</ParamField>
+<ParamField path="param" type="String" required>
+  Parameter name (exact, then case-insensitive) or 0-based index
+</ParamField>
+<ParamField path="value" type="Nullable`1">
+  Value in the parameter's [min_value, max_value] domain. Mutually exclusive with value_raw and label.
+</ParamField>
+<ParamField path="value_raw" type="Nullable`1">
+  Normalized value in [0, 1], scaled into the parameter's own [min_value, max_value] domain — use this when you don't know the native range. Mutually exclusive with value and label.
+</ParamField>
+<ParamField path="label" type="String">
+  Label for a quantized parameter, e.g. "Band-pass". Mutually exclusive with value and value_raw.
+</ParamField>
+
+### `apply_device_params`
+
+Set several parameters on ONE device in a single call. Each entry is "param=value", e.g. ["Frequency=0.5", "Resonance=0.3", "Filter Type=Band-pass"]. Values are in each parameter's own [min_value, max_value] domain, not display units; a quantized parameter takes its label or its index. Prefix a value with "raw:" (e.g. "Frequency=raw:0.5") to pass a normalized [0, 1] number instead — scaled into the parameter's own domain when you don't know its native range. Everything is validated before anything is applied, so one bad entry lands nothing. Scoped to one device deliberately: that is the boundary where all-or-nothing is real, since Live offers no transaction across devices. Returns the parameters actually written, as Live reports them after the write.
+
+```json
+{
+  "tool": "apply_device_params",
+  "arguments": {
+    "track": "<String>",
+    "device_id": "<String>",
+    "parameters": "<String[]>"
+  }
+}
+```
+
+<ParamField path="track" type="String" required>
+  Track handle from list_tracks, e.g. "trk_42". Copy verbatim.
+</ParamField>
+<ParamField path="device_id" type="String" required>
+  Device ID or 1-based position number or name substring
+</ParamField>
+<ParamField path="parameters" type="String[]" required>
+  Entries as "param=value", e.g. ["Frequency=0.5", "Filter Type=Band-pass", "Resonance=raw:0.5"]. Must not be empty.
+</ParamField>
+
+### `set_device_state`
+
+Bypass or un-bypass a device (Live's device on/off switch, device.is_active). Lets you A/B a chain without deleting it. list_devices reports each device's current is_active.
+
+```json
+{
+  "tool": "set_device_state",
+  "arguments": {
+    "track": "<String>",
+    "device_id": "<String>",
+    "enabled": "<Boolean>"
+  }
+}
+```
+
+<ParamField path="track" type="String" required>
+  Track handle from list_tracks, e.g. "trk_42". Copy verbatim.
+</ParamField>
+<ParamField path="device_id" type="String" required>
+  Device ID or 1-based position number or name substring
+</ParamField>
+<ParamField path="enabled" type="Boolean" required>
+  true = active, false = bypassed
 </ParamField>

@@ -11,10 +11,10 @@ Generate or plan a composition from a .vibrai project file.
 
 ### `generate`
 
-Generate clips and arrangement from a .vibrai project file
+Plan + render a composition into Live's session and arrangement views. Same preview engine as 'plan'; use generate to write and plan to iterate on variations before writing.
 
 ```bash
-vibrai generate --project <PATH> --force --clear-first --dry-run --seed <VALUE> --allow-skip --with-instruments --stock-only --on-existing-tracks <MODE> --keep-empty-clips --session-only --swing <PCT> --humanize <PCT> --ornaments <PCT> --dropout <PCT> --gate <PCT> --bass-motion <PROFILE> --kick-relation <MODE> --native-randomization --number-tracks --no-number-tracks
+vibrai generate --project <PATH> --force --clear-first --dry-run --seed <VALUE> --allow-skip --with-instruments --stock-only --on-existing-tracks <MODE> --keep-empty-clips --session-only --create-missing-tracks --swing <PCT> --humanize <PCT> --ornaments <PCT> --dropout <PCT> --gate <PCT> --bass-motion <PROFILE> --kick-relation <MODE> --native-randomization --number-tracks --no-number-tracks
 ```
 
 <ParamField path="--project">
@@ -27,7 +27,7 @@ vibrai generate --project <PATH> --force --clear-first --dry-run --seed <VALUE> 
   Delete all Vibrai-generated tracks (same rule/order as 'vibrai project clear --yes') before planning and rendering — a clean slate so this run's composition doesn't stack on top of a previous, different project's tracks. Never touches Audio/Return/Master tracks or MIDI tracks whose Part Type is Other (user/template tracks). Skipped entirely under --dry-run (which never calls the bridge).
 </ParamField>
 <ParamField path="--dry-run">
-  Plan only — do not call the bridge
+  Identical preview to 'plan' but with generate's exact settings; use it to sanity-check the write you are about to make.
 </ParamField>
 <ParamField path="--seed">
   Override the project's T2mHash seed for this run
@@ -49,6 +49,9 @@ vibrai generate --project <PATH> --force --clear-first --dry-run --seed <VALUE> 
 </ParamField>
 <ParamField path="--session-only">
   Write clips to the Session grid only; skip Arrangement placement. Use with play-song to drive the song from Session view.
+</ParamField>
+<ParamField path="--create-missing-tracks">
+  When a part is bound to a track_id (project init / capture) that no longer exists in the Live set, create it (name from the part, MIDI type) instead of failing. Default: off — such a project fails validation up front, naming the missing track_id(s), before anything is written.
 </ParamField>
 <ParamField path="--swing">
   Swing amount 0-100 (0 straight, 100 hard triplet). Overrides genre/preset default.
@@ -83,7 +86,7 @@ vibrai generate --project <PATH> --force --clear-first --dry-run --seed <VALUE> 
 
 ### `plan`
 
-Plan a composition from a .vibrai project file without writing to Live
+Preview with variation knobs (seed/density/etc.). Same preview engine as 'generate --dry-run'; use plan when you want to iterate on variations before writing.
 
 ```bash
 vibrai plan --project <PATH> --seed <VALUE> --keep-empty-clips --swing <PCT> --humanize <PCT> --ornaments <PCT> --dropout <PCT> --gate <PCT> --bass-motion <PROFILE> --kick-relation <MODE> --native-randomization
@@ -127,7 +130,7 @@ vibrai plan --project <PATH> --seed <VALUE> --keep-empty-clips --swing <PCT> --h
 
 ### `plan`
 
-Plan a composition from a .vibrai file without writing to Live. Returns a slim summary. Track ids in the summary (session_clips, arrangement_placements, instruments, current_tracks) are 1-based, matching list_tracks and load_device.
+Preview a composition with variation knobs (seed/density/etc.) WITHOUT writing to Live — the same generation the 'generate' tool runs, stopped before the write. Use plan to iterate on variations; call 'generate' when you're ready to write. Returns a slim summary. Track ids in the summary (session_clips, arrangement_placements, instruments, current_tracks) are 1-based, matching list_tracks and load_device.
 
 ```json
 {
@@ -184,7 +187,7 @@ Plan a composition from a .vibrai file without writing to Live. Returns a slim s
 
 ### `generate`
 
-Plan + render a composition into Live's session view and arrangement view. force=true is required only when append re-renders onto an existing part track whose target slots are non-empty; replace implies consent and never requires force. By default, fails fast when any ArrangementAutomationEntry cannot be resolved against the live device tree; pass allow_skip=true to log warnings and continue. Track ids in the summary (session_clips, arrangement_placements, instruments, current_tracks) are 1-based, matching list_tracks and load_device. Call `get_skill` first to load the Vibrai operational playbook.
+Plan + render a composition into Live's session view and arrangement view. To preview the result without writing to Live, use the 'plan' tool first. force=true is required only when append re-renders onto an existing part track whose target slots are non-empty; replace implies consent and never requires force. By default, fails fast when any ArrangementAutomationEntry cannot be resolved against the live device tree; pass allow_skip=true to log warnings and continue. Track ids in the summary (session_clips, arrangement_placements, instruments, current_tracks) are 1-based, matching list_tracks and load_device. Call `get_skill` first to load the Vibrai operational playbook.
 
 ```json
 {
@@ -208,7 +211,8 @@ Plan + render a composition into Live's session view and arrangement view. force
     "kick_relation": "<String>",
     "number_tracks": "<Nullable`1>",
     "session_only": "<Boolean>",
-    "clear_first": "<Boolean>"
+    "clear_first": "<Boolean>",
+    "create_missing_tracks": "<Boolean>"
   }
 }
 ```
@@ -269,4 +273,7 @@ Plan + render a composition into Live's session view and arrangement view. force
 </ParamField>
 <ParamField path="clear_first" type="Boolean">
   Delete all Vibrai-generated tracks (same rule/order as clear_project with confirm=true, or 'vibrai project clear --yes') before planning and rendering — a clean slate so this run's composition doesn't stack on top of a previous, different project's tracks. Never touches Audio/Return/Master tracks, group/folder tracks, or MIDI tracks whose part type is 'other' (user/template tracks).
+</ParamField>
+<ParamField path="create_missing_tracks" type="Boolean">
+  When a part is bound to a track_id (project init / capture) that no longer exists in the Live set, create it (name from the part, MIDI type) instead of failing. Default false: such a project fails validation up front, naming the missing track_id(s), before anything is written.
 </ParamField>

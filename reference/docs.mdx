@@ -29,10 +29,12 @@ vibrai llms --section <NAME> --list-sections
 Print the Vibrai SKILL.md to stdout
 
 ```bash
-vibrai skill print
+vibrai skill print --doc <DOC>
 ```
 
-
+<ParamField path="--doc" default="skill">
+  Which document to print: skill (default), reference, or onboarding
+</ParamField>
 
 ## MCP tools
 
@@ -51,7 +53,7 @@ Get the Vibrai agent skill and/or command reference — the operational playbook
 ```
 
 <ParamField path="doc" type="String">
-  Which document: "skill" for the operational playbook, "reference" for the command reference. Omit to get the skill plus the list of reference sections.
+  Which document: "skill" for the operational playbook, "reference" for the command reference, "onboarding" for the onboarding/troubleshooting reference (Live setup, remote-script activation, bridge triage, license states, first-run errors). Omit to get the skill plus the list of reference sections.
 </ParamField>
 <ParamField path="section" type="String">
   Reference section to return, e.g. "Genre" or "Automation" — a name or unique prefix from reference_sections. Only used with doc="reference"; omit for the whole reference (large).

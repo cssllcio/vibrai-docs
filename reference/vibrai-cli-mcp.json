@@ -1,6 +1,6 @@
 {
-  "engine_version": "1.4.0.0",
-  "generated_at": "2026-08-03T04:08:10Z",
+  "engine_version": "1.6.0.0",
+  "generated_at": "2026-08-06T00:39:31Z",
   "features": [
     {
       "id": "transport",
@@ -718,7 +718,7 @@
                 "name": "--position",
                 "value_name": "N",
                 "default": null,
-                "description": "Insert position in device chain (1-based: 1 = first slot; omit to append)"
+                "description": "Insert position in device chain (1-based: 1 = first slot). Omit to let Vibrai pick a valid slot for the device family \u2014 audio effects append after the instrument, MIDI effects and instruments insert at the head \u2014 since Live enforces MIDI effects then instrument then audio effects."
               }
             ]
           },
@@ -794,6 +794,100 @@
                 "description": "Resolve instruments from stock content only: skips explicit defaults.instruments overrides AND tagged instruments. For demos/testing without third-party packs."
               }
             ]
+          },
+          {
+            "name": "device set-param",
+            "description": "Set one device parameter to a static value (e.g. a filter cutoff)",
+            "arguments": [
+              {
+                "name": "track",
+                "required": true,
+                "description": "Track handle (trk_42) OR 1-based number (1, 2, \u2026) OR ordinal (first, second, \u2026)."
+              },
+              {
+                "name": "device",
+                "required": true,
+                "description": "Device ID, 1-based chain position, or a name substring (e.g. \u0022Auto Filter\u0022)."
+              },
+              {
+                "name": "param",
+                "required": true,
+                "description": "Parameter name (exact, then case-insensitive) or 0-based index. See \u0027vibrai automation params\u0027."
+              },
+              {
+                "name": "value",
+                "required": false,
+                "description": "A number in the parameter\u0027s [min, max] domain (see \u0027vibrai automation params\u0027), or a label for a quantized parameter (Band-pass). NOT display units: an Auto Filter\u0027s Frequency runs 0..1, where 0.5 reads as 632 Hz. Mutually exclusive with --raw and --label."
+              }
+            ],
+            "options": [
+              {
+                "name": "--raw",
+                "value_name": "VALUE",
+                "default": null,
+                "description": "Value as a normalized 0.0-1.0 fraction of the parameter\u0027s travel, scaled into its own [min, max] domain \u2014 use this when you don\u0027t know the native range. Mutually exclusive with the positional value and --label; not accepted on quantized parameters."
+              },
+              {
+                "name": "--label",
+                "value_name": "VALUE",
+                "default": null,
+                "description": "Label for a quantized parameter, e.g. \u0022Band-pass\u0022 \u2014 an explicit alternative to passing the label as the positional value, needed when the label itself looks numeric (a vocabulary entry like \u002212\u0022 would otherwise be parsed as a native value). Mutually exclusive with the positional value and --raw."
+              }
+            ]
+          },
+          {
+            "name": "device apply-params",
+            "description": "Set several parameters on one device at once (all-or-nothing)",
+            "arguments": [
+              {
+                "name": "track",
+                "required": true,
+                "description": "Track handle (trk_42) OR 1-based number (1, 2, \u2026) OR ordinal (first, second, \u2026)."
+              },
+              {
+                "name": "device",
+                "required": true,
+                "description": "Device ID, 1-based chain position, or a name substring."
+              }
+            ],
+            "options": [
+              {
+                "name": "--set",
+                "value_name": "PARAM=VALUE",
+                "default": null,
+                "description": "Parameter assignment, e.g. --set Frequency=0.5. Repeatable. Values are in the parameter\u0027s own [min, max] domain, not display units. A quantized parameter takes its label (--set \u0022Filter Type=Band-pass\u0022) or its index. Prefix with raw: for a normalized 0-1 fraction of travel, scaled into the parameter\u0027s own domain (--set Pitch=raw:0.75)."
+              }
+            ]
+          },
+          {
+            "name": "device set-state",
+            "description": "Bypass or un-bypass a device",
+            "arguments": [
+              {
+                "name": "track",
+                "required": true,
+                "description": "Track handle (trk_42) OR 1-based number (1, 2, \u2026) OR ordinal (first, second, \u2026)."
+              },
+              {
+                "name": "device",
+                "required": true,
+                "description": "Device ID, 1-based chain position, or a name substring."
+              }
+            ],
+            "options": [
+              {
+                "name": "--enabled",
+                "value_name": null,
+                "default": null,
+                "description": "Activate the device."
+              },
+              {
+                "name": "--disabled",
+                "value_name": null,
+                "default": null,
+                "description": "Bypass the device."
+              }
+            ]
           }
         ]
       },
@@ -825,7 +919,7 @@
                 "name": "position",
                 "type": "String",
                 "required": false,
-                "description": "Insert position in device chain (1-based: 1 = first slot; omit to append at the end)"
+                "description": "Insert position in device chain (1-based: 1 = first slot). Omit to let Vibrai pick a valid slot for the device family \u2014 audio effects append after the instrument, MIDI effects and instruments insert at the head \u2014 since Live enforces MIDI effects then instrument then audio effects."
               }
             ]
           },
@@ -861,7 +955,7 @@
           },
           {
             "name": "list_devices",
-            "description": "List devices currently loaded on a track in chain order. Returns each device\u0027s index, id, name, and class info \u2014 pass device_id to list_automation_params / get_automation / write_automation.",
+            "description": "List devices currently loaded on a track in chain order. Returns each device\u0027s index, id, name, class info, and current is_active (device.is_active, Live\u0027s bypass switch) \u2014 pass device_id to list_automation_params / get_automation / write_automation.",
             "parameters": [
               {
                 "name": "track",
@@ -930,6 +1024,96 @@
                 "description": "Resolve instruments from stock content only: skips explicit defaults.instruments overrides AND tagged instruments. For demos/testing without third-party packs."
               }
             ]
+          },
+          {
+            "name": "set_device_param",
+            "description": "Set one device parameter to a static value. \u0060value\u0060 is a number in the parameter\u0027s own [min_value, max_value] domain \u2014 NOT display units: an Auto Filter\u0027s Frequency runs 0..1, where 0.5 reads as 632 Hz. Call list_automation_params first to see each parameter\u0027s range, its current display_value, and its value_items when quantized. Don\u0027t know the native range? Pass \u0060value_raw\u0060 instead: a normalized [0, 1] number scaled into [min_value, max_value] for you. For a quantized parameter pass \u0060label\u0060 (\u0022Band-pass\u0022) or its index as \u0060value\u0060. Exactly one of value / value_raw / label. Returns that ONE parameter as Live reports it AFTER the write, including display_value, so you can see what the number meant. For time-varying changes use write_automation.",
+            "parameters": [
+              {
+                "name": "track",
+                "type": "String",
+                "required": true,
+                "description": "Track handle from list_tracks, e.g. \u0022trk_42\u0022. Copy verbatim."
+              },
+              {
+                "name": "device_id",
+                "type": "String",
+                "required": true,
+                "description": "Device ID or 1-based position number or name substring"
+              },
+              {
+                "name": "param",
+                "type": "String",
+                "required": true,
+                "description": "Parameter name (exact, then case-insensitive) or 0-based index"
+              },
+              {
+                "name": "value",
+                "type": "Nullable\u00601",
+                "required": false,
+                "description": "Value in the parameter\u0027s [min_value, max_value] domain. Mutually exclusive with value_raw and label."
+              },
+              {
+                "name": "value_raw",
+                "type": "Nullable\u00601",
+                "required": false,
+                "description": "Normalized value in [0, 1], scaled into the parameter\u0027s own [min_value, max_value] domain \u2014 use this when you don\u0027t know the native range. Mutually exclusive with value and label."
+              },
+              {
+                "name": "label",
+                "type": "String",
+                "required": false,
+                "description": "Label for a quantized parameter, e.g. \u0022Band-pass\u0022. Mutually exclusive with value and value_raw."
+              }
+            ]
+          },
+          {
+            "name": "apply_device_params",
+            "description": "Set several parameters on ONE device in a single call. Each entry is \u0022param=value\u0022, e.g. [\u0022Frequency=0.5\u0022, \u0022Resonance=0.3\u0022, \u0022Filter Type=Band-pass\u0022]. Values are in each parameter\u0027s own [min_value, max_value] domain, not display units; a quantized parameter takes its label or its index. Prefix a value with \u0022raw:\u0022 (e.g. \u0022Frequency=raw:0.5\u0022) to pass a normalized [0, 1] number instead \u2014 scaled into the parameter\u0027s own domain when you don\u0027t know its native range. Everything is validated before anything is applied, so one bad entry lands nothing. Scoped to one device deliberately: that is the boundary where all-or-nothing is real, since Live offers no transaction across devices. Returns the parameters actually written, as Live reports them after the write.",
+            "parameters": [
+              {
+                "name": "track",
+                "type": "String",
+                "required": true,
+                "description": "Track handle from list_tracks, e.g. \u0022trk_42\u0022. Copy verbatim."
+              },
+              {
+                "name": "device_id",
+                "type": "String",
+                "required": true,
+                "description": "Device ID or 1-based position number or name substring"
+              },
+              {
+                "name": "parameters",
+                "type": "String[]",
+                "required": true,
+                "description": "Entries as \u0022param=value\u0022, e.g. [\u0022Frequency=0.5\u0022, \u0022Filter Type=Band-pass\u0022, \u0022Resonance=raw:0.5\u0022]. Must not be empty."
+              }
+            ]
+          },
+          {
+            "name": "set_device_state",
+            "description": "Bypass or un-bypass a device (Live\u0027s device on/off switch, device.is_active). Lets you A/B a chain without deleting it. list_devices reports each device\u0027s current is_active.",
+            "parameters": [
+              {
+                "name": "track",
+                "type": "String",
+                "required": true,
+                "description": "Track handle from list_tracks, e.g. \u0022trk_42\u0022. Copy verbatim."
+              },
+              {
+                "name": "device_id",
+                "type": "String",
+                "required": true,
+                "description": "Device ID or 1-based position number or name substring"
+              },
+              {
+                "name": "enabled",
+                "type": "Boolean",
+                "required": true,
+                "description": "true = active, false = bypassed"
+              }
+            ]
           }
         ]
       }
@@ -989,9 +1173,9 @@
             "description": "Show one stock item: category, kind, device class, load URI",
             "arguments": [
               {
-                "name": "path",
+                "name": "path-or-name",
                 "required": true,
-                "description": "Exact relative path of the item (from stock list / stock browse)."
+                "description": "Exact relative path, or unique Name (from stock list / stock browse), of the item."
               }
             ],
             "options": []
@@ -1022,7 +1206,7 @@
                 "name": "--position",
                 "value_name": "N",
                 "default": null,
-                "description": "Insert position in device chain (1-based: 1 = first slot; omit to append)"
+                "description": "Insert position in device chain (1-based: 1 = first slot). Omit to let Vibrai pick a valid slot for the device family \u2014 audio effects append after the instrument, MIDI effects and instruments insert at the head \u2014 since Live enforces MIDI effects then instrument then audio effects."
               }
             ]
           },
@@ -1099,7 +1283,7 @@
           },
           {
             "name": "browse_stock_sounds",
-            "description": "Depth-1 browse of the offline Core Library folder tree, like a file browser one level at a time. Live-independent (same cached index as list_stock_sounds). Pass a relative folder path (forward-slash separated) to list its immediate sub-folders and leaf items; omit path (or pass empty) for the top level. Each entry is either a folder (is_folder=true \u2014 drill in by passing its path) or an item (is_folder=false, with the full stock item for loading). Returns an empty list for an unknown or leaf path.",
+            "description": "Depth-1 browse of the offline Core Library folder tree, like a file browser one level at a time. Live-independent (same cached index as list_stock_sounds). Pass a relative folder path (forward-slash separated) to list its immediate sub-folders and leaf items; omit path (or pass empty) for the top level. Each entry is either a folder (is_folder=true \u2014 drill in by passing its path) or an item (is_folder=false, with the full stock item for loading). Returns an empty list for a real but childless leaf path; errors (STOCK_PATH_NOT_FOUND) for a path that isn\u0027t a prefix of any item \u2014 try list_stock_sounds/show_stock_sound to find a real one.",
             "parameters": [
               {
                 "name": "path",
@@ -1111,13 +1295,13 @@
           },
           {
             "name": "show_stock_sound",
-            "description": "Show one Core Library item by its exact relative path (as returned by list_stock_sounds / browse_stock_sounds): name, category, kind, device class, and the derived load URI. Offline and Live-independent. Errors (STOCK_ITEM_NOT_FOUND) when no item matches the path exactly.",
+            "description": "Show one Core Library item by its exact relative path OR its unique Name \u2014 the column list_stock_sounds/browse_stock_sounds lead with (#219): name, category, kind, device class, and the derived load URI. Offline and Live-independent. Resolution: an exact path always wins; else a case-insensitive Name match resolves if unique. Errors (STOCK_ITEM_AMBIGUOUS) when the Name matches more than one item \u2014 the message lists every matching path so you can retry with one; errors (STOCK_ITEM_NOT_FOUND) when nothing matches at all.",
             "parameters": [
               {
                 "name": "path",
                 "type": "String",
                 "required": true,
-                "description": "Exact relative path of the item, e.g. \u0027Devices/Instruments/Operator/Bass/Analog Bass.adv\u0027."
+                "description": "Exact relative path OR unique Name of the item, e.g. \u0027Devices/Instruments/Operator/Bass/Analog Bass.adv\u0027 or \u0027Analog Bass\u0027."
               }
             ]
           },
@@ -1146,7 +1330,7 @@
                 "name": "position",
                 "type": "String",
                 "required": false,
-                "description": "Insert position in the device chain (1-based: 1 = first slot; omit to append at the end)"
+                "description": "Insert position in device chain (1-based: 1 = first slot). Omit to let Vibrai pick a valid slot for the device family \u2014 audio effects append after the instrument, MIDI effects and instruments insert at the head \u2014 since Live enforces MIDI effects then instrument then audio effects."
               }
             ]
           },
@@ -1716,6 +1900,23 @@
             "options": []
           },
           {
+            "name": "clip stop",
+            "description": "Stop a playing session clip",
+            "arguments": [
+              {
+                "name": "track",
+                "required": true,
+                "description": "Track handle (trk_42) OR 1-based number (1, 2, \u2026) OR ordinal (first, second, \u2026)"
+              },
+              {
+                "name": "scene",
+                "required": true,
+                "description": "Scene handle (scn_7) OR 1-based number (1, 2, \u2026) OR ordinal (first, second, \u2026)"
+              }
+            ],
+            "options": []
+          },
+          {
             "name": "clip rename",
             "description": "Rename a clip by track and scene handle",
             "arguments": [
@@ -1992,6 +2193,24 @@
           {
             "name": "fire_clip",
             "description": "Trigger the clip at the given track and scene (both handles).",
+            "parameters": [
+              {
+                "name": "track",
+                "type": "String",
+                "required": true,
+                "description": "Track handle from list_tracks, e.g. \u0022trk_42\u0022. Copy verbatim."
+              },
+              {
+                "name": "scene",
+                "type": "String",
+                "required": true,
+                "description": "Scene handle from list_scenes, e.g. \u0022scn_7\u0022. Copy verbatim."
+              }
+            ]
+          },
+          {
+            "name": "stop_clip",
+            "description": "Stop the playing clip at the given track and scene (both handles). The inverse of fire_clip.",
             "parameters": [
               {
                 "name": "track",
@@ -2758,7 +2977,7 @@
         "tools": [
           {
             "name": "list_automation_params",
-            "description": "List the automatable parameters of a device on a track.",
+            "description": "List the automatable parameters of a device on a track. Each parameter\u0027s \u0060value\u0060 is a number in its own \u0060[min_value, max_value]\u0060 domain \u2014 NOT display units: an Auto Filter\u0027s Frequency runs 0..1, where 0.5 reads as 632 Hz. \u0060display_value\u0060 (Live\u0027s str_for_value) shows what the number means. Quantized parameters (\u0060is_quantized: true\u0060) also carry \u0060value_items\u0060, the ordered label vocabulary the value indexes into (e.g. Filter Type\u0027s \u0022Band-pass\u0022) \u2014 \u0060default_value\u0060 is the opposite case: present on continuous parameters, absent (null) on quantized ones, where Live reports no default to reset to. This is the metadata set_device_param / apply_device_params expect you to have read first.",
             "parameters": [
               {
                 "name": "track",
@@ -3046,6 +3265,12 @@
                 "value_name": null,
                 "default": null,
                 "description": "Overwrite the file at --project if it already exists (without this, init refuses rather than destroying an existing project)"
+              },
+              {
+                "name": "--time-signature",
+                "value_name": "VALUE",
+                "default": null,
+                "description": "Project time signature, e.g. \u00227/8\u0022. Omit to leave it undeclared, in which case Vibrai follows Live\u0027s transport. Values are numerator/denominator; numerator 1-99, denominator one of 1, 2, 4, 8, 16."
               }
             ]
           },
@@ -3104,6 +3329,12 @@
                 "value_name": "BOOL",
                 "default": null,
                 "description": "Persist Ableton \u0027#\u0027 track auto-numbering: true or false."
+              },
+              {
+                "name": "--time-signature",
+                "value_name": "VALUE",
+                "default": null,
+                "description": "Project time signature, e.g. \u00227/8\u0022."
               }
             ]
           },
@@ -3157,6 +3388,12 @@
                 "type": "Boolean",
                 "required": false,
                 "description": "Overwrite an existing file at \u0060path\u0060. Without this, init refuses rather than destroying an existing project."
+              },
+              {
+                "name": "time_signature",
+                "type": "String",
+                "required": false,
+                "description": "Project time signature, e.g. \u00227/8\u0022. Omit to leave it undeclared, in which case Vibrai follows Live\u0027s transport. Values are numerator/denominator; numerator 1-99, denominator one of 1, 2, 4, 8, 16."
               }
             ]
           },
@@ -3204,7 +3441,7 @@
           },
           {
             "name": "configure_project",
-            "description": "Edit project-level preferences in an existing .vibrai file. Currently: number_tracks (persist Ableton \u0027#\u0027 track auto-numbering). Loads, updates project.defaults, and saves. Errors if the file is missing.",
+            "description": "Edit project-level preferences in an existing .vibrai file. Currently: number_tracks (persist Ableton \u0027#\u0027 track auto-numbering) and time_signature. Loads, updates project.defaults / project.meta, and saves. Pass at least one of number_tracks or time_signature. Errors if the file is missing.",
             "parameters": [
               {
                 "name": "path",
@@ -3214,9 +3451,15 @@
               },
               {
                 "name": "number_tracks",
-                "type": "Boolean",
-                "required": true,
-                "description": "Persist Ableton \u0027#\u0027 track auto-numbering (true) or disable it (false)."
+                "type": "Nullable\u00601",
+                "required": false,
+                "description": "Persist Ableton \u0027#\u0027 track auto-numbering (true) or disable it (false). Omit to leave unchanged."
+              },
+              {
+                "name": "time_signature",
+                "type": "String",
+                "required": false,
+                "description": "Project time signature, e.g. \u00227/8\u0022. Omit to leave unchanged."
               }
             ]
           },
@@ -3607,6 +3850,12 @@
                 "value_name": null,
                 "default": null,
                 "description": "Allow envelope carry even when existing destination-track automation would be clobbered"
+              },
+              {
+                "name": "--project",
+                "value_name": "PATH",
+                "default": null,
+                "description": "Path to the .vibrai file whose declared meter governs the placed clip\u0027s length (default: the project in the CWD when present, else Live\u0027s transport meter)"
               }
             ]
           },
@@ -3724,6 +3973,12 @@
                 "type": "Boolean",
                 "required": false,
                 "description": "Allow envelope carry even when existing track-lane automation would be clobbered (default: false)."
+              },
+              {
+                "name": "project_path",
+                "type": "String",
+                "required": false,
+                "description": "Path to the .vibrai file whose declared meter should govern the placed clip\u0027s length. Omitted: the default project in the CWD is consulted when present, otherwise Live\u0027s transport meter is used."
               }
             ]
           },
@@ -4404,7 +4659,7 @@
         "commands": [
           {
             "name": "generate",
-            "description": "Generate clips and arrangement from a .vibrai project file",
+            "description": "Plan \u002B render a composition into Live\u0027s session and arrangement views. Same preview engine as \u0027plan\u0027; use generate to write and plan to iterate on variations before writing.",
             "arguments": [],
             "options": [
               {
@@ -4429,7 +4684,7 @@
                 "name": "--dry-run",
                 "value_name": null,
                 "default": null,
-                "description": "Plan only \u2014 do not call the bridge"
+                "description": "Identical preview to \u0027plan\u0027 but with generate\u0027s exact settings; use it to sanity-check the write you are about to make."
               },
               {
                 "name": "--seed",
@@ -4472,6 +4727,12 @@
                 "value_name": null,
                 "default": null,
                 "description": "Write clips to the Session grid only; skip Arrangement placement. Use with play-song to drive the song from Session view."
+              },
+              {
+                "name": "--create-missing-tracks",
+                "value_name": null,
+                "default": null,
+                "description": "When a part is bound to a track_id (project init / capture) that no longer exists in the Live set, create it (name from the part, MIDI type) instead of failing. Default: off \u2014 such a project fails validation up front, naming the missing track_id(s), before anything is written."
               },
               {
                 "name": "--swing",
@@ -4537,7 +4798,7 @@
           },
           {
             "name": "plan",
-            "description": "Plan a composition from a .vibrai project file without writing to Live",
+            "description": "Preview with variation knobs (seed/density/etc.). Same preview engine as \u0027generate --dry-run\u0027; use plan when you want to iterate on variations before writing.",
             "arguments": [],
             "options": [
               {
@@ -4614,7 +4875,7 @@
         "tools": [
           {
             "name": "plan",
-            "description": "Plan a composition from a .vibrai file without writing to Live. Returns a slim summary. Track ids in the summary (session_clips, arrangement_placements, instruments, current_tracks) are 1-based, matching list_tracks and load_device.",
+            "description": "Preview a composition with variation knobs (seed/density/etc.) WITHOUT writing to Live \u2014 the same generation the \u0027generate\u0027 tool runs, stopped before the write. Use plan to iterate on variations; call \u0027generate\u0027 when you\u0027re ready to write. Returns a slim summary. Track ids in the summary (session_clips, arrangement_placements, instruments, current_tracks) are 1-based, matching list_tracks and load_device.",
             "parameters": [
               {
                 "name": "project_path",
@@ -4686,7 +4947,7 @@
           },
           {
             "name": "generate",
-            "description": "Plan \u002B render a composition into Live\u0027s session view and arrangement view. force=true is required only when append re-renders onto an existing part track whose target slots are non-empty; replace implies consent and never requires force. By default, fails fast when any ArrangementAutomationEntry cannot be resolved against the live device tree; pass allow_skip=true to log warnings and continue. Track ids in the summary (session_clips, arrangement_placements, instruments, current_tracks) are 1-based, matching list_tracks and load_device. Call \u0060get_skill\u0060 first to load the Vibrai operational playbook.",
+            "description": "Plan \u002B render a composition into Live\u0027s session view and arrangement view. To preview the result without writing to Live, use the \u0027plan\u0027 tool first. force=true is required only when append re-renders onto an existing part track whose target slots are non-empty; replace implies consent and never requires force. By default, fails fast when any ArrangementAutomationEntry cannot be resolved against the live device tree; pass allow_skip=true to log warnings and continue. Track ids in the summary (session_clips, arrangement_placements, instruments, current_tracks) are 1-based, matching list_tracks and load_device. Call \u0060get_skill\u0060 first to load the Vibrai operational playbook.",
             "parameters": [
               {
                 "name": "project_path",
@@ -4801,6 +5062,12 @@
                 "type": "Boolean",
                 "required": false,
                 "description": "Delete all Vibrai-generated tracks (same rule/order as clear_project with confirm=true, or \u0027vibrai project clear --yes\u0027) before planning and rendering \u2014 a clean slate so this run\u0027s composition doesn\u0027t stack on top of a previous, different project\u0027s tracks. Never touches Audio/Return/Master tracks, group/folder tracks, or MIDI tracks whose part type is \u0027other\u0027 (user/template tracks)."
+              },
+              {
+                "name": "create_missing_tracks",
+                "type": "Boolean",
+                "required": false,
+                "description": "When a part is bound to a track_id (project init / capture) that no longer exists in the Live set, create it (name from the part, MIDI type) instead of failing. Default false: such a project fails validation up front, naming the missing track_id(s), before anything is written."
               }
             ]
           }
@@ -5069,13 +5336,13 @@
     {
       "id": "uninstall",
       "title": "Uninstall",
-      "description": "Remove Vibrai\u0027s program files, and optionally app data, Ableton integration, and the Claude Desktop MCP registration. Program-files removal is CLI-only \u2014 it requires root, which the MCP server has no way to obtain (no TTY, no sudo prompt); the MCP tool covers every other scope with full parity.",
+      "description": "Remove Vibrai\u0027s program files, and by default the Claude Desktop registration and installed Agent Skills (retain either with --keep-claude-desktop-entry / --keep-agent-skills). App data and the Ableton integration are kept unless you pass --purge-data / --remove-ableton. Program-files removal is CLI-only \u2014 it requires root, which the MCP server has no way to obtain (no TTY, no sudo prompt); the MCP tool covers every other scope with full parity.",
       "cli": {
         "branch": "uninstall",
         "commands": [
           {
             "name": "uninstall",
-            "description": "Remove Vibrai\u0027s program files, and optionally app data, Ableton integration, and the Claude Desktop registration",
+            "description": "Remove Vibrai\u0027s program files, and by default the Claude Desktop registration and installed Agent Skills (retain either with --keep-claude-desktop-entry / --keep-agent-skills). App data and the Ableton integration are kept unless you pass --purge-data / --remove-ableton.",
             "arguments": [],
             "options": [
               {
@@ -5094,13 +5361,13 @@
                 "name": "--keep-claude-desktop-entry",
                 "value_name": null,
                 "default": null,
-                "description": "Skip removing the vibrai entry from Claude Desktop\u0027s config."
+                "description": "Retain the vibrai entry in Claude Desktop\u0027s config (removed by default)."
               },
               {
                 "name": "--keep-agent-skills",
                 "value_name": null,
                 "default": null,
-                "description": "Skip removing installed Vibrai Agent Skills from coding-agent config dirs."
+                "description": "Retain installed Vibrai Agent Skills in coding-agent config dirs (removed by default)."
               },
               {
                 "name": "--yes",
@@ -5134,7 +5401,7 @@
         "tools": [
           {
             "name": "uninstall",
-            "description": "Remove Vibrai\u0027s app data, installed Agent Skills (from coding-agent config dirs, removed by default unless keepAgentSkills=true), Ableton integration (M4L device \u002B remote script), and/or its Claude Desktop MCP registration. Does NOT remove the installed CLI/MCP program files (/usr/local/bin/vibrai, /usr/local/lib/vibrai) \u2014 that requires root and must be run from a terminal via \u0060vibrai uninstall\u0060. Call with confirm=false first to preview what would be removed; call again with confirm=true to actually remove it.",
+            "description": "Remove Vibrai\u0027s by-default Claude Desktop MCP registration and installed Agent Skills (from coding-agent config dirs); optionally also app data and/or Ableton integration (M4L device \u002B remote script). Claude Desktop and Agent Skills are removed by default \u2014 use keepClaudeDesktopEntry and keepAgentSkills to retain either. App data (~/Library/Application Support/Vibrai) and Ableton integration are kept by default unless purgeData=true and/or removeAbleton=true. Does NOT remove the installed CLI/MCP program files (/usr/local/bin/vibrai, /usr/local/lib/vibrai) \u2014 that requires root and must be run from a terminal via \u0060vibrai uninstall\u0060. Call with confirm=false first to preview what would be removed; call again with confirm=true to actually remove it.",
             "parameters": [
               {
                 "name": "confirm",
@@ -5146,25 +5413,25 @@
                 "name": "purge_data",
                 "type": "Boolean",
                 "required": false,
-                "description": "Also remove ~/Library/Application Support/Vibrai (license, sessions, cache). Default false."
+                "description": "Also remove ~/Library/Application Support/Vibrai (license, sessions, cache). Default false (kept by default)."
               },
               {
                 "name": "remove_ableton",
                 "type": "Boolean",
                 "required": false,
-                "description": "Also remove the Ableton M4L device and Python remote script. Default false."
+                "description": "Also remove the Ableton M4L device and Python remote script. Default false (kept by default)."
               },
               {
                 "name": "keep_claude_desktop_entry",
                 "type": "Boolean",
                 "required": false,
-                "description": "Skip removing the vibrai entry from Claude Desktop\u0027s config. Default false (entry IS removed)."
+                "description": "Retain the vibrai entry in Claude Desktop\u0027s config. Default false (entry IS removed by default)."
               },
               {
                 "name": "keep_agent_skills",
                 "type": "Boolean",
                 "required": false,
-                "description": "Skip removing installed Vibrai Agent Skills from coding-agent config dirs. Default false (skills ARE removed)."
+                "description": "Retain installed Vibrai Agent Skills in coding-agent config dirs. Default false (skills ARE removed by default)."
               }
             ]
           }
@@ -5399,7 +5666,14 @@
             "name": "skill print",
             "description": "Print the Vibrai SKILL.md to stdout",
             "arguments": [],
-            "options": []
+            "options": [
+              {
+                "name": "--doc",
+                "value_name": "DOC",
+                "default": "skill",
+                "description": "Which document to print: skill (default), reference, or onboarding"
+              }
+            ]
           }
         ]
       },
@@ -5413,7 +5687,7 @@
                 "name": "doc",
                 "type": "String",
                 "required": false,
-                "description": "Which document: \u0022skill\u0022 for the operational playbook, \u0022reference\u0022 for the command reference. Omit to get the skill plus the list of reference sections."
+                "description": "Which document: \u0022skill\u0022 for the operational playbook, \u0022reference\u0022 for the command reference, \u0022onboarding\u0022 for the onboarding/troubleshooting reference (Live setup, remote-script activation, bridge triage, license states, first-run errors). Omit to get the skill plus the list of reference sections."
               },
               {
                 "name": "section",
@@ -5425,14 +5699,171 @@
           }
         ]
       }
+    },
+    {
+      "id": "onboarding",
+      "title": "Onboarding",
+      "description": "Guided first-run flows: a 60-second demo, a first-song wizard, and a genre-song wizard.",
+      "cli": {
+        "branch": "start",
+        "commands": [
+          {
+            "name": "start hello-demo",
+            "description": "60-second ambient-techno demo you can hear immediately",
+            "arguments": [],
+            "options": []
+          },
+          {
+            "name": "start first-song",
+            "description": "Build a multi-section arrangement from a vibe preset",
+            "arguments": [],
+            "options": [
+              {
+                "name": "--vibe",
+                "value_name": "VIBE",
+                "default": null,
+                "description": "Vibe preset to build from (e.g. ambient-techno, lofi-house) \u2014 maps to a verified genre\u002Bpreset pair"
+              },
+              {
+                "name": "--on-existing-tracks",
+                "value_name": "MODE",
+                "default": null,
+                "description": "How to treat existing MIDI tracks, if the wizard\u0027s inner genre-song step finds any: replace (delete them) or append (keep, add after). Required only when the Live set already has MIDI tracks."
+              },
+              {
+                "name": "--project-dir",
+                "value_name": "DIR",
+                "default": null,
+                "description": "Directory the new .vibrai project file is minted into (default: current directory)"
+              },
+              {
+                "name": "--interactive",
+                "value_name": null,
+                "default": null,
+                "description": "Prompt for a choice instead of exiting when input is needed"
+              }
+            ]
+          },
+          {
+            "name": "start genre-song",
+            "description": "Build an arrangement from the installed genre catalog",
+            "arguments": [],
+            "options": [
+              {
+                "name": "--genre",
+                "value_name": "GENRE",
+                "default": null,
+                "description": "Genre id from the installed catalog (e.g. techno, house, deep_house, downtempo)"
+              },
+              {
+                "name": "--sub-genre",
+                "value_name": "SUB_GENRE",
+                "default": null,
+                "description": "Narrow presets to this sub-genre before picking one"
+              },
+              {
+                "name": "--preset",
+                "value_name": "PRESET",
+                "default": null,
+                "description": "Preset id within the chosen genre (e.g. hypnotic_1)"
+              },
+              {
+                "name": "--on-existing-tracks",
+                "value_name": "MODE",
+                "default": null,
+                "description": "How to treat existing MIDI tracks: replace (delete them) or append (keep, add after last MIDI track). Required only when the Live set already has MIDI tracks."
+              },
+              {
+                "name": "--project-dir",
+                "value_name": "DIR",
+                "default": null,
+                "description": "Directory the new .vibrai project file is minted into (default: current directory)"
+              },
+              {
+                "name": "--interactive",
+                "value_name": null,
+                "default": null,
+                "description": "Prompt for a choice instead of exiting when input is needed"
+              }
+            ]
+          }
+        ]
+      },
+      "mcp": {
+        "tools": [
+          {
+            "name": "start_hello_demo",
+            "description": "Start the Vibrai 60-second hello demo: spin up an ambient-techno beat in Live\u0027s session view in under a minute. Call this when the user asks for a \u0027hello demo\u0027 / \u0027quick demo\u0027 / \u0027showcase\u0027 / wants to hear something fast / says \u0027show me what Vibrai can do.\u0027 Executes the flow directly (tempo, tracks, a clip, notes, an instrument, then fires the clips) and returns a structured result \u2014 narrate it. If any step\u0027s action is load_device_failed, that track has no instrument and will play silently; tell the user.",
+            "parameters": []
+          },
+          {
+            "name": "start_first_song",
+            "description": "Start the Vibrai first-song wizard: build a multi-section arrangement from a vibe preset. Call this when the user asks to \u0027build a song\u0027 / \u0027make a track\u0027 / \u0027create music with Vibrai\u0027 / wants the full guided flow. Executes the flow directly. An omitted or unrecognized vibe returns a needs_input result naming the missing option and listing valid choices \u2014 present them to the user and call this tool again with the chosen value. Call \u0060get_skill\u0060 first to load the Vibrai operational playbook.",
+            "parameters": [
+              {
+                "name": "vibe",
+                "type": "String",
+                "required": false,
+                "description": "Optional vibe preset. One of: ambient-techno, lofi-house, deep-house, ambient-downtempo, minimal-techno. Omit to receive a needs_input result listing the choices."
+              },
+              {
+                "name": "on_existing_tracks",
+                "type": "String",
+                "required": false,
+                "description": "Optional. How to treat MIDI tracks already in the Live set, if the wizard\u0027s inner genre-song step finds any: \u0022replace\u0022 deletes the existing MIDI tracks (audio/return tracks untouched) or \u0022append\u0022 keeps them and adds the new tracks after the last MIDI track. IMPORTANT: \u0022append\u0022 does NOT re-render onto the existing tracks \u2014 it creates a DUPLICATE track set \u2014 so never guess between the two; ask the user if you don\u0027t know which they want. Required only when this tool\u0027s needs_input result names on_existing_tracks (i.e. the Live set already has MIDI tracks); omit on a fresh set."
+              },
+              {
+                "name": "project_directory",
+                "type": "String",
+                "required": false,
+                "description": "Optional. Directory the new .vibrai project file is minted into. Omit to use Vibrai\u0027s per-user data directory (always writable) rather than this process\u0027s working directory."
+              }
+            ]
+          },
+          {
+            "name": "start_genre_song",
+            "description": "Start the Vibrai genre-song wizard: build a full arrangement in a genre and sub-genre picked from the installed genre catalog, via the deterministic apply_genre preset path. Call this when the user names a specific genre or sub-genre (\u0027make me a techno track\u0027, \u0027something deep house\u0027) \u2014 for the vibe-preset flow with no genre named, use start_first_song instead. Executes the flow directly. Any unresolved option (genre, sub_genre, or preset when several match) returns a needs_input result naming it and listing valid choices read live from the installed catalog \u2014 present them and call this tool again with the chosen value. Call \u0060get_skill\u0060 first to load the Vibrai operational playbook.",
+            "parameters": [
+              {
+                "name": "genre",
+                "type": "String",
+                "required": false,
+                "description": "Optional genre \u2014 a slug or display name from the live catalog (list_genres). Omit to receive a needs_input result listing the catalog."
+              },
+              {
+                "name": "sub_genre",
+                "type": "String",
+                "required": false,
+                "description": "Optional sub-genre label from the chosen genre\u0027s presets. Omit to receive a needs_input result listing the choices."
+              },
+              {
+                "name": "preset",
+                "type": "String",
+                "required": false,
+                "description": "Optional preset id within the chosen genre/sub-genre (e.g. hypnotic_1). Required only when several presets match; omitting it then returns a needs_input result listing them."
+              },
+              {
+                "name": "on_existing_tracks",
+                "type": "String",
+                "required": false,
+                "description": "Optional. How to treat MIDI tracks already in the Live set: \u0022replace\u0022 deletes the existing MIDI tracks (audio/return tracks untouched) or \u0022append\u0022 keeps them and adds the new tracks after the last MIDI track. IMPORTANT: \u0022append\u0022 does NOT re-render onto the existing tracks \u2014 it creates a DUPLICATE track set \u2014 so never guess between the two; ask the user if you don\u0027t know which they want. Required only when this tool\u0027s needs_input result names on_existing_tracks (i.e. the Live set already has MIDI tracks); omit on a fresh set."
+              },
+              {
+                "name": "project_directory",
+                "type": "String",
+                "required": false,
+                "description": "Optional. Directory the new .vibrai project file is minted into. Omit to use Vibrai\u0027s per-user data directory (always writable) rather than this process\u0027s working directory."
+              }
+            ]
+          }
+        ]
+      }
     }
   ],
   "unpaired": {
     "cli_only": [
       "recipe"
     ],
-    "mcp_only": [
-      "OnboardingTools"
-    ]
+    "mcp_only": []
   }
 }

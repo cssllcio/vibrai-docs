@@ -47,11 +47,11 @@ vibrai stock browse [path]
 Show one stock item: category, kind, device class, load URI
 
 ```bash
-vibrai stock show <path>
+vibrai stock show <path-or-name>
 ```
 
-<ParamField path="path" required>
-  Exact relative path of the item (from stock list / stock browse).
+<ParamField path="path-or-name" required>
+  Exact relative path, or unique Name (from stock list / stock browse), of the item.
 </ParamField>
 
 ### `stock refresh`
@@ -79,7 +79,7 @@ vibrai stock load <track> <path> --position <N>
   Exact relative path of the item to load (from stock list / stock browse / stock show).
 </ParamField>
 <ParamField path="--position">
-  Insert position in device chain (1-based: 1 = first slot; omit to append)
+  Insert position in device chain (1-based: 1 = first slot). Omit to let Vibrai pick a valid slot for the device family — audio effects append after the instrument, MIDI effects and instruments insert at the head — since Live enforces MIDI effects then instrument then audio effects.
 </ParamField>
 
 ### `stock locate`
@@ -146,7 +146,7 @@ List (and filter) Ableton Live 12 Suite factory Core Library content — instrum
 
 ### `browse_stock_sounds`
 
-Depth-1 browse of the offline Core Library folder tree, like a file browser one level at a time. Live-independent (same cached index as list_stock_sounds). Pass a relative folder path (forward-slash separated) to list its immediate sub-folders and leaf items; omit path (or pass empty) for the top level. Each entry is either a folder (is_folder=true — drill in by passing its path) or an item (is_folder=false, with the full stock item for loading). Returns an empty list for an unknown or leaf path.
+Depth-1 browse of the offline Core Library folder tree, like a file browser one level at a time. Live-independent (same cached index as list_stock_sounds). Pass a relative folder path (forward-slash separated) to list its immediate sub-folders and leaf items; omit path (or pass empty) for the top level. Each entry is either a folder (is_folder=true — drill in by passing its path) or an item (is_folder=false, with the full stock item for loading). Returns an empty list for a real but childless leaf path; errors (STOCK_PATH_NOT_FOUND) for a path that isn't a prefix of any item — try list_stock_sounds/show_stock_sound to find a real one.
 
 ```json
 {
@@ -163,7 +163,7 @@ Depth-1 browse of the offline Core Library folder tree, like a file browser one 
 
 ### `show_stock_sound`
 
-Show one Core Library item by its exact relative path (as returned by list_stock_sounds / browse_stock_sounds): name, category, kind, device class, and the derived load URI. Offline and Live-independent. Errors (STOCK_ITEM_NOT_FOUND) when no item matches the path exactly.
+Show one Core Library item by its exact relative path OR its unique Name — the column list_stock_sounds/browse_stock_sounds lead with (#219): name, category, kind, device class, and the derived load URI. Offline and Live-independent. Resolution: an exact path always wins; else a case-insensitive Name match resolves if unique. Errors (STOCK_ITEM_AMBIGUOUS) when the Name matches more than one item — the message lists every matching path so you can retry with one; errors (STOCK_ITEM_NOT_FOUND) when nothing matches at all.
 
 ```json
 {
@@ -175,7 +175,7 @@ Show one Core Library item by its exact relative path (as returned by list_stock
 ```
 
 <ParamField path="path" type="String" required>
-  Exact relative path of the item, e.g. 'Devices/Instruments/Operator/Bass/Analog Bass.adv'.
+  Exact relative path OR unique Name of the item, e.g. 'Devices/Instruments/Operator/Bass/Analog Bass.adv' or 'Analog Bass'.
 </ParamField>
 
 ### `refresh_stock_library`
@@ -213,7 +213,7 @@ Load a Core Library item onto a track by its relative path. Unlike the discovery
   Exact relative path of the item to load (from list_stock_sounds / browse_stock_sounds / show_stock_sound).
 </ParamField>
 <ParamField path="position" type="String">
-  Insert position in the device chain (1-based: 1 = first slot; omit to append at the end)
+  Insert position in device chain (1-based: 1 = first slot). Omit to let Vibrai pick a valid slot for the device family — audio effects append after the instrument, MIDI effects and instruments insert at the head — since Live enforces MIDI effects then instrument then audio effects.
 </ParamField>
 
 ### `locate_stock_library`
