@@ -4,6 +4,51 @@ description: "New features, improvements, and fixes in Vibrai."
 rss: true
 ---
 
+<Update label="1.6.0" description="August 5, 2026">
+  Vibrai used to assume every song was in 4/4. It doesn't any more — and you can now shape a sound directly, instead of only automating it.
+
+  ## Songs that aren't in 4/4
+
+  Tell Vibrai the meter when you start a project:
+
+  ```bash
+  vibrai project init --time-signature 7/8
+  ```
+
+  Leave it out and Vibrai follows whatever Live's transport says, exactly as before. A real time signature now runs through the whole engine, so 3/4 and 6/8 stay different things rather than both becoming "three beats a bar" — bar lengths, clip lengths and arrangement placement all follow the meter you asked for.
+
+  ## Shape a sound, don't just automate it
+
+  Automation moves a control over time. Sometimes you just want the filter *set* where you want it. Three new pairs do that:
+
+  ```bash
+  vibrai device set-param 2 "Auto Filter" Frequency 0.5
+  vibrai device set-param 2 "Auto Filter" "Filter Type" Band-pass
+  ```
+
+  Enum controls read back by their real names — `Band-pass`, not `4`. `vibrai automation params <track> <device>` lists everything a device exposes, `vibrai device apply-params` sets several at once, and `vibrai device set-state` bypasses or re-enables a device. All three have MCP twins: `set_device_param`, `apply_device_params`, `set_device_state`.
+
+  ## Wizards that actually run
+
+  The first-song and setup flows now execute on both the MCP server and the CLI, instead of being instructions you follow by hand.
+
+  ## Also new
+
+  - **Generate can create missing tracks.** If a project references a track that isn't in your set any more, `vibrai generate --create-missing-tracks` makes it instead of failing. Without the flag you now get a clear error naming the missing tracks *before* anything is written, rather than a half-finished set.
+  - **Clips report whether they're playing.** `vibrai clip get` and `clip list` carry `is_triggered` (queued, counting in) and `is_playing` (actually sounding).
+  - **`vibrai stock show` accepts the name you can see** in `stock list`, not just an exact path.
+
+  ## Fixed
+
+  - Notes written past the end of a clip are now **refused**, naming the clip length and which notes are out of range. Before, they were silently mangled and reported as a success.
+  - Audio effects load at the **end** of the device chain, where you'd put them — not in front of your instrument.
+  - `capture_project` no longer fails on any set containing a Wavetable.
+  - Claude Desktop no longer runs out of memory during long sessions.
+  - Commands that can't do anything useful with your input now say so instead of exiting quietly.
+  - `genre` help examples are quoted properly, so pasting one works.
+  - `uninstall --help` describes what it actually removes by default.
+</Update>
+
 <Update label="1.5.0" description="August 3, 2026">
   You can mix your set, colour it, and change a single note — three things Vibrai simply could not do before.
 
