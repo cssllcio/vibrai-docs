@@ -26,7 +26,7 @@ vibrai arrangement get-clips <track>
 Place a session-view clip into the arrangement
 
 ```bash
-vibrai arrangement place <track> <scene> <start> --no-carry-envelopes --force
+vibrai arrangement place <track> <scene> <start> --no-carry-envelopes --force --project <PATH>
 ```
 
 <ParamField path="track" required>
@@ -43,6 +43,9 @@ vibrai arrangement place <track> <scene> <start> --no-carry-envelopes --force
 </ParamField>
 <ParamField path="--force">
   Allow envelope carry even when existing destination-track automation would be clobbered
+</ParamField>
+<ParamField path="--project">
+  Path to the .vibrai file whose declared meter governs the placed clip's length (default: the project in the CWD when present, else Live's transport meter)
 </ParamField>
 
 ### `arrangement set-props`
@@ -134,7 +137,8 @@ Copy the session-view clip at (track, source_scene) into the arrangement on the 
     "source_scene": "<String>",
     "start_beat": "<String>",
     "carry_envelopes": "<Boolean>",
-    "force": "<Boolean>"
+    "force": "<Boolean>",
+    "project_path": "<String>"
   }
 }
 ```
@@ -153,6 +157,9 @@ Copy the session-view clip at (track, source_scene) into the arrangement on the 
 </ParamField>
 <ParamField path="force" type="Boolean">
   Allow envelope carry even when existing track-lane automation would be clobbered (default: false).
+</ParamField>
+<ParamField path="project_path" type="String">
+  Path to the .vibrai file whose declared meter should govern the placed clip's length. Omitted: the default project in the CWD is consulted when present, otherwise Live's transport meter is used.
 </ParamField>
 
 ### `delete_arrangement_clip`

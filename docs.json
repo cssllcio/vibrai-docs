@@ -61,7 +61,8 @@
           "reference/uninstall",
           "reference/session",
           "reference/skill-package",
-          "reference/docs"
+          "reference/docs",
+          "reference/onboarding"
         ]
       },
       {

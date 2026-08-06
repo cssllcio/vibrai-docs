@@ -14,7 +14,7 @@ Initialize, load, save, and inspect Vibrai project files.
 Initialize a new .vibrai project file
 
 ```bash
-vibrai project init --name <NAME> --project <PATH> --demo --genre <NAME> --preset <PRESET> --number-tracks --force
+vibrai project init --name <NAME> --project <PATH> --demo --genre <NAME> --preset <PRESET> --number-tracks --force --time-signature <VALUE>
 ```
 
 <ParamField path="--name">
@@ -37,6 +37,9 @@ vibrai project init --name <NAME> --project <PATH> --demo --genre <NAME> --prese
 </ParamField>
 <ParamField path="--force">
   Overwrite the file at --project if it already exists (without this, init refuses rather than destroying an existing project)
+</ParamField>
+<ParamField path="--time-signature">
+  Project time signature, e.g. "7/8". Omit to leave it undeclared, in which case Vibrai follows Live's transport. Values are numerator/denominator; numerator 1-99, denominator one of 1, 2, 4, 8, 16.
 </ParamField>
 
 ### `project load`
@@ -80,7 +83,7 @@ vibrai project info --project <PATH>
 Edit persisted project preferences (e.g. --number-tracks)
 
 ```bash
-vibrai project config --project <PATH> --number-tracks <BOOL>
+vibrai project config --project <PATH> --number-tracks <BOOL> --time-signature <VALUE>
 ```
 
 <ParamField path="--project">
@@ -88,6 +91,9 @@ vibrai project config --project <PATH> --number-tracks <BOOL>
 </ParamField>
 <ParamField path="--number-tracks">
   Persist Ableton '#' track auto-numbering: true or false.
+</ParamField>
+<ParamField path="--time-signature">
+  Project time signature, e.g. "7/8".
 </ParamField>
 
 ### `project clear`
@@ -116,7 +122,8 @@ Create a new .vibrai YAML file at the given absolute path. Without `demo`, write
     "name": "<String>",
     "demo": "<Boolean>",
     "number_tracks": "<Boolean>",
-    "force": "<Boolean>"
+    "force": "<Boolean>",
+    "time_signature": "<String>"
   }
 }
 ```
@@ -135,6 +142,9 @@ Create a new .vibrai YAML file at the given absolute path. Without `demo`, write
 </ParamField>
 <ParamField path="force" type="Boolean">
   Overwrite an existing file at `path`. Without this, init refuses rather than destroying an existing project.
+</ParamField>
+<ParamField path="time_signature" type="String">
+  Project time signature, e.g. "7/8". Omit to leave it undeclared, in which case Vibrai follows Live's transport. Values are numerator/denominator; numerator 1-99, denominator one of 1, 2, 4, 8, 16.
 </ParamField>
 
 ### `load_project`
@@ -194,14 +204,15 @@ Return a summary of the project (counts of sections, parts, templates) at the gi
 
 ### `configure_project`
 
-Edit project-level preferences in an existing .vibrai file. Currently: number_tracks (persist Ableton '#' track auto-numbering). Loads, updates project.defaults, and saves. Errors if the file is missing.
+Edit project-level preferences in an existing .vibrai file. Currently: number_tracks (persist Ableton '#' track auto-numbering) and time_signature. Loads, updates project.defaults / project.meta, and saves. Pass at least one of number_tracks or time_signature. Errors if the file is missing.
 
 ```json
 {
   "tool": "configure_project",
   "arguments": {
     "path": "<String>",
-    "number_tracks": "<Boolean>"
+    "number_tracks": "<Nullable`1>",
+    "time_signature": "<String>"
   }
 }
 ```
@@ -209,8 +220,11 @@ Edit project-level preferences in an existing .vibrai file. Currently: number_tr
 <ParamField path="path" type="String" required>
   Absolute filesystem path to the .vibrai file.
 </ParamField>
-<ParamField path="number_tracks" type="Boolean" required>
-  Persist Ableton '#' track auto-numbering (true) or disable it (false).
+<ParamField path="number_tracks" type="Nullable`1">
+  Persist Ableton '#' track auto-numbering (true) or disable it (false). Omit to leave unchanged.
+</ParamField>
+<ParamField path="time_signature" type="String">
+  Project time signature, e.g. "7/8". Omit to leave unchanged.
 </ParamField>
 
 ### `clear_project`

@@ -1,17 +1,17 @@
 ---
 title: "Uninstall"
-description: "Remove Vibrai's program files, and optionally app data, Ableton integration, and the Claude Desktop MCP registration. Program-files removal is CLI-only — it requires root, which the MCP server has no way to obtain (no TTY, no sudo prompt); the MCP tool covers every other scope with full parity."
+description: "Remove Vibrai's program files, and by default the Claude Desktop registration and installed Agent Skills (retain either with --keep-claude-desktop-entry / --keep-agent-skills). App data and the Ableton integration are kept unless you pass --purge-data / --remove-ableton. Program-files removal is CLI-only — it requires root, which the MCP server has no way to obtain (no TTY, no sudo prompt); the MCP tool covers every other scope with full parity."
 ---
 
 {/* GENERATED — do not edit by hand. Regenerate with `npm run generate:reference`. */}
 
-Remove Vibrai's program files, and optionally app data, Ableton integration, and the Claude Desktop MCP registration. Program-files removal is CLI-only — it requires root, which the MCP server has no way to obtain (no TTY, no sudo prompt); the MCP tool covers every other scope with full parity.
+Remove Vibrai's program files, and by default the Claude Desktop registration and installed Agent Skills (retain either with --keep-claude-desktop-entry / --keep-agent-skills). App data and the Ableton integration are kept unless you pass --purge-data / --remove-ableton. Program-files removal is CLI-only — it requires root, which the MCP server has no way to obtain (no TTY, no sudo prompt); the MCP tool covers every other scope with full parity.
 
 ## Command line
 
 ### `uninstall`
 
-Remove Vibrai's program files, and optionally app data, Ableton integration, and the Claude Desktop registration
+Remove Vibrai's program files, and by default the Claude Desktop registration and installed Agent Skills (retain either with --keep-claude-desktop-entry / --keep-agent-skills). App data and the Ableton integration are kept unless you pass --purge-data / --remove-ableton.
 
 ```bash
 vibrai uninstall --purge-data --remove-ableton --keep-claude-desktop-entry --keep-agent-skills --yes --dry-run --user <NAME> --program-files-only
@@ -24,10 +24,10 @@ vibrai uninstall --purge-data --remove-ableton --keep-claude-desktop-entry --kee
   Also remove the Ableton M4L device and Python remote script.
 </ParamField>
 <ParamField path="--keep-claude-desktop-entry">
-  Skip removing the vibrai entry from Claude Desktop's config.
+  Retain the vibrai entry in Claude Desktop's config (removed by default).
 </ParamField>
 <ParamField path="--keep-agent-skills">
-  Skip removing installed Vibrai Agent Skills from coding-agent config dirs.
+  Retain installed Vibrai Agent Skills in coding-agent config dirs (removed by default).
 </ParamField>
 <ParamField path="--yes">
   Skip the confirmation prompt (required for non-interactive use).
@@ -46,7 +46,7 @@ vibrai uninstall --purge-data --remove-ableton --keep-claude-desktop-entry --kee
 
 ### `uninstall`
 
-Remove Vibrai's app data, installed Agent Skills (from coding-agent config dirs, removed by default unless keepAgentSkills=true), Ableton integration (M4L device + remote script), and/or its Claude Desktop MCP registration. Does NOT remove the installed CLI/MCP program files (/usr/local/bin/vibrai, /usr/local/lib/vibrai) — that requires root and must be run from a terminal via `vibrai uninstall`. Call with confirm=false first to preview what would be removed; call again with confirm=true to actually remove it.
+Remove Vibrai's by-default Claude Desktop MCP registration and installed Agent Skills (from coding-agent config dirs); optionally also app data and/or Ableton integration (M4L device + remote script). Claude Desktop and Agent Skills are removed by default — use keepClaudeDesktopEntry and keepAgentSkills to retain either. App data (~/Library/Application Support/Vibrai) and Ableton integration are kept by default unless purgeData=true and/or removeAbleton=true. Does NOT remove the installed CLI/MCP program files (/usr/local/bin/vibrai, /usr/local/lib/vibrai) — that requires root and must be run from a terminal via `vibrai uninstall`. Call with confirm=false first to preview what would be removed; call again with confirm=true to actually remove it.
 
 ```json
 {
@@ -65,14 +65,14 @@ Remove Vibrai's app data, installed Agent Skills (from coding-agent config dirs,
   Actually perform the removal. Default false returns a preview plan only.
 </ParamField>
 <ParamField path="purge_data" type="Boolean">
-  Also remove ~/Library/Application Support/Vibrai (license, sessions, cache). Default false.
+  Also remove ~/Library/Application Support/Vibrai (license, sessions, cache). Default false (kept by default).
 </ParamField>
 <ParamField path="remove_ableton" type="Boolean">
-  Also remove the Ableton M4L device and Python remote script. Default false.
+  Also remove the Ableton M4L device and Python remote script. Default false (kept by default).
 </ParamField>
 <ParamField path="keep_claude_desktop_entry" type="Boolean">
-  Skip removing the vibrai entry from Claude Desktop's config. Default false (entry IS removed).
+  Retain the vibrai entry in Claude Desktop's config. Default false (entry IS removed by default).
 </ParamField>
 <ParamField path="keep_agent_skills" type="Boolean">
-  Skip removing installed Vibrai Agent Skills from coding-agent config dirs. Default false (skills ARE removed).
+  Retain installed Vibrai Agent Skills in coding-agent config dirs. Default false (skills ARE removed by default).
 </ParamField>
