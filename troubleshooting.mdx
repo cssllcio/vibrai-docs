@@ -72,7 +72,7 @@ description: "Common issues and fixes."
   </Accordion>
 
   <Accordion title="Track IDs shifted after reordering tracks in Live">
-    Positional track IDs (`id` in `list_tracks`) are 0-based indices that can shift when you reorder, add, or delete tracks. Re-run `vibrai track list` (or call `list_tracks` via MCP) after any reorder to get current IDs.
+    Positional track IDs (`id` in `list_tracks`) are **1-based** and can shift when you reorder, add, or delete tracks. Re-run `vibrai track list` (or call `list_tracks` via MCP) after any reorder to get current IDs. Note that audio tracks, return tracks, and the master all count toward the numbering, so track 1 may not be a MIDI track.
 
     For multi-step workflows that operate on the same track over time, use `liveset_id` (returned by `list_tracks`). It is stable within one Live session — it survives reorders, renames, and inserts. Pass it with `--liveset-id` on `track rename` and `track delete`, or as `liveset_id` on the MCP equivalents.
   </Accordion>
@@ -97,6 +97,38 @@ description: "Common issues and fixes."
     ```
 
     From MCP, the guided `generate` flow loads instruments for you; to load defaults onto a set that already has clips, call `load_default_instruments`. If a drum rack loads but stays silent, see the kit note above.
+  </Accordion>
+
+  <Accordion title="You saved the file but Live looks the same">
+    Saving a `.vibrai` file — by hand, via `vibrai project save`, or by applying a genre preset — only writes to disk. Nothing reaches Live until you render:
+
+    ```bash
+    vibrai generate --project my-song.vibrai --force --with-instruments
+    ```
+
+    From MCP, call `generate`. This split is deliberate: the file is the source of truth, and rendering is the step that overwrites what is in your set.
+  </Accordion>
+
+  <Accordion title="You sent a message but nothing happened in Live">
+    The Max for Live device sometimes needs a moment to initialize fully, especially right after opening a set. In Live, click the device's title bar and choose **Reload Device**, then try again.
+
+    If it still does nothing, confirm the device is on the current set's track and its Active toggle (the power button in the device header) is on.
+  </Accordion>
+
+  <Accordion title="Scale set fails with an out-of-range root note">
+    `vibrai scale set` takes a pitch class from `0` to `11` — `0`=C, `1`=C#, `2`=D, `3`=D#, `4`=E, `5`=F, `6`=F#, `7`=G, `8`=G#, `9`=A, `10`=A#, `11`=B. Anything higher exits immediately with an argument-validation error (exit code 255).
+
+    Valid scale names: `Major`, `Ionian`, `Dorian`, `Phrygian`, `Lydian`, `Mixolydian`, `Minor`, `Aeolian`, `Locrian`.
+  </Accordion>
+
+  <Accordion title="An AI assistant keeps editing the wrong track">
+    Say which track you mean, by name rather than by position:
+
+    ```
+    Work on the bass track, not the drums.
+    ```
+
+    Better still, give it a map first: `List the tracks in this set, then add a hi-hat pattern to the drum track.` See [MCP Overview](/mcp/overview) for more prompting guidance.
   </Accordion>
 
   <Accordion title="Features are disabled or a trial/license banner appears">

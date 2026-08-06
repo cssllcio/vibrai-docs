@@ -7,6 +7,16 @@ Vibrai is an engine that gives you programmatic control over Ableton Live: track
 
 Two equal surfaces expose the same engine. The **CLI** (`vibrai`) is scriptable, deterministic, and pipe-friendly. The **MCP server** lets an AI assistant like Claude drive Live in plain language while you watch. Both surfaces share the same bridge, the same project files, and the same underlying operations — so you can generate a song through Claude, then iterate on it from the terminal, or vice versa.
 
+## Which surface should you use?
+
+|  | CLI (`vibrai …`) | AI assistant (MCP) |
+|---|---|---|
+| **Best for** | Knowing exactly what you want to do | Exploring ideas, letting Vibrai surprise you |
+| **How you talk to it** | Typed commands | Plain-English chat |
+| **Scriptable** | Yes — put commands in a shell script | Not directly |
+
+Use the CLI when you want predictable, repeatable results. Use an AI assistant when you want to say "make me something lo-fi and chill" and see what happens. You can mix both freely in one session: generate a song with the assistant, capture it to a file from the terminal, then iterate on the file with commands.
+
 <CardGroup cols={2}>
   <Card title="Quickstart" icon="rocket" href="/quickstart">
     From zero to a generated arrangement in under five minutes, shown both ways.
