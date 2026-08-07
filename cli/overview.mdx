@@ -41,9 +41,7 @@ vibrai > transport set-tempo 120
 vibrai > exit
 ```
 
-<Note>
-`shell` is intercepted before the command parser, so it does not appear in the generated Reference section or in `vibrai llms` output. `vibrai shell --help` is the authority on it.
-</Note>
+Inside the prompt, `exit` and `quit` both leave, `help` prints the command tree, and `version` prints the CLI version. Every other line is dispatched as if you had typed `vibrai ` in front of it.
 
 ## Global flags
 
