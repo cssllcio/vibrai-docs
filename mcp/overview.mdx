@@ -56,12 +56,137 @@ If an LLM sends camelCase keys (for example `trackId` instead of `track_id`), th
 The fastest way to hear Vibrai in action through MCP is the first-song wizard:
 
 ```
-Build a lofi-house song, medium length.
+Build me a lofi-house song.
 ```
 
-The assistant calls `start_first_song(vibe="lofi-house", length="medium")`, which returns a step-by-step recipe. It then executes the recipe: Claude assembles a complete project and saves it, then loads instruments, generates the parts, and starts playback. A full arrangement appears in Live in about 30–60 seconds.
+The assistant calls `start_first_song(vibe="lofi-house")`. A full arrangement appears in Live in about 30–60 seconds.
 
-Supported vibes: `ambient-techno` (default), `lofi-house`, `deep-house`, `ambient-downtempo`, `minimal-techno`.
+Supported vibes: `ambient-techno`, `lofi-house`, `deep-house`, `ambient-downtempo`, `minimal-techno`. Each maps to a verified genre and preset pair.
+
+<Note>
+**The wizard executes; it does not hand back a script.** It drives the engine directly and returns one structured result — mint the project, render it, start playback — not a recipe for the assistant to replay as further tool calls. If a step comes back with `action: "load_device_failed"`, that track has no instrument and will play silently, even though the run still reports `completed`.
+</Note>
+
+An option the wizard can't resolve — an omitted vibe, an ambiguous preset, or a Live set that already holds MIDI tracks — comes back as `outcome: "needs_input"` with the valid choices listed. That is not an error: present the choices and call the tool again with the value filled in.
+
+## Things you can ask for
+
+You don't need any special syntax. Describe what you want. These are copy-and-paste starting points.
+
+<AccordionGroup>
+  <Accordion title="Start a new idea">
+    ```
+    Make me a 60-second ambient techno loop.
+    ```
+
+    Generates a complete loop with drums, pads, and bass in an ambient techno style.
+  </Accordion>
+
+  <Accordion title="Demo it without any of your own instrument packs">
+    ```
+    Apply the techno genre to a new project called demo.vibrai, then generate it
+    using only stock content — no third-party packs.
+    ```
+
+    Applies a genre preset, then renders instruments from Ableton's own Core Library only, skipping any tagged presets or `defaults.instruments` overrides in the file. Useful for demos, testing, or any machine without extra sound packs.
+
+    Under the hood that is `apply_genre` with `confirm: true`, then `generate` with `with_instruments: true` and `stock_only: true`. Every one of the 14 built-in genres ships its own stock-instrument picks — see [Concepts](/concepts) for the resolution order.
+  </Accordion>
+
+  <Accordion title="Add or change a part">
+    ```
+    Add a bass line that sticks to the root notes.
+    ```
+
+    Creates a new bass track with a minimal, root-note pattern.
+
+    ```
+    Now write a melody on top — high-register, sparse.
+    ```
+
+    Adds a lead melody on a new or existing track.
+  </Accordion>
+
+  <Accordion title="Shape an arrangement">
+    ```
+    Make the drums more sparse in the breakdown.
+    ```
+
+    Thins out the drum pattern in whatever section you call the breakdown.
+
+    ```
+    Build out a full structure: intro, verse, chorus, verse, outro.
+    ```
+
+    Scaffolds a complete arrangement across multiple scenes.
+  </Accordion>
+
+  <Accordion title="Understand what's there">
+    ```
+    What's the current tempo and scale?
+    ```
+
+    Reports the BPM and the key and scale Live is set to.
+
+    ```
+    List the tracks in this set.
+    ```
+
+    Worth doing before making edits, so the assistant knows exactly what it is working with.
+  </Accordion>
+
+  <Accordion title="Save your work">
+    ```
+    Save this as my-track.vibrai on the desktop.
+    ```
+
+    Writes your project to a file you can reopen, share, or regenerate later.
+
+    ```
+    Capture what I have here into a project file.
+    ```
+
+    Reads your existing Live set — whatever you built by hand — and saves it as a Vibrai project.
+  </Accordion>
+
+  <Accordion title="Turn a set you like into a reusable genre">
+    ```
+    Extract a genre called "My Style" from this set.
+    ```
+
+    Reads the open Live set — tempo, scale, instruments, arrangement — and saves its character as a new genre you can apply to future projects. Ask for "faithful" mode if you want the actual riffs embedded, not just the style.
+  </Accordion>
+
+  <Accordion title="Navigate and play">
+    ```
+    Move the playhead to bar 33.
+    ```
+
+    Jumps the transport to that position.
+
+    ```
+    Stop playback.
+    ```
+
+    Stops everything.
+  </Accordion>
+</AccordionGroup>
+
+## Getting better results
+
+**Name the section you mean.** Instead of "change the second part," say "in the breakdown" or "in the chorus." The assistant works better with named sections.
+
+**Name the instrument.** "Bass," "drums," "lead," and "pads" are all clear. "The thing on track 3" is harder to act on — if you're not sure what's there, ask it to list the tracks.
+
+**Say keys and scales the way you'd say them out loud.** "F minor," "C major," and "D Dorian" all work. You don't need numbers.
+
+**Undo is always available.** Everything Vibrai writes to Live is a normal edit, the same as dragging MIDI notes in by hand. Press `Cmd+Z` in Live to undo anything you don't like.
+
+**If the assistant keeps picking the wrong track,** give it a map before it starts:
+
+```
+List the tracks in this set, then add a hi-hat pattern to the drum track.
+```
 
 ## Reference pages
 

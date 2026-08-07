@@ -29,6 +29,22 @@ Commands are organized into **branches** (subcommand groups) and a few top-level
 
 Run `vibrai --help` to see the full tree. Run `vibrai <branch> --help` for subcommand detail. See the **[Reference](/reference/transport)** section for the complete branch list and every flag, argument, and example.
 
+## Interactive shell
+
+Running many commands in a row? `vibrai shell` opens a prompt where you type commands without the `vibrai` prefix, and without paying process startup for each one.
+
+```
+$ vibrai shell
+vibrai shell — type exit or quit to exit
+vibrai > track list
+vibrai > transport set-tempo 120
+vibrai > exit
+```
+
+<Note>
+`shell` is intercepted before the command parser, so it does not appear in the generated Reference section or in `vibrai llms` output. `vibrai shell --help` is the authority on it.
+</Note>
+
 ## Global flags
 
 These flags work on every command. `--url`, `--log-level`, and `--log-file` are pre-parsed and may appear before the subcommand name. `--json` must appear after the subcommand.
@@ -39,6 +55,12 @@ These flags work on every command. `--url`, `--log-level`, and `--log-file` are 
 | `--json` | — | off | Emit JSON instead of formatted tables |
 | `--log-level <level>` | — | `Warning` | `Verbose` / `Debug` / `Information` / `Warning` / `Error` |
 | `--log-file <path>` | — | (none) | Write a rolling log to a file |
+
+The flag is `--url`, not `--bridge-url`. Set `VIBRAI_URL` once to avoid repeating it:
+
+```bash
+export VIBRAI_URL=http://192.168.1.10:3333
+```
 
 ```bash
 # Non-default bridge
