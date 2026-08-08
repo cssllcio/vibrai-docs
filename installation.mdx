@@ -69,7 +69,7 @@ Claude Desktop installs the extension and restarts. The `vibrai.amxd` device is 
   actually landed.
 </Note>
 
-**Manual registration (Claude Code, Cursor, or any MCP client):**
+**Manual registration (Cursor, or any MCP client that reads a JSON config):**
 
 Point the MCP client config at the MCP server binary the installer placed on disk:
 
@@ -88,6 +88,16 @@ Point the MCP client config at the MCP server binary the installer placed on dis
 ```
 
 The config file lives at `~/Library/Application Support/Claude/claude_desktop_config.json` on macOS and `%APPDATA%\Claude\claude_desktop_config.json` on Windows. Restart the client after editing.
+
+**Claude Code:**
+
+Claude Code does not read `claude_desktop_config.json`. Register the server with its own CLI:
+
+```bash
+claude mcp add vibrai /usr/local/lib/vibrai/Vibrai.Mcp
+```
+
+If you installed the Vibrai Claude Code plugin, it already registers a bundled copy of the MCP server — skip this step, or you will end up with two `vibrai` entries pointing at different binaries.
 
 **Environment variables:**
 
