@@ -27,7 +27,7 @@ description: "Install the Vibrai CLI and connect the MCP server."
     The installer:
 
     - puts the `vibrai` CLI on your `PATH` at `/usr/local/bin/vibrai`,
-    - installs the MCP server and drops the Claude Desktop bundle at `/usr/local/lib/vibrai/Vibrai.mcpb` (no separate download),
+    - installs the MCP server and deploys its Claude Desktop bundle to your Ableton **User Library**, then opens a Finder window with it selected (no separate download),
     - copies the `vibrai.amxd` device into your Ableton **User Library**,
     - installs the Python remote script.
 
@@ -44,13 +44,30 @@ The MCP server (`Vibrai.Mcp`) runs as a subprocess launched by your MCP client. 
 
 **Claude Desktop (.mcpb bundle — recommended):**
 
-On macOS the package installer already put the bundle on disk — there is **no separate download from vibrai.com**. It lives at `/usr/local/lib/vibrai/Vibrai.mcpb`.
+On macOS the package installer already put the bundle on disk — there is **no separate download from vibrai.com**. It deploys to your Ableton User Library, at `~/Music/Ableton/User Library/Vibrai/Vibrai.mcpb`, and the installer opens a Finder window with it selected when it finishes.
 
-1. In Finder, press **⌘⇧G** and enter `/usr/local/lib/vibrai/` to reveal the bundle.
+1. Find the Finder window the installer opened. It may be **behind** the installer window, so check your other windows if you don't see it.
 2. Open Claude Desktop → **Settings** → **Extensions**.
-3. Drag `Vibrai.mcpb` into the Extensions panel.
+3. Drag `Vibrai.mcpb` from that Finder window into the Extensions panel.
 
 Claude Desktop installs the extension and restarts. The `vibrai.amxd` device is already in your Ableton User Library (the installer put it there) — just drag it onto a track (see below).
+
+<Tip>
+  Closed the window, or coming back to this later? Reopen it any time:
+
+  ```bash
+  vibrai install claude-extension --reveal
+  ```
+
+  From an MCP client, ask Claude to run `install_claude_extension` with `reveal: true`.
+</Tip>
+
+<Note>
+  **If you moved your Ableton User Library** from its default location, Vibrai reads
+  Live's own configuration and deploys there instead — so the path above may differ on
+  your machine. `vibrai install claude-extension --json` reports where the bundle
+  actually landed.
+</Note>
 
 **Manual registration (Claude Code, Cursor, or any MCP client):**
 
@@ -241,22 +258,33 @@ Vibrai ships a first-class uninstaller on both surfaces. It previews what will b
 
     </CodeGroup>
 
-    By default `vibrai uninstall` removes the **program files** (`/usr/local/bin/vibrai`, `/usr/local/lib/vibrai`) and deregisters the `vibrai` entry from Claude Desktop's config. Removing program files needs root, so the command re-runs itself under `sudo` and may prompt for your password. Your **license, session history, and the Ableton device** are left in place unless you opt in with the flags below.
+    By default `vibrai uninstall` removes the **program files** (`/usr/local/bin/vibrai`, `/usr/local/lib/vibrai`), deregisters the `vibrai` entry from Claude Desktop's config, and removes the deployed Claude Desktop bundle (`Vibrai.mcpb`) from your Ableton User Library. Removing program files needs root, so the command re-runs itself under `sudo` and may prompt for your password. Your **license, session history, and the Ableton device** are left in place unless you opt in with the flags below.
 
     | Flag | Effect |
     |------|--------|
     | `--purge-data` | Also remove `~/Library/Application Support/Vibrai` (license, sessions, cache) |
     | `--remove-ableton` | Also remove the Max for Live device and Python remote script |
     | `--keep-claude-desktop-entry` | Leave the `vibrai` entry in Claude Desktop's config in place |
+    | `--keep-claude-extension` | Leave the deployed `Vibrai.mcpb` bundle in your Ableton User Library |
     | `-y`, `--yes` | Skip the confirmation prompt (required for non-interactive use) |
     | `--dry-run` | Print what would be removed and exit without removing anything |
+
+    <Note>
+      Uninstall removes the `Vibrai.mcpb` **file** only. If you keep your own presets in
+      `~/Music/Ableton/User Library/Vibrai/`, they are left untouched — the folder itself
+      is removed only if uninstalling empties it.
+    </Note>
 
     <Accordion title="Manual removal (fallback)">
       If you can't run the CLI, remove the files by hand:
 
       ```bash
-      # CLI, MCP server, and Claude Desktop bundle
+      # CLI, MCP server, and the staged Claude Desktop bundle
       sudo rm -rf /usr/local/lib/vibrai /usr/local/bin/vibrai
+
+      # Deployed Claude Desktop bundle (the file only — leave the folder alone
+      # if you keep your own presets in it)
+      rm -f ~/Music/Ableton/User\ Library/Vibrai/Vibrai.mcpb
 
       # Max for Live device
       rm -rf ~/Music/Ableton/User\ Library/Presets/Audio\ Effects/Max\ Audio\ Effect/vibrai
