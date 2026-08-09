@@ -18,10 +18,10 @@ vibrai project init --name <NAME> --project <PATH> --demo --genre <NAME> --prese
 ```
 
 <ParamField path="--name">
-  Project name (default: basename of --project, or "Untitled")
+  Project name (default: basename of --project, i.e. the current directory name)
 </ParamField>
 <ParamField path="--project">
-  Path to .vibrai file (default: Untitled.vibrai in CWD; auto-uniquified to Untitled-2.vibrai, etc. if it already exists)
+  Path to .vibrai file (default: &lt;current-directory-name>.vibrai in the working directory; auto-uniquified to &lt;name>-2.vibrai, etc. if it already exists)
 </ParamField>
 <ParamField path="--demo">
   Write opinionated demo content (3 sections, 2 parts, exercises variation + scale overrides + naming) instead of the boilerplate
@@ -51,7 +51,7 @@ vibrai project load --project <PATH>
 ```
 
 <ParamField path="--project">
-  Path to .vibrai file (default: Untitled.vibrai in CWD)
+  Path to the .vibrai file (default: &lt;current-directory-name>.vibrai in the working directory)
 </ParamField>
 
 ### `project save`
@@ -63,7 +63,7 @@ vibrai project save --project <PATH>
 ```
 
 <ParamField path="--project">
-  Path to .vibrai file (default: Untitled.vibrai in CWD)
+  Path to the .vibrai file (default: &lt;current-directory-name>.vibrai in the working directory)
 </ParamField>
 
 ### `project info`
@@ -75,7 +75,7 @@ vibrai project info --project <PATH>
 ```
 
 <ParamField path="--project">
-  Path to .vibrai file (default: Untitled.vibrai in CWD)
+  Path to the .vibrai file (default: &lt;current-directory-name>.vibrai in the working directory)
 </ParamField>
 
 ### `project config`
@@ -87,7 +87,7 @@ vibrai project config --project <PATH> --number-tracks <BOOL> --time-signature <
 ```
 
 <ParamField path="--project">
-  Path to .vibrai file (default: Untitled.vibrai in CWD)
+  Path to the .vibrai file (default: &lt;current-directory-name>.vibrai in the working directory)
 </ParamField>
 <ParamField path="--number-tracks">
   Persist Ableton '#' track auto-numbering: true or false.
@@ -187,7 +187,7 @@ Save a VibraiProject (same shape as load_project's return value) to the given ab
 
 ### `project_info`
 
-Return a summary of the project (counts of sections, parts, templates) at the given path.
+Return a summary of the project (counts of sections, parts, templates, and a `scale` block: root/name for what a fresh render targets, source_root/source_name for what the underlying genre data was authored in — null on hand-authored/pre-v5 projects) at the given path.
 
 ```json
 {

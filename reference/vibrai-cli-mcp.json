@@ -1,6 +1,6 @@
 {
   "engine_version": "1.6.0.0",
-  "generated_at": "2026-08-06T00:39:31Z",
+  "generated_at": "2026-08-09T01:48:42Z",
   "features": [
     {
       "id": "transport",
@@ -291,6 +291,37 @@
               }
             ],
             "options": []
+          },
+          {
+            "name": "track auto-number",
+            "description": "Turn Ableton\u0027s \u0027#\u0027 track auto-numbering on or off across the open set",
+            "arguments": [
+              {
+                "name": "state",
+                "required": true,
+                "description": "on or off"
+              }
+            ],
+            "options": [
+              {
+                "name": "--persist",
+                "value_name": null,
+                "default": null,
+                "description": "Also record the choice in the project\u0027s defaults.number_tracks, so a later generate/track create inherits it. Implies --write-project."
+              },
+              {
+                "name": "--write-project",
+                "value_name": null,
+                "default": null,
+                "description": "Write the .vibrai file to disk."
+              },
+              {
+                "name": "--project",
+                "value_name": "PATH",
+                "default": null,
+                "description": "Path to the .vibrai file (default: \u003Ccurrent-directory-name\u003E.vibrai in the working directory). Only read or written when --persist or --write-project is given."
+              }
+            ]
           }
         ]
       },
@@ -374,6 +405,36 @@
             ]
           },
           {
+            "name": "set_track_auto_numbering",
+            "description": "Turn Ableton\u0027s \u0027#\u0027 track auto-numbering on or off across every track in the open set. This is a one-shot sweep, not a mode: it renames the tracks that are there now and does not change what a later generate/create_track does. Turning it off strips a leading number only when it matches the track\u0027s own position, so a track genuinely named \u0027808 Bass\u0027 is left alone. Reversible by calling again with the opposite value. CLI equivalent: vibrai track auto-number on|off.",
+            "parameters": [
+              {
+                "name": "enabled",
+                "type": "Boolean",
+                "required": true,
+                "description": "true numbers the tracks, false removes the numbering."
+              },
+              {
+                "name": "persist",
+                "type": "Boolean",
+                "required": false,
+                "description": "Also record the choice in the project\u0027s defaults.number_tracks so a later generate inherits it. Implies write_project."
+              },
+              {
+                "name": "write_project",
+                "type": "Boolean",
+                "required": false,
+                "description": "Write the .vibrai file to disk."
+              },
+              {
+                "name": "project_path",
+                "type": "String",
+                "required": false,
+                "description": "Path to the .vibrai file (defaults to \u003Ccurrent-directory-name\u003E.vibrai in the working directory when omitted). Only read or written when persist or write_project is set."
+              }
+            ]
+          },
+          {
             "name": "get_track_mixer",
             "description": "Read a track\u0027s mixer state: volume (both dB and Live\u0027s raw 0.0-1.0), pan, mute, solo, arm, and every send with its return-track name. Address the track by its liveset_id handle from list_tracks (e.g. trk_42).",
             "parameters": [
@@ -453,7 +514,7 @@
                 "name": "project_path",
                 "type": "String",
                 "required": false,
-                "description": "Path to the .vibrai project to bind part types against (defaults to Untitled.vibrai in the working directory). When no project is found, binding falls back to track-name hints and says so."
+                "description": "Path to the .vibrai project to bind part types against (defaults to \u003Ccurrent-directory-name\u003E.vibrai in the working directory). When no project is found, binding falls back to track-name hints and says so."
               }
             ]
           },
@@ -553,7 +614,7 @@
                 "name": "--project",
                 "value_name": "PATH",
                 "default": null,
-                "description": "Path to the .vibrai project to bind part types against (defaults to Untitled.vibrai in the working directory). Without one, binding falls back to track-name hints."
+                "description": "Path to the .vibrai file (default: \u003Ccurrent-directory-name\u003E.vibrai in the working directory). Without one, binding falls back to track-name hints."
               }
             ]
           }
@@ -641,7 +702,7 @@
                 "name": "project_path",
                 "type": "String",
                 "required": false,
-                "description": "Path to the .vibrai project to bind part types against (defaults to Untitled.vibrai in the working directory). When no project is found, binding falls back to track-name hints and says so."
+                "description": "Path to the .vibrai project to bind part types against (defaults to \u003Ccurrent-directory-name\u003E.vibrai in the working directory). When no project is found, binding falls back to track-name hints and says so."
               }
             ]
           },
@@ -749,7 +810,7 @@
                 "name": "--project",
                 "value_name": "PATH",
                 "default": null,
-                "description": "Resolve genre-aware defaults against this .vibrai file (defaults to Untitled.vibrai in CWD)"
+                "description": "Resolve genre-aware defaults against this .vibrai file (default: \u003Ccurrent-directory-name\u003E.vibrai in the working directory)"
               },
               {
                 "name": "--stock-only",
@@ -997,7 +1058,7 @@
                 "name": "project_path",
                 "type": "String",
                 "required": false,
-                "description": "Path to a .vibrai file to resolve genre-aware defaults against (defaults to Untitled.vibrai in CWD)"
+                "description": "Path to a .vibrai file to resolve genre-aware defaults against (defaults to \u003Ccurrent-directory-name\u003E.vibrai in the working directory)"
               },
               {
                 "name": "stock_only",
@@ -1015,7 +1076,7 @@
                 "name": "project_path",
                 "type": "String",
                 "required": false,
-                "description": "Path to the .vibrai file (defaults to Untitled.vibrai in CWD when omitted)"
+                "description": "Path to the .vibrai file (defaults to \u003Ccurrent-directory-name\u003E.vibrai in the working directory when omitted)"
               },
               {
                 "name": "stock_only",
@@ -1358,7 +1419,7 @@
                 "name": "--project",
                 "value_name": "PATH",
                 "default": null,
-                "description": "Path to the .vibrai file (defaults to Untitled.vibrai in CWD)"
+                "description": "Path to the .vibrai file (default: \u003Ccurrent-directory-name\u003E.vibrai in the working directory)"
               }
             ]
           },
@@ -1377,7 +1438,7 @@
                 "name": "--project",
                 "value_name": "PATH",
                 "default": null,
-                "description": "Path to the .vibrai file (defaults to Untitled.vibrai in CWD)"
+                "description": "Path to the .vibrai file (default: \u003Ccurrent-directory-name\u003E.vibrai in the working directory)"
               }
             ]
           },
@@ -1396,7 +1457,7 @@
                 "name": "--project",
                 "value_name": "PATH",
                 "default": null,
-                "description": "Path to the .vibrai file (defaults to Untitled.vibrai in CWD)"
+                "description": "Path to the .vibrai file (default: \u003Ccurrent-directory-name\u003E.vibrai in the working directory)"
               }
             ]
           },
@@ -1421,7 +1482,7 @@
                 "name": "--project",
                 "value_name": "PATH",
                 "default": null,
-                "description": "Path to the .vibrai file (defaults to Untitled.vibrai in CWD)"
+                "description": "Path to the .vibrai file (default: \u003Ccurrent-directory-name\u003E.vibrai in the working directory)"
               }
             ]
           }
@@ -1437,7 +1498,7 @@
                 "name": "project_path",
                 "type": "String",
                 "required": false,
-                "description": "Path to the .vibrai file (defaults to Untitled.vibrai in CWD when omitted)"
+                "description": "Path to the .vibrai file (defaults to \u003Ccurrent-directory-name\u003E.vibrai in the working directory when omitted)"
               }
             ]
           },
@@ -1455,7 +1516,7 @@
                 "name": "project_path",
                 "type": "String",
                 "required": false,
-                "description": "Path to the .vibrai file (defaults to Untitled.vibrai in CWD when omitted)"
+                "description": "Path to the .vibrai file (defaults to \u003Ccurrent-directory-name\u003E.vibrai in the working directory when omitted)"
               }
             ]
           },
@@ -1473,7 +1534,7 @@
                 "name": "project_path",
                 "type": "String",
                 "required": false,
-                "description": "Path to the .vibrai file (defaults to Untitled.vibrai in CWD when omitted)"
+                "description": "Path to the .vibrai file (defaults to \u003Ccurrent-directory-name\u003E.vibrai in the working directory when omitted)"
               }
             ]
           },
@@ -1485,7 +1546,7 @@
                 "name": "project_path",
                 "type": "String",
                 "required": false,
-                "description": "Path to the .vibrai file (defaults to Untitled.vibrai in CWD when omitted)"
+                "description": "Path to the .vibrai file (defaults to \u003Ccurrent-directory-name\u003E.vibrai in the working directory when omitted)"
               },
               {
                 "name": "tracks",
@@ -2913,7 +2974,7 @@
                 "name": "--project",
                 "value_name": "PATH",
                 "default": null,
-                "description": "Path to .vibrai file (default: Untitled.vibrai in CWD)"
+                "description": "Path to the .vibrai file (default: \u003Ccurrent-directory-name\u003E.vibrai in the working directory)"
               },
               {
                 "name": "--in-memory",
@@ -2968,6 +3029,25 @@
                 "value_name": null,
                 "default": null,
                 "description": "Also push the applied slots into the running Live set via the safe bouncer. Requires an existing populated arrangement; slots without a clip at the section are skipped."
+              }
+            ]
+          },
+          {
+            "name": "automation render",
+            "description": "Apply the project composition\u0027s arrangement automation to the already-rendered Live set. Run after generate (and after instruments are loaded). Re-plans from the .vibrai; pass the same --seed generate used.",
+            "arguments": [],
+            "options": [
+              {
+                "name": "--project",
+                "value_name": "PATH",
+                "default": null,
+                "description": "Path to .vibrai file (default: Untitled.vibrai in CWD)"
+              },
+              {
+                "name": "--seed",
+                "value_name": "VALUE",
+                "default": null,
+                "description": "Override the project\u0027s T2mHash seed for this run. Pass the same value generate used, or the re-planned composition may not match what was rendered."
               }
             ]
           }
@@ -3198,6 +3278,24 @@
             ]
           },
           {
+            "name": "render_automation",
+            "description": "Apply the project composition\u0027s arrangement automation to the already-rendered Live set. Run this AFTER generate, and after the parts\u0027 instruments are loaded \u2014 automation resolves against the live device tree, so a deviceless track can only be skipped. Re-plans the composition from the .vibrai (PlanComposition is deterministic given project \u002B seed \u002B meter), so pass the same seed generate used. Automates clips that EXIST; it never creates them. A planned placement with no arrangement clip under it is reported as a skip, not bounced. Never throws on an unresolvable target: each is reported in skipped_entries with the slot, the parameter, and why it could not land. Each skipped entry carries live_track_id \u2014 the 1-based live address matching list_tracks and load_device, or null when the part bound to no live track; use that, not track_id, if you need an address to pass to another tool. If the bounce deletes arrangement clips it cannot restore, the top-level data_loss field carries a plain-language alarm and rollback_failures names the clips \u2014 check data_loss before treating a run as successful. Arrangement automation is bounced and not directly LOM-readable \u2014 verify with get_automation, which merges the write ledger, and save the set (Cmd-S) so the ledger persists. The CLI sibling is \u0060vibrai automation render\u0060.",
+            "parameters": [
+              {
+                "name": "path",
+                "type": "String",
+                "required": true,
+                "description": "Absolute filesystem path to the .vibrai file."
+              },
+              {
+                "name": "seed",
+                "type": "Nullable\u00601",
+                "required": false,
+                "description": "Optional seed override. Pass the same value generate used, or the re-planned composition may not match what was rendered."
+              }
+            ]
+          },
+          {
             "name": "list_automation_slots",
             "description": "Enumerate the symbolic automation slots supported for a PartType. Returns a list of {slot_key, target_kind, target_details, description}. target_kind is \u0022device_param\u0022 or \u0022macro\u0022. Macro slots resolve at bounce-time; device_param slots resolve to a fixed (device_index, param_name) pair. Returns an empty list for PartTypes with no entries (e.g. Bd, Sd, Hh).",
             "parameters": [
@@ -3228,13 +3326,13 @@
                 "name": "--name",
                 "value_name": "NAME",
                 "default": null,
-                "description": "Project name (default: basename of --project, or \u0022Untitled\u0022)"
+                "description": "Project name (default: basename of --project, i.e. the current directory name)"
               },
               {
                 "name": "--project",
                 "value_name": "PATH",
                 "default": null,
-                "description": "Path to .vibrai file (default: Untitled.vibrai in CWD; auto-uniquified to Untitled-2.vibrai, etc. if it already exists)"
+                "description": "Path to .vibrai file (default: \u003Ccurrent-directory-name\u003E.vibrai in the working directory; auto-uniquified to \u003Cname\u003E-2.vibrai, etc. if it already exists)"
               },
               {
                 "name": "--demo",
@@ -3283,7 +3381,7 @@
                 "name": "--project",
                 "value_name": "PATH",
                 "default": null,
-                "description": "Path to .vibrai file (default: Untitled.vibrai in CWD)"
+                "description": "Path to the .vibrai file (default: \u003Ccurrent-directory-name\u003E.vibrai in the working directory)"
               }
             ]
           },
@@ -3296,7 +3394,7 @@
                 "name": "--project",
                 "value_name": "PATH",
                 "default": null,
-                "description": "Path to .vibrai file (default: Untitled.vibrai in CWD)"
+                "description": "Path to the .vibrai file (default: \u003Ccurrent-directory-name\u003E.vibrai in the working directory)"
               }
             ]
           },
@@ -3309,7 +3407,7 @@
                 "name": "--project",
                 "value_name": "PATH",
                 "default": null,
-                "description": "Path to .vibrai file (default: Untitled.vibrai in CWD)"
+                "description": "Path to the .vibrai file (default: \u003Ccurrent-directory-name\u003E.vibrai in the working directory)"
               }
             ]
           },
@@ -3322,7 +3420,7 @@
                 "name": "--project",
                 "value_name": "PATH",
                 "default": null,
-                "description": "Path to .vibrai file (default: Untitled.vibrai in CWD)"
+                "description": "Path to the .vibrai file (default: \u003Ccurrent-directory-name\u003E.vibrai in the working directory)"
               },
               {
                 "name": "--number-tracks",
@@ -3429,7 +3527,7 @@
           },
           {
             "name": "project_info",
-            "description": "Return a summary of the project (counts of sections, parts, templates) at the given path.",
+            "description": "Return a summary of the project (counts of sections, parts, templates, and a \u0060scale\u0060 block: root/name for what a fresh render targets, source_root/source_name for what the underlying genre data was authored in \u2014 null on hand-authored/pre-v5 projects) at the given path.",
             "parameters": [
               {
                 "name": "path",
@@ -3751,7 +3849,7 @@
               {
                 "name": "project",
                 "required": false,
-                "description": "Path to the .vibrai file (defaults to Untitled.vibrai in CWD)."
+                "description": "Path to the .vibrai file (default: \u003Ccurrent-directory-name\u003E.vibrai in the working directory)"
               }
             ],
             "options": [
@@ -3781,7 +3879,7 @@
                 "name": "project_path",
                 "type": "String",
                 "required": false,
-                "description": "Path to the .vibrai file (defaults to Untitled.vibrai in CWD when omitted)"
+                "description": "Path to the .vibrai file (defaults to \u003Ccurrent-directory-name\u003E.vibrai in the working directory when omitted)"
               },
               {
                 "name": "loop",
@@ -3797,6 +3895,25 @@
             "parameters": []
           }
         ]
+      }
+    },
+    {
+      "id": "shell",
+      "title": "Shell",
+      "description": "Interactive prompt for running many commands in a row.",
+      "cli": {
+        "branch": "shell",
+        "commands": [
+          {
+            "name": "shell",
+            "description": "Open an interactive prompt that runs vibrai commands without the \u0027vibrai\u0027 prefix",
+            "arguments": [],
+            "options": []
+          }
+        ]
+      },
+      "mcp": {
+        "tools": []
       }
     },
     {
@@ -4111,7 +4228,7 @@
               {
                 "name": "project-path",
                 "required": false,
-                "description": "Path to .vibrai (default: ./project.vibrai)"
+                "description": "Path to the .vibrai file (default: \u003Ccurrent-directory-name\u003E.vibrai in the working directory)"
               }
             ],
             "options": [
@@ -4144,6 +4261,18 @@
                 "value_name": null,
                 "default": null,
                 "description": "Persist \u0027#\u0027 track auto-numbering as OFF in the project (overrides env / an existing setting)."
+              },
+              {
+                "name": "--scale-root",
+                "value_name": "NOTE",
+                "default": null,
+                "description": "Target scale root: note name (C, C#, Db, \u2026, B) or pitch class 0\u201311. Omit to use the genre\u0027s own default scale."
+              },
+              {
+                "name": "--scale-name",
+                "value_name": "MODE",
+                "default": null,
+                "description": "Target scale: Major, Ionian, Dorian, Phrygian, Lydian, Mixolydian, Minor, Aeolian, Locrian. Omit to use the genre\u0027s own default scale."
               }
             ]
           },
@@ -4256,6 +4385,18 @@
                 "type": "Nullable\u00601",
                 "required": false,
                 "description": "Persist Ableton \u0027#\u0027 track auto-numbering into the project. Null preserves the existing project\u0027s setting."
+              },
+              {
+                "name": "scale_root_note",
+                "type": "String",
+                "required": false,
+                "description": "Optional target scale root: note name (C, C#, Db, \u2026, B) or pitch class 0\u201311. Omit to use the genre\u0027s own default scale."
+              },
+              {
+                "name": "scale_name",
+                "type": "String",
+                "required": false,
+                "description": "Optional target scale: Major, Ionian, Dorian, Phrygian, Lydian, Mixolydian, Minor, Aeolian, Locrian. Omit to use the genre\u0027s own default scale."
               }
             ]
           },
@@ -4455,7 +4596,7 @@
     {
       "id": "install",
       "title": "Install",
-      "description": "Install the Vibrai M4L device, Python remote script, and Ableton templates.",
+      "description": "Install the Vibrai device, remote script, Ableton templates, and Claude Desktop extension bundle.",
       "cli": {
         "branch": "install",
         "commands": [
@@ -4547,8 +4688,45 @@
             ]
           },
           {
+            "name": "install claude-extension",
+            "description": "Deploy the Claude Desktop extension bundle (Vibrai.mcpb) into Live\u0027s User Library, where you can find it in Finder",
+            "arguments": [],
+            "options": [
+              {
+                "name": "--reveal",
+                "value_name": null,
+                "default": null,
+                "description": "Open a Finder window with the deployed Vibrai.mcpb selected, ready to drag into Claude Desktop \u2192 Settings \u2192 Extensions."
+              },
+              {
+                "name": "--force",
+                "value_name": null,
+                "default": null,
+                "description": "Overwrite an existing install whose files differ from the source."
+              },
+              {
+                "name": "--source",
+                "value_name": "PATH",
+                "default": null,
+                "description": "[advanced] Override the source directory (test/debug use)."
+              },
+              {
+                "name": "--dest",
+                "value_name": "PATH",
+                "default": null,
+                "description": "[advanced] Override the destination directory (test/debug use)."
+              },
+              {
+                "name": "--user",
+                "value_name": "NAME",
+                "default": null,
+                "description": "Install into \u003Cname\u003E\u0027s home directory instead of the current user\u0027s. Used by the macOS .pkg postinstall to deposit files into the real installing user\u0027s Ableton User Library when running as root."
+              }
+            ]
+          },
+          {
             "name": "install all",
-            "description": "Install the M4L device, the Python remote script, and the Ableton templates",
+            "description": "Install the M4L device, the Python remote script, the Ableton templates, and the Claude Desktop extension bundle",
             "arguments": [],
             "options": [
               {
@@ -4562,6 +4740,12 @@
                 "value_name": "NAME",
                 "default": null,
                 "description": "Install into \u003Cname\u003E\u0027s home directory instead of the current user\u0027s. Used by the macOS .pkg postinstall to deposit files into the real installing user\u0027s Ableton User Library when running as root."
+              },
+              {
+                "name": "--reveal",
+                "value_name": null,
+                "default": null,
+                "description": "Open a Finder window with the deployed Vibrai.mcpb selected. Used by the macOS .pkg postinstall so the bundle is waiting for the user when the installer finishes."
               }
             ]
           }
@@ -4636,14 +4820,50 @@
             ]
           },
           {
+            "name": "install_claude_extension",
+            "description": "Deploy the Claude Desktop extension bundle (Vibrai.mcpb) from Vibrai\u0027s program directory into the user\u0027s Ableton User Library at \u0027User Library/Vibrai/Vibrai.mcpb\u0027, where it is visible in Finder \u2014 the program directory (/usr/local/lib/vibrai) is hidden by default on macOS. Pass reveal=true to also open a Finder window with the bundle selected, ready to drag into Claude Desktop \u2192 Settings \u2192 Extensions. By default refuses to overwrite a deployed bundle that differs from the source \u2014 pass force=true to clobber. Returns status Installed | AlreadyUpToDate | SkippedNoSource; SkippedNoSource is NOT an error \u2014 it means no .mcpb was built for this platform (Windows never produces one) or this is a dev tree. Installing the bundle into Claude Desktop is still a manual drag; this tool only makes the file findable.",
+            "parameters": [
+              {
+                "name": "force",
+                "type": "Boolean",
+                "required": false,
+                "description": "Overwrite a deployed bundle that differs from the source (default false)"
+              },
+              {
+                "name": "reveal",
+                "type": "Boolean",
+                "required": false,
+                "description": "Open a Finder window with the deployed bundle selected (default false, macOS only)"
+              },
+              {
+                "name": "source_override",
+                "type": "String",
+                "required": false,
+                "description": "[advanced] Test-only override for the source directory"
+              },
+              {
+                "name": "dest_override",
+                "type": "String",
+                "required": false,
+                "description": "[advanced] Test-only override for the destination directory"
+              }
+            ]
+          },
+          {
             "name": "install_all",
-            "description": "Install the Max-for-Live device, Python remote script, and Ableton templates in one call \u2014 equivalent to install_device \u002B install_vibrai_remote_script \u002B install_templates run in sequence. Stops at the first failure (each step must succeed before the next runs). Templates always overwrite regardless of force. Returns per-target results (device, remote_script, templates).",
+            "description": "Install the Max-for-Live device, Python remote script, Ableton templates, and Claude Desktop extension bundle in one call \u2014 equivalent to install_device \u002B install_vibrai_remote_script \u002B install_templates \u002B install_claude_extension run in sequence. Stops at the first failure (each step must succeed before the next runs). Templates always overwrite regardless of force. The Claude Desktop bundle reports SkippedNoSource when no .mcpb exists for this platform, which is not a failure. Returns per-target results (device, remote_script, templates, claude_extension).",
             "parameters": [
               {
                 "name": "force",
                 "type": "Boolean",
                 "required": false,
                 "description": "Overwrite existing device/remote-script installs whose files differ from the source (default false). Templates always overwrite regardless of this flag."
+              },
+              {
+                "name": "reveal",
+                "type": "Boolean",
+                "required": false,
+                "description": "Open a Finder window with the deployed Claude Desktop bundle selected (default false, macOS only)"
               }
             ]
           }
@@ -4666,7 +4886,7 @@
                 "name": "--project",
                 "value_name": "PATH",
                 "default": null,
-                "description": "Path to .vibrai file (default: Untitled.vibrai in CWD)"
+                "description": "Path to the .vibrai file (default: \u003Ccurrent-directory-name\u003E.vibrai in the working directory)"
               },
               {
                 "name": "--force",
@@ -4696,13 +4916,19 @@
                 "name": "--allow-skip",
                 "value_name": null,
                 "default": null,
-                "description": "Continue when arrangement-automation entries cannot be resolved; default fails fast."
+                "description": "Deprecated and ignored. Automation no longer fails a render; unresolvable entries are always reported as skips."
               },
               {
                 "name": "--with-instruments",
                 "value_name": null,
                 "default": null,
                 "description": "After rendering, load each part\u0027s default instrument (drum kits for drum parts) so the song is audible."
+              },
+              {
+                "name": "--with-automation",
+                "value_name": null,
+                "default": null,
+                "description": "After rendering (and after --with-instruments, if passed), apply the composition\u0027s arrangement automation. Off by default: automation resolves against the live device tree, so it needs instruments already loaded. Never fatal - unresolvable targets are reported and the render still succeeds."
               },
               {
                 "name": "--stock-only",
@@ -4783,6 +5009,18 @@
                 "description": "Emit Live\u0027s per-note probability/velocity-deviation instead of baking randomization in. The loop then varies on every playback, but the audible result is no longer reproducible from the seed. Omit to inherit the genre\u0027s setting."
               },
               {
+                "name": "--scale-root",
+                "value_name": "NOTE",
+                "default": null,
+                "description": "Target scale root: note name (C, C#, Db, \u2026, B) or pitch class 0\u201311. Omit to use the project\u0027s own default scale (tiebroken by the open Live set only when the project is still at its untouched preset default)."
+              },
+              {
+                "name": "--scale-name",
+                "value_name": "MODE",
+                "default": null,
+                "description": "Target scale: Major, Ionian, Dorian, Phrygian, Lydian, Mixolydian, Minor, Aeolian, Locrian. Omit to use the project\u0027s own default scale (tiebroken by the open Live set only when the project is still at its untouched preset default)."
+              },
+              {
                 "name": "--number-tracks",
                 "value_name": null,
                 "default": null,
@@ -4805,7 +5043,7 @@
                 "name": "--project",
                 "value_name": "PATH",
                 "default": null,
-                "description": "Path to .vibrai file (default: Untitled.vibrai in CWD)"
+                "description": "Path to the .vibrai file (default: \u003Ccurrent-directory-name\u003E.vibrai in the working directory)"
               },
               {
                 "name": "--seed",
@@ -4866,6 +5104,18 @@
                 "value_name": null,
                 "default": null,
                 "description": "Emit Live\u0027s per-note probability/velocity-deviation instead of baking randomization in. The loop then varies on every playback, but the audible result is no longer reproducible from the seed. Omit to inherit the genre\u0027s setting."
+              },
+              {
+                "name": "--scale-root",
+                "value_name": "NOTE",
+                "default": null,
+                "description": "Target scale root: note name (C, C#, Db, \u2026, B) or pitch class 0\u201311. Omit to use the project\u0027s own default scale (tiebroken by the open Live set only when the project is still at its untouched preset default)."
+              },
+              {
+                "name": "--scale-name",
+                "value_name": "MODE",
+                "default": null,
+                "description": "Target scale: Major, Ionian, Dorian, Phrygian, Lydian, Mixolydian, Minor, Aeolian, Locrian. Omit to use the project\u0027s own default scale (tiebroken by the open Live set only when the project is still at its untouched preset default)."
               }
             ]
           }
@@ -4881,7 +5131,7 @@
                 "name": "project_path",
                 "type": "String",
                 "required": false,
-                "description": "Path to the .vibrai file (defaults to Untitled.vibrai in CWD when omitted)"
+                "description": "Path to the .vibrai file (defaults to \u003Ccurrent-directory-name\u003E.vibrai in the working directory when omitted)"
               },
               {
                 "name": "seed",
@@ -4942,18 +5192,30 @@
                 "type": "String",
                 "required": false,
                 "description": "How the bass sits against the kick: lock, dodge, free; overrides the genre default"
+              },
+              {
+                "name": "scale_root_note",
+                "type": "String",
+                "required": false,
+                "description": "Optional target scale root: note name (C, C#, Db, \u2026, B) or pitch class 0\u201311. Omit to use the project\u0027s own default scale (tiebroken by the open Live set only when the project is still at its untouched preset default)."
+              },
+              {
+                "name": "scale_name",
+                "type": "String",
+                "required": false,
+                "description": "Optional target scale: Major, Ionian, Dorian, Phrygian, Lydian, Mixolydian, Minor, Aeolian, Locrian. Omit to use the project\u0027s own default scale (tiebroken by the open Live set only when the project is still at its untouched preset default)."
               }
             ]
           },
           {
             "name": "generate",
-            "description": "Plan \u002B render a composition into Live\u0027s session view and arrangement view. To preview the result without writing to Live, use the \u0027plan\u0027 tool first. force=true is required only when append re-renders onto an existing part track whose target slots are non-empty; replace implies consent and never requires force. By default, fails fast when any ArrangementAutomationEntry cannot be resolved against the live device tree; pass allow_skip=true to log warnings and continue. Track ids in the summary (session_clips, arrangement_placements, instruments, current_tracks) are 1-based, matching list_tracks and load_device. Call \u0060get_skill\u0060 first to load the Vibrai operational playbook.",
+            "description": "Plan \u002B render a composition into Live\u0027s session view and arrangement view. To preview the result without writing to Live, use the \u0027plan\u0027 tool first. force=true is required only when append re-renders onto an existing part track whose target slots are non-empty; replace implies consent and never requires force. Automation is not applied by default \u2014 the composition\u0027s planned entries are reported and applied by render_automation (or by passing with_automation=true). Track ids in the summary (session_clips, arrangement_placements, instruments, current_tracks) are 1-based, matching list_tracks and load_device. The ONE exception is automation.skipped_entries[].track_id, which is the project\u0027s own part id echoed back for diagnosis \u2014 use that entry\u0027s live_track_id (1-based, null when the part bound to no live track) if you need an address to pass to another tool. Call \u0060get_skill\u0060 first to load the Vibrai operational playbook.",
             "parameters": [
               {
                 "name": "project_path",
                 "type": "String",
                 "required": false,
-                "description": "Path to the .vibrai file (defaults to Untitled.vibrai in CWD when omitted)"
+                "description": "Path to the .vibrai file (defaults to \u003Ccurrent-directory-name\u003E.vibrai in the working directory when omitted)"
               },
               {
                 "name": "force",
@@ -4965,13 +5227,19 @@
                 "name": "allow_skip",
                 "type": "Boolean",
                 "required": false,
-                "description": "Continue when arrangement-automation entries cannot be resolved; default fails fast."
+                "description": "Deprecated and ignored. Automation no longer fails a render; unresolvable entries are always reported as skips."
               },
               {
                 "name": "with_instruments",
                 "type": "Boolean",
                 "required": false,
                 "description": "After rendering, load each part\u0027s default instrument (drum kits for drum parts) so the song is audible."
+              },
+              {
+                "name": "with_automation",
+                "type": "Boolean",
+                "required": false,
+                "description": "After rendering (and after with_instruments, if set), apply the composition\u0027s arrangement automation. Default false: automation resolves against the live device tree, so it needs instruments already loaded. Never fatal \u2014 unresolvable targets are reported and the render still succeeds. Equivalent to calling render_automation immediately after. Check the top-level data_loss field afterwards."
               },
               {
                 "name": "stock_only",
@@ -5068,6 +5336,18 @@
                 "type": "Boolean",
                 "required": false,
                 "description": "When a part is bound to a track_id (project init / capture) that no longer exists in the Live set, create it (name from the part, MIDI type) instead of failing. Default false: such a project fails validation up front, naming the missing track_id(s), before anything is written."
+              },
+              {
+                "name": "scale_root_note",
+                "type": "String",
+                "required": false,
+                "description": "Optional target scale root: note name (C, C#, Db, \u2026, B) or pitch class 0\u201311. Omit to use the project\u0027s own default scale (tiebroken by the open Live set only when the project is still at its untouched preset default)."
+              },
+              {
+                "name": "scale_name",
+                "type": "String",
+                "required": false,
+                "description": "Optional target scale: Major, Ionian, Dorian, Phrygian, Lydian, Mixolydian, Minor, Aeolian, Locrian. Omit to use the project\u0027s own default scale (tiebroken by the open Live set only when the project is still at its untouched preset default)."
               }
             ]
           }
@@ -5336,13 +5616,13 @@
     {
       "id": "uninstall",
       "title": "Uninstall",
-      "description": "Remove Vibrai\u0027s program files, and by default the Claude Desktop registration and installed Agent Skills (retain either with --keep-claude-desktop-entry / --keep-agent-skills). App data and the Ableton integration are kept unless you pass --purge-data / --remove-ableton. Program-files removal is CLI-only \u2014 it requires root, which the MCP server has no way to obtain (no TTY, no sudo prompt); the MCP tool covers every other scope with full parity.",
+      "description": "Remove Vibrai\u0027s program files, and by default the Claude Desktop registration, installed Agent Skills, and the deployed Claude Desktop bundle (Vibrai.mcpb in your Ableton User Library) (retain any of them with --keep-claude-desktop-entry / --keep-agent-skills / --keep-claude-extension). App data and the Ableton integration are kept unless you pass --purge-data / --remove-ableton. Program-files removal is CLI-only \u2014 it requires root, which the MCP server has no way to obtain (no TTY, no sudo prompt); the MCP tool covers every other scope with full parity.",
       "cli": {
         "branch": "uninstall",
         "commands": [
           {
             "name": "uninstall",
-            "description": "Remove Vibrai\u0027s program files, and by default the Claude Desktop registration and installed Agent Skills (retain either with --keep-claude-desktop-entry / --keep-agent-skills). App data and the Ableton integration are kept unless you pass --purge-data / --remove-ableton.",
+            "description": "Remove Vibrai\u0027s program files, and by default the Claude Desktop registration, installed Agent Skills, and the deployed Claude Desktop bundle (Vibrai.mcpb in your Ableton User Library) (retain any of them with --keep-claude-desktop-entry / --keep-agent-skills / --keep-claude-extension). App data and the Ableton integration are kept unless you pass --purge-data / --remove-ableton.",
             "arguments": [],
             "options": [
               {
@@ -5368,6 +5648,12 @@
                 "value_name": null,
                 "default": null,
                 "description": "Retain installed Vibrai Agent Skills in coding-agent config dirs (removed by default)."
+              },
+              {
+                "name": "--keep-claude-extension",
+                "value_name": null,
+                "default": null,
+                "description": "Keep the deployed Claude Desktop bundle (User Library/Vibrai/Vibrai.mcpb) instead of removing it."
               },
               {
                 "name": "--yes",
@@ -5401,7 +5687,7 @@
         "tools": [
           {
             "name": "uninstall",
-            "description": "Remove Vibrai\u0027s by-default Claude Desktop MCP registration and installed Agent Skills (from coding-agent config dirs); optionally also app data and/or Ableton integration (M4L device \u002B remote script). Claude Desktop and Agent Skills are removed by default \u2014 use keepClaudeDesktopEntry and keepAgentSkills to retain either. App data (~/Library/Application Support/Vibrai) and Ableton integration are kept by default unless purgeData=true and/or removeAbleton=true. Does NOT remove the installed CLI/MCP program files (/usr/local/bin/vibrai, /usr/local/lib/vibrai) \u2014 that requires root and must be run from a terminal via \u0060vibrai uninstall\u0060. Call with confirm=false first to preview what would be removed; call again with confirm=true to actually remove it.",
+            "description": "Remove Vibrai\u0027s by-default Claude Desktop MCP registration, installed Agent Skills (from coding-agent config dirs), and the deployed Claude Desktop bundle (User Library/Vibrai/Vibrai.mcpb); optionally also app data and/or Ableton integration (M4L device \u002B remote script). Claude Desktop, Agent Skills, and the Claude Desktop bundle are removed by default \u2014 use keepClaudeDesktopEntry, keepAgentSkills, and keepClaudeExtension to retain any of them. App data (~/Library/Application Support/Vibrai) and Ableton integration are kept by default unless purgeData=true and/or removeAbleton=true. Does NOT remove the installed CLI/MCP program files (/usr/local/bin/vibrai, /usr/local/lib/vibrai) \u2014 that requires root and must be run from a terminal via \u0060vibrai uninstall\u0060. Call with confirm=false first to preview what would be removed; call again with confirm=true to actually remove it.",
             "parameters": [
               {
                 "name": "confirm",
@@ -5432,6 +5718,12 @@
                 "type": "Boolean",
                 "required": false,
                 "description": "Retain installed Vibrai Agent Skills in coding-agent config dirs. Default false (skills ARE removed by default)."
+              },
+              {
+                "name": "keep_claude_extension",
+                "type": "Boolean",
+                "required": false,
+                "description": "Retain the deployed Claude Desktop bundle (User Library/Vibrai/Vibrai.mcpb). Default false (bundle IS removed by default)."
               }
             ]
           }
@@ -5784,6 +6076,18 @@
                 "value_name": null,
                 "default": null,
                 "description": "Prompt for a choice instead of exiting when input is needed"
+              },
+              {
+                "name": "--scale-root",
+                "value_name": "NOTE",
+                "default": null,
+                "description": "Target scale root: note name (C, C#, Db, \u2026, B) or pitch class 0\u201311. Omit to use the genre\u0027s own default scale."
+              },
+              {
+                "name": "--scale-name",
+                "value_name": "MODE",
+                "default": null,
+                "description": "Target scale: Major, Ionian, Dorian, Phrygian, Lydian, Mixolydian, Minor, Aeolian, Locrian. Omit to use the genre\u0027s own default scale."
               }
             ]
           }
@@ -5853,6 +6157,18 @@
                 "type": "String",
                 "required": false,
                 "description": "Optional. Directory the new .vibrai project file is minted into. Omit to use Vibrai\u0027s per-user data directory (always writable) rather than this process\u0027s working directory."
+              },
+              {
+                "name": "scale_root_note",
+                "type": "String",
+                "required": false,
+                "description": "Optional target scale root: note name (C, C#, Db, \u2026, B) or pitch class 0\u201311. Omit to use the genre\u0027s own default scale."
+              },
+              {
+                "name": "scale_name",
+                "type": "String",
+                "required": false,
+                "description": "Optional target scale: Major, Ionian, Dorian, Phrygian, Lydian, Mixolydian, Minor, Aeolian, Locrian. Omit to use the genre\u0027s own default scale."
               }
             ]
           }
@@ -5862,7 +6178,8 @@
   ],
   "unpaired": {
     "cli_only": [
-      "recipe"
+      "recipe",
+      "shell"
     ],
     "mcp_only": []
   }

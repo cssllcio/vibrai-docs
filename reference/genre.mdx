@@ -51,7 +51,7 @@ vibrai genre import-songsketch <json> --out <DIR>
 Apply a genre+preset to a .vibrai project
 
 ```bash
-vibrai genre apply [genre] [preset] [project-path] --genre <NAME> --preset <ID> --yes --number-tracks --no-number-tracks
+vibrai genre apply [genre] [preset] [project-path] --genre <NAME> --preset <ID> --yes --number-tracks --no-number-tracks --scale-root <NOTE> --scale-name <MODE>
 ```
 
 <ParamField path="genre">
@@ -61,7 +61,7 @@ vibrai genre apply [genre] [preset] [project-path] --genre <NAME> --preset <ID> 
   Preset id or display name within the genre (from 'vibrai genre presets &lt;genre>').
 </ParamField>
 <ParamField path="project-path">
-  Path to .vibrai (default: ./project.vibrai)
+  Path to the .vibrai file (default: &lt;current-directory-name>.vibrai in the working directory)
 </ParamField>
 <ParamField path="--genre">
   (deprecated) Use positional &lt;genre> instead. Will be removed in the next minor release.
@@ -77,6 +77,12 @@ vibrai genre apply [genre] [preset] [project-path] --genre <NAME> --preset <ID> 
 </ParamField>
 <ParamField path="--no-number-tracks">
   Persist '#' track auto-numbering as OFF in the project (overrides env / an existing setting).
+</ParamField>
+<ParamField path="--scale-root">
+  Target scale root: note name (C, C#, Db, …, B) or pitch class 0–11. Omit to use the genre's own default scale.
+</ParamField>
+<ParamField path="--scale-name">
+  Target scale: Major, Ionian, Dorian, Phrygian, Lydian, Mixolydian, Minor, Aeolian, Locrian. Omit to use the genre's own default scale.
 </ParamField>
 
 ### `genre extract`
@@ -156,7 +162,9 @@ Materialize a genre+preset into a .vibrai project at the given path. Destructive
     "preset": "<String>",
     "project_path": "<String>",
     "confirm": "<Boolean>",
-    "number_tracks": "<Nullable`1>"
+    "number_tracks": "<Nullable`1>",
+    "scale_root_note": "<String>",
+    "scale_name": "<String>"
   }
 }
 ```
@@ -175,6 +183,12 @@ Materialize a genre+preset into a .vibrai project at the given path. Destructive
 </ParamField>
 <ParamField path="number_tracks" type="Nullable`1">
   Persist Ableton '#' track auto-numbering into the project. Null preserves the existing project's setting.
+</ParamField>
+<ParamField path="scale_root_note" type="String">
+  Optional target scale root: note name (C, C#, Db, …, B) or pitch class 0–11. Omit to use the genre's own default scale.
+</ParamField>
+<ParamField path="scale_name" type="String">
+  Optional target scale: Major, Ionian, Dorian, Phrygian, Lydian, Mixolydian, Minor, Aeolian, Locrian. Omit to use the genre's own default scale.
 </ParamField>
 
 ### `extract_genre`

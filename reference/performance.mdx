@@ -18,7 +18,7 @@ vibrai play-song [project] --loop --stop
 ```
 
 <ParamField path="project">
-  Path to the .vibrai file (defaults to Untitled.vibrai in CWD).
+  Path to the .vibrai file (default: &lt;current-directory-name>.vibrai in the working directory)
 </ParamField>
 <ParamField path="--loop">
   Repeat the song until stopped (Ctrl-C).
@@ -44,7 +44,7 @@ Play the song by firing Session scenes in section order, advancing at each secti
 ```
 
 <ParamField path="project_path" type="String">
-  Path to the .vibrai file (defaults to Untitled.vibrai in CWD when omitted)
+  Path to the .vibrai file (defaults to &lt;current-directory-name>.vibrai in the working directory when omitted)
 </ParamField>
 <ParamField path="loop" type="Boolean">
   Repeat the song until stopped

@@ -31,7 +31,7 @@ vibrai mix apply --part <SPEC> --project <PATH>
   Mix entry as part_type=dB, optionally with pan and sends: pad=-12:pan=-0.3:send=A-Reverb=-9. Repeatable.
 </ParamField>
 <ParamField path="--project">
-  Path to the .vibrai project to bind part types against (defaults to Untitled.vibrai in the working directory). Without one, binding falls back to track-name hints.
+  Path to the .vibrai file (default: &lt;current-directory-name>.vibrai in the working directory). Without one, binding falls back to track-name hints.
 </ParamField>
 
 ## MCP tools
@@ -116,7 +116,7 @@ Apply a whole mix in one call, keyed by part type. Each entry is "part_type=dB" 
   Mix entries, e.g. ["bass=-6", "lead=-3", "pad=-12:send=A-Reverb=-9"].
 </ParamField>
 <ParamField path="project_path" type="String">
-  Path to the .vibrai project to bind part types against (defaults to Untitled.vibrai in the working directory). When no project is found, binding falls back to track-name hints and says so.
+  Path to the .vibrai project to bind part types against (defaults to &lt;current-directory-name>.vibrai in the working directory). When no project is found, binding falls back to track-name hints and says so.
 </ParamField>
 
 ### `list_returns`

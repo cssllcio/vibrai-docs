@@ -1,20 +1,20 @@
 ---
 title: "Uninstall"
-description: "Remove Vibrai's program files, and by default the Claude Desktop registration and installed Agent Skills (retain either with --keep-claude-desktop-entry / --keep-agent-skills). App data and the Ableton integration are kept unless you pass --purge-data / --remove-ableton. Program-files removal is CLI-only — it requires root, which the MCP server has no way to obtain (no TTY, no sudo prompt); the MCP tool covers every other scope with full parity."
+description: "Remove Vibrai's program files, and by default the Claude Desktop registration, installed Agent Skills, and the deployed Claude Desktop bundle (Vibrai.mcpb in your Ableton User Library) (retain any of them with --keep-claude-desktop-entry / --keep-agent-skills / --keep-claude-extension). App data and the Ableton integration are kept unless you pass --purge-data / --remove-ableton. Program-files removal is CLI-only — it requires root, which the MCP server has no way to obtain (no TTY, no sudo prompt); the MCP tool covers every other scope with full parity."
 ---
 
 {/* GENERATED — do not edit by hand. Regenerate with `npm run generate:reference`. */}
 
-Remove Vibrai's program files, and by default the Claude Desktop registration and installed Agent Skills (retain either with --keep-claude-desktop-entry / --keep-agent-skills). App data and the Ableton integration are kept unless you pass --purge-data / --remove-ableton. Program-files removal is CLI-only — it requires root, which the MCP server has no way to obtain (no TTY, no sudo prompt); the MCP tool covers every other scope with full parity.
+Remove Vibrai's program files, and by default the Claude Desktop registration, installed Agent Skills, and the deployed Claude Desktop bundle (Vibrai.mcpb in your Ableton User Library) (retain any of them with --keep-claude-desktop-entry / --keep-agent-skills / --keep-claude-extension). App data and the Ableton integration are kept unless you pass --purge-data / --remove-ableton. Program-files removal is CLI-only — it requires root, which the MCP server has no way to obtain (no TTY, no sudo prompt); the MCP tool covers every other scope with full parity.
 
 ## Command line
 
 ### `uninstall`
 
-Remove Vibrai's program files, and by default the Claude Desktop registration and installed Agent Skills (retain either with --keep-claude-desktop-entry / --keep-agent-skills). App data and the Ableton integration are kept unless you pass --purge-data / --remove-ableton.
+Remove Vibrai's program files, and by default the Claude Desktop registration, installed Agent Skills, and the deployed Claude Desktop bundle (Vibrai.mcpb in your Ableton User Library) (retain any of them with --keep-claude-desktop-entry / --keep-agent-skills / --keep-claude-extension). App data and the Ableton integration are kept unless you pass --purge-data / --remove-ableton.
 
 ```bash
-vibrai uninstall --purge-data --remove-ableton --keep-claude-desktop-entry --keep-agent-skills --yes --dry-run --user <NAME> --program-files-only
+vibrai uninstall --purge-data --remove-ableton --keep-claude-desktop-entry --keep-agent-skills --keep-claude-extension --yes --dry-run --user <NAME> --program-files-only
 ```
 
 <ParamField path="--purge-data">
@@ -28,6 +28,9 @@ vibrai uninstall --purge-data --remove-ableton --keep-claude-desktop-entry --kee
 </ParamField>
 <ParamField path="--keep-agent-skills">
   Retain installed Vibrai Agent Skills in coding-agent config dirs (removed by default).
+</ParamField>
+<ParamField path="--keep-claude-extension">
+  Keep the deployed Claude Desktop bundle (User Library/Vibrai/Vibrai.mcpb) instead of removing it.
 </ParamField>
 <ParamField path="--yes">
   Skip the confirmation prompt (required for non-interactive use).
@@ -46,7 +49,7 @@ vibrai uninstall --purge-data --remove-ableton --keep-claude-desktop-entry --kee
 
 ### `uninstall`
 
-Remove Vibrai's by-default Claude Desktop MCP registration and installed Agent Skills (from coding-agent config dirs); optionally also app data and/or Ableton integration (M4L device + remote script). Claude Desktop and Agent Skills are removed by default — use keepClaudeDesktopEntry and keepAgentSkills to retain either. App data (~/Library/Application Support/Vibrai) and Ableton integration are kept by default unless purgeData=true and/or removeAbleton=true. Does NOT remove the installed CLI/MCP program files (/usr/local/bin/vibrai, /usr/local/lib/vibrai) — that requires root and must be run from a terminal via `vibrai uninstall`. Call with confirm=false first to preview what would be removed; call again with confirm=true to actually remove it.
+Remove Vibrai's by-default Claude Desktop MCP registration, installed Agent Skills (from coding-agent config dirs), and the deployed Claude Desktop bundle (User Library/Vibrai/Vibrai.mcpb); optionally also app data and/or Ableton integration (M4L device + remote script). Claude Desktop, Agent Skills, and the Claude Desktop bundle are removed by default — use keepClaudeDesktopEntry, keepAgentSkills, and keepClaudeExtension to retain any of them. App data (~/Library/Application Support/Vibrai) and Ableton integration are kept by default unless purgeData=true and/or removeAbleton=true. Does NOT remove the installed CLI/MCP program files (/usr/local/bin/vibrai, /usr/local/lib/vibrai) — that requires root and must be run from a terminal via `vibrai uninstall`. Call with confirm=false first to preview what would be removed; call again with confirm=true to actually remove it.
 
 ```json
 {
@@ -56,7 +59,8 @@ Remove Vibrai's by-default Claude Desktop MCP registration and installed Agent S
     "purge_data": "<Boolean>",
     "remove_ableton": "<Boolean>",
     "keep_claude_desktop_entry": "<Boolean>",
-    "keep_agent_skills": "<Boolean>"
+    "keep_agent_skills": "<Boolean>",
+    "keep_claude_extension": "<Boolean>"
   }
 }
 ```
@@ -75,4 +79,7 @@ Remove Vibrai's by-default Claude Desktop MCP registration and installed Agent S
 </ParamField>
 <ParamField path="keep_agent_skills" type="Boolean">
   Retain installed Vibrai Agent Skills in coding-agent config dirs. Default false (skills ARE removed by default).
+</ParamField>
+<ParamField path="keep_claude_extension" type="Boolean">
+  Retain the deployed Claude Desktop bundle (User Library/Vibrai/Vibrai.mcpb). Default false (bundle IS removed by default).
 </ParamField>
