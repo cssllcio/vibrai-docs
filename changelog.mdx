@@ -4,6 +4,80 @@ description: "New features, improvements, and fixes in Vibrai."
 rss: true
 ---
 
+<Update label="1.6.1" description="August 8, 2026">
+  Ask for a key and actually get it, an install that no longer dead-ends in a hidden folder, and automation that runs once your instruments are loaded.
+
+  ## Ask for a key and get it
+
+  A genre preset used to decide the key for you. Now you can say what you want:
+
+  ```bash
+  vibrai genre apply techno hypnotic_1 --scale-root D --scale-name Dorian
+  ```
+
+  The same `--scale-root` / `--scale-name` pair works on `vibrai start genre-song`, `vibrai plan` and `vibrai generate`, and on their MCP twins `apply_genre`, `start_genre_song`, `plan` and `generate`. Vibrai re-keys the composition as it renders, in one pass — not by writing the preset's key and transposing afterwards.
+
+  Leave it out and nothing changes: the preset's own key wins. Vibrai only reads the key from your open Live set when nobody has chosen one, and parts or sections pinned to their own scale are never re-keyed.
+
+  Chords follow the mode now too. Vibrai's two chord banks were fixed to Aeolian and Ionian whatever you asked for, so a Dorian project got Aeolian harmony. Roots and thirds are now built from your project's own mode. Every shipped genre defaults to Minor, so their output is unchanged — this shows up when you ask for something else.
+
+  ## The Claude Desktop bundle, somewhere you can find it
+
+  If you installed from the macOS `.pkg`, dragging `Vibrai.mcpb` into Claude Desktop is the only way to connect the two — and that file lived in `/usr/local/lib/vibrai`, which Finder hides.
+
+  ```bash
+  vibrai install claude-extension --reveal
+  ```
+
+  That puts the bundle in your Ableton User Library under `Vibrai/` and opens a Finder window with it selected, ready to drag into Claude Desktop → Settings → Extensions. Vibrai finds your real User Library from Live's own preferences rather than guessing. `vibrai install all` does it as part of a full install; `install_claude_extension` is the MCP equivalent.
+
+  ## Automation is its own step
+
+  `vibrai generate` used to write automation during the render — before the instruments were loaded, so anything aimed at a track it had just created had nothing to aim at. It failed every time, and an explicit automation slot stopped the render outright.
+
+  Automation now runs after the instruments do:
+
+  ```bash
+  vibrai generate --project my-song.vibrai
+  vibrai automation render --project my-song.vibrai
+  ```
+
+  Or ask `generate` to do it inline, as the last thing it does:
+
+  ```bash
+  vibrai generate --project my-song.vibrai --with-automation
+  ```
+
+  Targets it can't resolve are no longer fatal — each is reported with the device it looked for and the controls that device actually has. `render_automation` is the MCP equivalent.
+
+  One thing to watch: if a bounce fails and can't restore your arrangement clips, the CLI exits with code **13** and the MCP response carries a `data_loss` message. That means clips were deleted and did not come back — check that field rather than counting skips.
+
+  ## Turn track numbering on and off
+
+  Ableton shows a leading `#` in a track name as the track's position, so `# Bass` displays as `1 Bass`. Vibrai could write that token but never remove it, so a numbered set had to be renamed by hand.
+
+  ```bash
+  vibrai track auto-number off
+  ```
+
+  It sweeps every track in the open set, and only strips a number that matches the track's own position — a track called `808 Bass` is left alone. Add `--persist` to make it the project's default. `set_track_auto_numbering` on MCP.
+
+  ## Where a project file lands by default
+
+  **This changes what an existing command does.** Leave out `--project` and Vibrai used to reach for `Untitled.vibrai`. It now uses the name of the directory you're in — so working in `~/Music/dawn-chorus` gives you `dawn-chorus.vibrai`.
+
+  If you have projects called `Untitled.vibrai`, commands that used to find them won't any more. Rename the file, or pass the path explicitly. Where Vibrai can tell that's what happened, it says so in the error.
+
+  ## Fixed
+
+  - **The install guide described a command that doesn't exist.** `vibrai install status` was never real, and the guide said the `.pkg` registers the MCP server with Claude Desktop for you — it doesn't, and nothing in Vibrai writes that config file. Claude Code now gets its own instructions instead of reusing Claude Desktop's.
+  - **`generate --create-missing-tracks` no longer duplicates a track that's sitting right there.** Reordering or rebuilding a set moved the track ids a project remembered, so the match missed and Vibrai created a second copy. It now finds a bound track by the name it saw, and writes the resolved ids back to the project file.
+  - **`vibrai uninstall --user <name>` now removes that user's Claude Desktop entry and app data.** Uninstall re-runs itself under `sudo` when it needs to, and those two steps were reading root's home instead — reporting success while leaving your files untouched.
+  - **The first-song and genre-song wizards apply automation again**, and tell you what landed. Splitting automation out of `generate` left them writing none of it, silently.
+  - **The session journal records the command that actually ran.** Seven flags were being dropped from recorded MCP calls, producing a shorter command that still looked right.
+  - **`vibrai shell` appears in `vibrai --help`** and in the published reference. It always worked; it was invisible to everything that documents it.
+</Update>
+
 <Update label="1.6.0" description="August 5, 2026">
   Vibrai used to assume every song was in 4/4. It doesn't any more — and you can now shape a sound directly, instead of only automating it.
 
