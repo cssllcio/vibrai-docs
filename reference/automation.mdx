@@ -171,7 +171,7 @@ vibrai automation apply --part <ID> --slot <KEY> --curve <CURVE> --sections <CSV
   Comma-separated section ids, or 'all' for every section
 </ParamField>
 <ParamField path="--project">
-  Path to .vibrai file (default: Untitled.vibrai in CWD)
+  Path to the .vibrai file (default: &lt;current-directory-name>.vibrai in the working directory)
 </ParamField>
 <ParamField path="--in-memory">
   Mutate but do not save (preview mode)
@@ -199,6 +199,21 @@ vibrai automation apply --part <ID> --slot <KEY> --curve <CURVE> --sections <CSV
 </ParamField>
 <ParamField path="--apply-to-live">
   Also push the applied slots into the running Live set via the safe bouncer. Requires an existing populated arrangement; slots without a clip at the section are skipped.
+</ParamField>
+
+### `automation render`
+
+Apply the project composition's arrangement automation to the already-rendered Live set. Run after generate (and after instruments are loaded). Re-plans from the .vibrai; pass the same --seed generate used.
+
+```bash
+vibrai automation render --project <PATH> --seed <VALUE>
+```
+
+<ParamField path="--project">
+  Path to .vibrai file (default: Untitled.vibrai in CWD)
+</ParamField>
+<ParamField path="--seed">
+  Override the project's T2mHash seed for this run. Pass the same value generate used, or the re-planned composition may not match what was rendered.
 </ParamField>
 
 ## MCP tools
@@ -394,6 +409,27 @@ Author a composition-level automation slot on the .vibrai project's arrangement 
 </ParamField>
 <ParamField path="apply_to_live" type="Boolean">
   If true, also push the applied slots into the running Live set via the safe bouncer. Default false — file-only authoring. Requires an existing populated arrangement; slots whose section has no arrangement clip are skipped with a status. See recipe `apply_automation_template_live` for the iteration flow.
+</ParamField>
+
+### `render_automation`
+
+Apply the project composition's arrangement automation to the already-rendered Live set. Run this AFTER generate, and after the parts' instruments are loaded — automation resolves against the live device tree, so a deviceless track can only be skipped. Re-plans the composition from the .vibrai (PlanComposition is deterministic given project + seed + meter), so pass the same seed generate used. Automates clips that EXIST; it never creates them. A planned placement with no arrangement clip under it is reported as a skip, not bounced. Never throws on an unresolvable target: each is reported in skipped_entries with the slot, the parameter, and why it could not land. Each skipped entry carries live_track_id — the 1-based live address matching list_tracks and load_device, or null when the part bound to no live track; use that, not track_id, if you need an address to pass to another tool. If the bounce deletes arrangement clips it cannot restore, the top-level data_loss field carries a plain-language alarm and rollback_failures names the clips — check data_loss before treating a run as successful. Arrangement automation is bounced and not directly LOM-readable — verify with get_automation, which merges the write ledger, and save the set (Cmd-S) so the ledger persists. The CLI sibling is `vibrai automation render`.
+
+```json
+{
+  "tool": "render_automation",
+  "arguments": {
+    "path": "<String>",
+    "seed": "<Nullable`1>"
+  }
+}
+```
+
+<ParamField path="path" type="String" required>
+  Absolute filesystem path to the .vibrai file.
+</ParamField>
+<ParamField path="seed" type="Nullable`1">
+  Optional seed override. Pass the same value generate used, or the re-planned composition may not match what was rendered.
 </ParamField>
 
 ### `list_automation_slots`

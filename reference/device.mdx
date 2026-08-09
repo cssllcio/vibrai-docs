@@ -81,7 +81,7 @@ vibrai device default <partType> --project <PATH> --stock-only
   PartType to resolve
 </ParamField>
 <ParamField path="--project">
-  Resolve genre-aware defaults against this .vibrai file (defaults to Untitled.vibrai in CWD)
+  Resolve genre-aware defaults against this .vibrai file (default: &lt;current-directory-name>.vibrai in the working directory)
 </ParamField>
 <ParamField path="--stock-only">
   Report the stock-only view: skips explicit defaults.instruments overrides AND tagged instruments.
@@ -309,7 +309,7 @@ Report the resolved instrument for a part-type without loading it: precedence is
   PartType to resolve
 </ParamField>
 <ParamField path="project_path" type="String">
-  Path to a .vibrai file to resolve genre-aware defaults against (defaults to Untitled.vibrai in CWD)
+  Path to a .vibrai file to resolve genre-aware defaults against (defaults to &lt;current-directory-name>.vibrai in the working directory)
 </ParamField>
 <ParamField path="stock_only" type="Boolean">
   Report the stock-only view: skips explicit defaults.instruments overrides AND tagged instruments.
@@ -330,7 +330,7 @@ Load each MIDI part's default instrument from a .vibrai project onto its track, 
 ```
 
 <ParamField path="project_path" type="String">
-  Path to the .vibrai file (defaults to Untitled.vibrai in CWD when omitted)
+  Path to the .vibrai file (defaults to &lt;current-directory-name>.vibrai in the working directory when omitted)
 </ParamField>
 <ParamField path="stock_only" type="Boolean">
   Resolve instruments from stock content only: skips explicit defaults.instruments overrides AND tagged instruments. For demos/testing without third-party packs.

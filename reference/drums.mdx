@@ -18,7 +18,7 @@ vibrai drums map show --project <PATH>
 ```
 
 <ParamField path="--project">
-  Path to the .vibrai file (defaults to Untitled.vibrai in CWD)
+  Path to the .vibrai file (default: &lt;current-directory-name>.vibrai in the working directory)
 </ParamField>
 
 ### `drums map set`
@@ -33,7 +33,7 @@ vibrai drums map set <entries> --project <PATH>
   Drum map entries like snare=40 hi_hat=42 (keys: bd, snare, hi_hat, hi_hat_plus, percussion, crash, fill, roll, drums)
 </ParamField>
 <ParamField path="--project">
-  Path to the .vibrai file (defaults to Untitled.vibrai in CWD)
+  Path to the .vibrai file (default: &lt;current-directory-name>.vibrai in the working directory)
 </ParamField>
 
 ### `drums map clear`
@@ -48,7 +48,7 @@ vibrai drums map clear [parts] --project <PATH>
   Drum part keys to remove; omit to clear the whole map
 </ParamField>
 <ParamField path="--project">
-  Path to the .vibrai file (defaults to Untitled.vibrai in CWD)
+  Path to the .vibrai file (default: &lt;current-directory-name>.vibrai in the working directory)
 </ParamField>
 
 ### `drums retarget`
@@ -66,7 +66,7 @@ vibrai drums retarget --track <N> --dry-run --project <PATH>
   Preview without remapping or saving
 </ParamField>
 <ParamField path="--project">
-  Path to the .vibrai file (defaults to Untitled.vibrai in CWD)
+  Path to the .vibrai file (default: &lt;current-directory-name>.vibrai in the working directory)
 </ParamField>
 
 ## MCP tools
@@ -85,7 +85,7 @@ Show the project's drum map: explicit drum-part→pitch overrides used as the fi
 ```
 
 <ParamField path="project_path" type="String">
-  Path to the .vibrai file (defaults to Untitled.vibrai in CWD when omitted)
+  Path to the .vibrai file (defaults to &lt;current-directory-name>.vibrai in the working directory when omitted)
 </ParamField>
 
 ### `set_drum_map`
@@ -106,7 +106,7 @@ Set drum map entries (merged into the existing map) like ["snare=40","hi_hat=42"
   Entries like "snare=40"
 </ParamField>
 <ParamField path="project_path" type="String">
-  Path to the .vibrai file (defaults to Untitled.vibrai in CWD when omitted)
+  Path to the .vibrai file (defaults to &lt;current-directory-name>.vibrai in the working directory when omitted)
 </ParamField>
 
 ### `clear_drum_map`
@@ -127,7 +127,7 @@ Clear the project drum map entirely, or only the named drum part keys (e.g. ["sn
   Drum part keys to remove; omit/empty to clear the whole map
 </ParamField>
 <ParamField path="project_path" type="String">
-  Path to the .vibrai file (defaults to Untitled.vibrai in CWD when omitted)
+  Path to the .vibrai file (defaults to &lt;current-directory-name>.vibrai in the working directory when omitted)
 </ParamField>
 
 ### `retarget_drums`
@@ -146,7 +146,7 @@ Re-resolve every drum part's pitch against the CURRENT kits (drum map → pad na
 ```
 
 <ParamField path="project_path" type="String">
-  Path to the .vibrai file (defaults to Untitled.vibrai in CWD when omitted)
+  Path to the .vibrai file (defaults to &lt;current-directory-name>.vibrai in the working directory when omitted)
 </ParamField>
 <ParamField path="tracks" type="String[]">
   Optional track handles from list_tracks, e.g. ["trk_42"], to limit the retarget. Copy verbatim.

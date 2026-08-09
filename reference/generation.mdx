@@ -14,11 +14,11 @@ Generate or plan a composition from a .vibrai project file.
 Plan + render a composition into Live's session and arrangement views. Same preview engine as 'plan'; use generate to write and plan to iterate on variations before writing.
 
 ```bash
-vibrai generate --project <PATH> --force --clear-first --dry-run --seed <VALUE> --allow-skip --with-instruments --stock-only --on-existing-tracks <MODE> --keep-empty-clips --session-only --create-missing-tracks --swing <PCT> --humanize <PCT> --ornaments <PCT> --dropout <PCT> --gate <PCT> --bass-motion <PROFILE> --kick-relation <MODE> --native-randomization --number-tracks --no-number-tracks
+vibrai generate --project <PATH> --force --clear-first --dry-run --seed <VALUE> --allow-skip --with-instruments --with-automation --stock-only --on-existing-tracks <MODE> --keep-empty-clips --session-only --create-missing-tracks --swing <PCT> --humanize <PCT> --ornaments <PCT> --dropout <PCT> --gate <PCT> --bass-motion <PROFILE> --kick-relation <MODE> --native-randomization --scale-root <NOTE> --scale-name <MODE> --number-tracks --no-number-tracks
 ```
 
 <ParamField path="--project">
-  Path to .vibrai file (default: Untitled.vibrai in CWD)
+  Path to the .vibrai file (default: &lt;current-directory-name>.vibrai in the working directory)
 </ParamField>
 <ParamField path="--force">
   Overwrite existing session clips and arrangement content in project tracks
@@ -33,10 +33,13 @@ vibrai generate --project <PATH> --force --clear-first --dry-run --seed <VALUE> 
   Override the project's T2mHash seed for this run
 </ParamField>
 <ParamField path="--allow-skip">
-  Continue when arrangement-automation entries cannot be resolved; default fails fast.
+  Deprecated and ignored. Automation no longer fails a render; unresolvable entries are always reported as skips.
 </ParamField>
 <ParamField path="--with-instruments">
   After rendering, load each part's default instrument (drum kits for drum parts) so the song is audible.
+</ParamField>
+<ParamField path="--with-automation">
+  After rendering (and after --with-instruments, if passed), apply the composition's arrangement automation. Off by default: automation resolves against the live device tree, so it needs instruments already loaded. Never fatal - unresolvable targets are reported and the render still succeeds.
 </ParamField>
 <ParamField path="--stock-only">
   Resolve instruments from stock content only: skips explicit defaults.instruments overrides AND tagged instruments, using genre stock defaults + built-in generic. For demos/testing without third-party packs.
@@ -77,6 +80,12 @@ vibrai generate --project <PATH> --force --clear-first --dry-run --seed <VALUE> 
 <ParamField path="--native-randomization">
   Emit Live's per-note probability/velocity-deviation instead of baking randomization in. The loop then varies on every playback, but the audible result is no longer reproducible from the seed. Omit to inherit the genre's setting.
 </ParamField>
+<ParamField path="--scale-root">
+  Target scale root: note name (C, C#, Db, …, B) or pitch class 0–11. Omit to use the project's own default scale (tiebroken by the open Live set only when the project is still at its untouched preset default).
+</ParamField>
+<ParamField path="--scale-name">
+  Target scale: Major, Ionian, Dorian, Phrygian, Lydian, Mixolydian, Minor, Aeolian, Locrian. Omit to use the project's own default scale (tiebroken by the open Live set only when the project is still at its untouched preset default).
+</ParamField>
 <ParamField path="--number-tracks">
   Prefix track names with Ableton's '#' auto-numbering token for this run.
 </ParamField>
@@ -89,11 +98,11 @@ vibrai generate --project <PATH> --force --clear-first --dry-run --seed <VALUE> 
 Preview with variation knobs (seed/density/etc.). Same preview engine as 'generate --dry-run'; use plan when you want to iterate on variations before writing.
 
 ```bash
-vibrai plan --project <PATH> --seed <VALUE> --keep-empty-clips --swing <PCT> --humanize <PCT> --ornaments <PCT> --dropout <PCT> --gate <PCT> --bass-motion <PROFILE> --kick-relation <MODE> --native-randomization
+vibrai plan --project <PATH> --seed <VALUE> --keep-empty-clips --swing <PCT> --humanize <PCT> --ornaments <PCT> --dropout <PCT> --gate <PCT> --bass-motion <PROFILE> --kick-relation <MODE> --native-randomization --scale-root <NOTE> --scale-name <MODE>
 ```
 
 <ParamField path="--project">
-  Path to .vibrai file (default: Untitled.vibrai in CWD)
+  Path to the .vibrai file (default: &lt;current-directory-name>.vibrai in the working directory)
 </ParamField>
 <ParamField path="--seed">
   Override the project's T2mHash seed for this run
@@ -125,6 +134,12 @@ vibrai plan --project <PATH> --seed <VALUE> --keep-empty-clips --swing <PCT> --h
 <ParamField path="--native-randomization">
   Emit Live's per-note probability/velocity-deviation instead of baking randomization in. The loop then varies on every playback, but the audible result is no longer reproducible from the seed. Omit to inherit the genre's setting.
 </ParamField>
+<ParamField path="--scale-root">
+  Target scale root: note name (C, C#, Db, …, B) or pitch class 0–11. Omit to use the project's own default scale (tiebroken by the open Live set only when the project is still at its untouched preset default).
+</ParamField>
+<ParamField path="--scale-name">
+  Target scale: Major, Ionian, Dorian, Phrygian, Lydian, Mixolydian, Minor, Aeolian, Locrian. Omit to use the project's own default scale (tiebroken by the open Live set only when the project is still at its untouched preset default).
+</ParamField>
 
 ## MCP tools
 
@@ -146,13 +161,15 @@ Preview a composition with variation knobs (seed/density/etc.) WITHOUT writing t
     "gate": "<Nullable`1>",
     "native_randomization": "<Nullable`1>",
     "bass_motion": "<String>",
-    "kick_relation": "<String>"
+    "kick_relation": "<String>",
+    "scale_root_note": "<String>",
+    "scale_name": "<String>"
   }
 }
 ```
 
 <ParamField path="project_path" type="String">
-  Path to the .vibrai file (defaults to Untitled.vibrai in CWD when omitted)
+  Path to the .vibrai file (defaults to &lt;current-directory-name>.vibrai in the working directory when omitted)
 </ParamField>
 <ParamField path="seed" type="Nullable`1">
   Optional seed override
@@ -184,10 +201,16 @@ Preview a composition with variation knobs (seed/density/etc.) WITHOUT writing t
 <ParamField path="kick_relation" type="String">
   How the bass sits against the kick: lock, dodge, free; overrides the genre default
 </ParamField>
+<ParamField path="scale_root_note" type="String">
+  Optional target scale root: note name (C, C#, Db, …, B) or pitch class 0–11. Omit to use the project's own default scale (tiebroken by the open Live set only when the project is still at its untouched preset default).
+</ParamField>
+<ParamField path="scale_name" type="String">
+  Optional target scale: Major, Ionian, Dorian, Phrygian, Lydian, Mixolydian, Minor, Aeolian, Locrian. Omit to use the project's own default scale (tiebroken by the open Live set only when the project is still at its untouched preset default).
+</ParamField>
 
 ### `generate`
 
-Plan + render a composition into Live's session view and arrangement view. To preview the result without writing to Live, use the 'plan' tool first. force=true is required only when append re-renders onto an existing part track whose target slots are non-empty; replace implies consent and never requires force. By default, fails fast when any ArrangementAutomationEntry cannot be resolved against the live device tree; pass allow_skip=true to log warnings and continue. Track ids in the summary (session_clips, arrangement_placements, instruments, current_tracks) are 1-based, matching list_tracks and load_device. Call `get_skill` first to load the Vibrai operational playbook.
+Plan + render a composition into Live's session view and arrangement view. To preview the result without writing to Live, use the 'plan' tool first. force=true is required only when append re-renders onto an existing part track whose target slots are non-empty; replace implies consent and never requires force. Automation is not applied by default — the composition's planned entries are reported and applied by render_automation (or by passing with_automation=true). Track ids in the summary (session_clips, arrangement_placements, instruments, current_tracks) are 1-based, matching list_tracks and load_device. The ONE exception is automation.skipped_entries[].track_id, which is the project's own part id echoed back for diagnosis — use that entry's live_track_id (1-based, null when the part bound to no live track) if you need an address to pass to another tool. Call `get_skill` first to load the Vibrai operational playbook.
 
 ```json
 {
@@ -197,6 +220,7 @@ Plan + render a composition into Live's session view and arrangement view. To pr
     "force": "<Boolean>",
     "allow_skip": "<Boolean>",
     "with_instruments": "<Boolean>",
+    "with_automation": "<Boolean>",
     "stock_only": "<Boolean>",
     "on_existing_tracks": "<String>",
     "seed": "<Nullable`1>",
@@ -212,22 +236,27 @@ Plan + render a composition into Live's session view and arrangement view. To pr
     "number_tracks": "<Nullable`1>",
     "session_only": "<Boolean>",
     "clear_first": "<Boolean>",
-    "create_missing_tracks": "<Boolean>"
+    "create_missing_tracks": "<Boolean>",
+    "scale_root_note": "<String>",
+    "scale_name": "<String>"
   }
 }
 ```
 
 <ParamField path="project_path" type="String">
-  Path to the .vibrai file (defaults to Untitled.vibrai in CWD when omitted)
+  Path to the .vibrai file (defaults to &lt;current-directory-name>.vibrai in the working directory when omitted)
 </ParamField>
 <ParamField path="force" type="Boolean">
   Overwrite existing session clips and arrangement content
 </ParamField>
 <ParamField path="allow_skip" type="Boolean">
-  Continue when arrangement-automation entries cannot be resolved; default fails fast.
+  Deprecated and ignored. Automation no longer fails a render; unresolvable entries are always reported as skips.
 </ParamField>
 <ParamField path="with_instruments" type="Boolean">
   After rendering, load each part's default instrument (drum kits for drum parts) so the song is audible.
+</ParamField>
+<ParamField path="with_automation" type="Boolean">
+  After rendering (and after with_instruments, if set), apply the composition's arrangement automation. Default false: automation resolves against the live device tree, so it needs instruments already loaded. Never fatal — unresolvable targets are reported and the render still succeeds. Equivalent to calling render_automation immediately after. Check the top-level data_loss field afterwards.
 </ParamField>
 <ParamField path="stock_only" type="Boolean">
   Resolve instruments from stock content only: skips explicit defaults.instruments overrides AND tagged instruments, using genre stock defaults + built-in generic. For demos/testing on installs without third-party packs.
@@ -276,4 +305,10 @@ Plan + render a composition into Live's session view and arrangement view. To pr
 </ParamField>
 <ParamField path="create_missing_tracks" type="Boolean">
   When a part is bound to a track_id (project init / capture) that no longer exists in the Live set, create it (name from the part, MIDI type) instead of failing. Default false: such a project fails validation up front, naming the missing track_id(s), before anything is written.
+</ParamField>
+<ParamField path="scale_root_note" type="String">
+  Optional target scale root: note name (C, C#, Db, …, B) or pitch class 0–11. Omit to use the project's own default scale (tiebroken by the open Live set only when the project is still at its untouched preset default).
+</ParamField>
+<ParamField path="scale_name" type="String">
+  Optional target scale: Major, Ionian, Dorian, Phrygian, Lydian, Mixolydian, Minor, Aeolian, Locrian. Omit to use the project's own default scale (tiebroken by the open Live set only when the project is still at its untouched preset default).
 </ParamField>

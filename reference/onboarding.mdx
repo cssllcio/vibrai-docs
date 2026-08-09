@@ -45,7 +45,7 @@ vibrai start first-song --vibe <VIBE> --on-existing-tracks <MODE> --project-dir 
 Build an arrangement from the installed genre catalog
 
 ```bash
-vibrai start genre-song --genre <GENRE> --sub-genre <SUB_GENRE> --preset <PRESET> --on-existing-tracks <MODE> --project-dir <DIR> --interactive
+vibrai start genre-song --genre <GENRE> --sub-genre <SUB_GENRE> --preset <PRESET> --on-existing-tracks <MODE> --project-dir <DIR> --interactive --scale-root <NOTE> --scale-name <MODE>
 ```
 
 <ParamField path="--genre">
@@ -65,6 +65,12 @@ vibrai start genre-song --genre <GENRE> --sub-genre <SUB_GENRE> --preset <PRESET
 </ParamField>
 <ParamField path="--interactive">
   Prompt for a choice instead of exiting when input is needed
+</ParamField>
+<ParamField path="--scale-root">
+  Target scale root: note name (C, C#, Db, …, B) or pitch class 0–11. Omit to use the genre's own default scale.
+</ParamField>
+<ParamField path="--scale-name">
+  Target scale: Major, Ionian, Dorian, Phrygian, Lydian, Mixolydian, Minor, Aeolian, Locrian. Omit to use the genre's own default scale.
 </ParamField>
 
 ## MCP tools
@@ -119,7 +125,9 @@ Start the Vibrai genre-song wizard: build a full arrangement in a genre and sub-
     "sub_genre": "<String>",
     "preset": "<String>",
     "on_existing_tracks": "<String>",
-    "project_directory": "<String>"
+    "project_directory": "<String>",
+    "scale_root_note": "<String>",
+    "scale_name": "<String>"
   }
 }
 ```
@@ -138,4 +146,10 @@ Start the Vibrai genre-song wizard: build a full arrangement in a genre and sub-
 </ParamField>
 <ParamField path="project_directory" type="String">
   Optional. Directory the new .vibrai project file is minted into. Omit to use Vibrai's per-user data directory (always writable) rather than this process's working directory.
+</ParamField>
+<ParamField path="scale_root_note" type="String">
+  Optional target scale root: note name (C, C#, Db, …, B) or pitch class 0–11. Omit to use the genre's own default scale.
+</ParamField>
+<ParamField path="scale_name" type="String">
+  Optional target scale: Major, Ionian, Dorian, Phrygian, Lydian, Mixolydian, Minor, Aeolian, Locrian. Omit to use the genre's own default scale.
 </ParamField>

@@ -151,6 +151,27 @@ vibrai track set-color <track> <color-index>
   Live colour palette index, 0-69.
 </ParamField>
 
+### `track auto-number`
+
+Turn Ableton's '#' track auto-numbering on or off across the open set
+
+```bash
+vibrai track auto-number <state> --persist --write-project --project <PATH>
+```
+
+<ParamField path="state" required>
+  on or off
+</ParamField>
+<ParamField path="--persist">
+  Also record the choice in the project's defaults.number_tracks, so a later generate/track create inherits it. Implies --write-project.
+</ParamField>
+<ParamField path="--write-project">
+  Write the .vibrai file to disk.
+</ParamField>
+<ParamField path="--project">
+  Path to the .vibrai file (default: &lt;current-directory-name>.vibrai in the working directory). Only read or written when --persist or --write-project is given.
+</ParamField>
+
 ## MCP tools
 
 ### `list_tracks`
@@ -250,6 +271,35 @@ Rename a track. Address it by its liveset_id handle from list_tracks (e.g. trk_4
   Prefix the name with Ableton's '#' auto-numbering token. Null inherits VIBRAI_NUMBER_TRACKS.
 </ParamField>
 
+### `set_track_auto_numbering`
+
+Turn Ableton's '#' track auto-numbering on or off across every track in the open set. This is a one-shot sweep, not a mode: it renames the tracks that are there now and does not change what a later generate/create_track does. Turning it off strips a leading number only when it matches the track's own position, so a track genuinely named '808 Bass' is left alone. Reversible by calling again with the opposite value. CLI equivalent: vibrai track auto-number on|off.
+
+```json
+{
+  "tool": "set_track_auto_numbering",
+  "arguments": {
+    "enabled": "<Boolean>",
+    "persist": "<Boolean>",
+    "write_project": "<Boolean>",
+    "project_path": "<String>"
+  }
+}
+```
+
+<ParamField path="enabled" type="Boolean" required>
+  true numbers the tracks, false removes the numbering.
+</ParamField>
+<ParamField path="persist" type="Boolean">
+  Also record the choice in the project's defaults.number_tracks so a later generate inherits it. Implies write_project.
+</ParamField>
+<ParamField path="write_project" type="Boolean">
+  Write the .vibrai file to disk.
+</ParamField>
+<ParamField path="project_path" type="String">
+  Path to the .vibrai file (defaults to &lt;current-directory-name>.vibrai in the working directory when omitted). Only read or written when persist or write_project is set.
+</ParamField>
+
 ### `get_track_mixer`
 
 Read a track's mixer state: volume (both dB and Live's raw 0.0-1.0), pan, mute, solo, arm, and every send with its return-track name. Address the track by its liveset_id handle from list_tracks (e.g. trk_42).
@@ -330,7 +380,7 @@ Apply a whole mix in one call, keyed by part type. Each entry is "part_type=dB" 
   Mix entries, e.g. ["bass=-6", "lead=-3", "pad=-12:send=A-Reverb=-9"].
 </ParamField>
 <ParamField path="project_path" type="String">
-  Path to the .vibrai project to bind part types against (defaults to Untitled.vibrai in the working directory). When no project is found, binding falls back to track-name hints and says so.
+  Path to the .vibrai project to bind part types against (defaults to &lt;current-directory-name>.vibrai in the working directory). When no project is found, binding falls back to track-name hints and says so.
 </ParamField>
 
 ### `list_returns`

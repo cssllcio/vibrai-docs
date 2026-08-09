@@ -1,11 +1,11 @@
 ---
 title: "Install"
-description: "Install the Vibrai M4L device, Python remote script, and Ableton templates."
+description: "Install the Vibrai device, remote script, Ableton templates, and Claude Desktop extension bundle."
 ---
 
 {/* GENERATED — do not edit by hand. Regenerate with `npm run generate:reference`. */}
 
-Install the Vibrai M4L device, Python remote script, and Ableton templates.
+Install the Vibrai device, remote script, Ableton templates, and Claude Desktop extension bundle.
 
 ## Command line
 
@@ -69,12 +69,36 @@ vibrai install templates --source <PATH> --dest <PATH> --user <NAME>
   Install into &lt;name>'s home directory instead of the current user's. Used by the macOS .pkg postinstall to deposit files into the real installing user's Ableton User Library when running as root.
 </ParamField>
 
-### `install all`
+### `install claude-extension`
 
-Install the M4L device, the Python remote script, and the Ableton templates
+Deploy the Claude Desktop extension bundle (Vibrai.mcpb) into Live's User Library, where you can find it in Finder
 
 ```bash
-vibrai install all --force --user <NAME>
+vibrai install claude-extension --reveal --force --source <PATH> --dest <PATH> --user <NAME>
+```
+
+<ParamField path="--reveal">
+  Open a Finder window with the deployed Vibrai.mcpb selected, ready to drag into Claude Desktop → Settings → Extensions.
+</ParamField>
+<ParamField path="--force">
+  Overwrite an existing install whose files differ from the source.
+</ParamField>
+<ParamField path="--source">
+  [advanced] Override the source directory (test/debug use).
+</ParamField>
+<ParamField path="--dest">
+  [advanced] Override the destination directory (test/debug use).
+</ParamField>
+<ParamField path="--user">
+  Install into &lt;name>'s home directory instead of the current user's. Used by the macOS .pkg postinstall to deposit files into the real installing user's Ableton User Library when running as root.
+</ParamField>
+
+### `install all`
+
+Install the M4L device, the Python remote script, the Ableton templates, and the Claude Desktop extension bundle
+
+```bash
+vibrai install all --force --user <NAME> --reveal
 ```
 
 <ParamField path="--force">
@@ -82,6 +106,9 @@ vibrai install all --force --user <NAME>
 </ParamField>
 <ParamField path="--user">
   Install into &lt;name>'s home directory instead of the current user's. Used by the macOS .pkg postinstall to deposit files into the real installing user's Ableton User Library when running as root.
+</ParamField>
+<ParamField path="--reveal">
+  Open a Finder window with the deployed Vibrai.mcpb selected. Used by the macOS .pkg postinstall so the bundle is waiting for the user when the installer finishes.
 </ParamField>
 
 ## MCP tools
@@ -157,19 +184,52 @@ Copy the bundled "Vibrai Starter" (blank, bridge preloaded on a Return track) an
   [advanced] Test-only override for the destination directory
 </ParamField>
 
+### `install_claude_extension`
+
+Deploy the Claude Desktop extension bundle (Vibrai.mcpb) from Vibrai's program directory into the user's Ableton User Library at 'User Library/Vibrai/Vibrai.mcpb', where it is visible in Finder — the program directory (/usr/local/lib/vibrai) is hidden by default on macOS. Pass reveal=true to also open a Finder window with the bundle selected, ready to drag into Claude Desktop → Settings → Extensions. By default refuses to overwrite a deployed bundle that differs from the source — pass force=true to clobber. Returns status Installed | AlreadyUpToDate | SkippedNoSource; SkippedNoSource is NOT an error — it means no .mcpb was built for this platform (Windows never produces one) or this is a dev tree. Installing the bundle into Claude Desktop is still a manual drag; this tool only makes the file findable.
+
+```json
+{
+  "tool": "install_claude_extension",
+  "arguments": {
+    "force": "<Boolean>",
+    "reveal": "<Boolean>",
+    "source_override": "<String>",
+    "dest_override": "<String>"
+  }
+}
+```
+
+<ParamField path="force" type="Boolean">
+  Overwrite a deployed bundle that differs from the source (default false)
+</ParamField>
+<ParamField path="reveal" type="Boolean">
+  Open a Finder window with the deployed bundle selected (default false, macOS only)
+</ParamField>
+<ParamField path="source_override" type="String">
+  [advanced] Test-only override for the source directory
+</ParamField>
+<ParamField path="dest_override" type="String">
+  [advanced] Test-only override for the destination directory
+</ParamField>
+
 ### `install_all`
 
-Install the Max-for-Live device, Python remote script, and Ableton templates in one call — equivalent to install_device + install_vibrai_remote_script + install_templates run in sequence. Stops at the first failure (each step must succeed before the next runs). Templates always overwrite regardless of force. Returns per-target results (device, remote_script, templates).
+Install the Max-for-Live device, Python remote script, Ableton templates, and Claude Desktop extension bundle in one call — equivalent to install_device + install_vibrai_remote_script + install_templates + install_claude_extension run in sequence. Stops at the first failure (each step must succeed before the next runs). Templates always overwrite regardless of force. The Claude Desktop bundle reports SkippedNoSource when no .mcpb exists for this platform, which is not a failure. Returns per-target results (device, remote_script, templates, claude_extension).
 
 ```json
 {
   "tool": "install_all",
   "arguments": {
-    "force": "<Boolean>"
+    "force": "<Boolean>",
+    "reveal": "<Boolean>"
   }
 }
 ```
 
 <ParamField path="force" type="Boolean">
   Overwrite existing device/remote-script installs whose files differ from the source (default false). Templates always overwrite regardless of this flag.
+</ParamField>
+<ParamField path="reveal" type="Boolean">
+  Open a Finder window with the deployed Claude Desktop bundle selected (default false, macOS only)
 </ParamField>
