@@ -4,6 +4,55 @@ description: "New features, improvements, and fixes in Vibrai."
 rss: true
 ---
 
+<Update label="1.6.2" description="August 16, 2026">
+  A knowledge layer for mixing, bar lines that land on your set's real meter, and a `generate` that asks before it duplicates your tracks.
+
+  ## Mixing advice, with the reasoning attached
+
+  Vibrai could already set a level, a pan and a send — but not tell you what to set them *to*. Mix profiles answer that per part type: a starting level, a pan position, a depth tier on the front↔back axis, and the corrective EQ and compressor moves that belong on that part, each with its reason.
+
+  ```bash
+  vibrai mix profiles
+  vibrai mix suggest --chains
+  vibrai mix apply-profile --reverb-return "Reverb"
+  ```
+
+  `mix apply-profile` writes the **placement half only**. The EQ and compressor numbers stay advice on purpose: a Live parameter's real range is only knowable from an open set, so a profile cannot honestly pre-compute what to send.
+
+  A part whose depth calls for a send, on a set where you named no return track, is applied for level and pan and then **warns**. Vibrai will not invent a return track for you.
+
+  ## Look up what to reach for
+
+  Knowing a mix is muddy is easy; knowing whether that wants EQ, compression, a dynamic EQ or automation is the hard part.
+
+  ```bash
+  vibrai mix advice                  # the index
+  vibrai mix advice --subject kick   # compression starting points for a kick
+  vibrai mix compress 1 "Compressor" --for kick
+  ```
+
+  **`mix compress` does not yet reach Live's own Compressor or Glue Compressor.** The starting points are in milliseconds; both devices report those parameters as normalized 0–1, and Vibrai refuses a value it cannot send honestly rather than guessing. On those two devices it writes nothing and tells you why. That refusal is the feature working — threshold is never written at all, because it depends on the incoming level, which no table can know.
+
+  ## Bar lines land on your meter
+
+  On a 7/8 project, `automation write`, `arrangement place` and `seek` used to read `2.1` as beat 4.0 while generation put bar 2 at 3.5. All of them now resolve your project's declared time signature first, then Live's transport. The song wizards plan at that meter too, instead of planning at 4/4 and rendering at yours.
+
+  ## `generate` asks before duplicating your tracks
+
+  On a set that already has MIDI tracks, `vibrai generate` used to quietly append a second set alongside them. It now stops and asks:
+
+  ```bash
+  vibrai generate --on-existing-tracks replace   # delete them, render fresh
+  vibrai generate --on-existing-tracks append    # add alongside
+  ```
+
+  The MCP tool has always refused this way. If you have a script relying on the old silent append, add the flag.
+
+  ## Also
+
+  An unseeded `Wander` curve now sounds the same on every run. Reading notes back from an arrangement clip retries like its session-view twin. `brew install` warns when an older standalone install shadows it on `PATH`.
+</Update>
+
 <Update label="1.6.1" description="August 8, 2026">
   Ask for a key and actually get it, an install that no longer dead-ends in a hidden folder, and automation that runs once your instruments are loaded.
 
