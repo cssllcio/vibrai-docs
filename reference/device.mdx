@@ -358,7 +358,7 @@ Set one device parameter to a static value. `value` is a number in the parameter
   Track handle from list_tracks, e.g. "trk_42". Copy verbatim.
 </ParamField>
 <ParamField path="device_id" type="String" required>
-  Device ID or 1-based position number or name substring
+  1-based position: 1 = the first device in the chain, 2 = the second. NOT the `device_id` list_devices reports — that field is 0-based, so add 1 to it. A name substring also works (case-insensitive, must match exactly one device).
 </ParamField>
 <ParamField path="param" type="String" required>
   Parameter name (exact, then case-insensitive) or 0-based index
@@ -392,7 +392,7 @@ Set several parameters on ONE device in a single call. Each entry is "param=valu
   Track handle from list_tracks, e.g. "trk_42". Copy verbatim.
 </ParamField>
 <ParamField path="device_id" type="String" required>
-  Device ID or 1-based position number or name substring
+  1-based position: 1 = the first device in the chain, 2 = the second. NOT the `device_id` list_devices reports — that field is 0-based, so add 1 to it. A name substring also works (case-insensitive, must match exactly one device).
 </ParamField>
 <ParamField path="parameters" type="String[]" required>
   Entries as "param=value", e.g. ["Frequency=0.5", "Filter Type=Band-pass", "Resonance=raw:0.5"]. Must not be empty.
@@ -417,7 +417,7 @@ Bypass or un-bypass a device (Live's device on/off switch, device.is_active). Le
   Track handle from list_tracks, e.g. "trk_42". Copy verbatim.
 </ParamField>
 <ParamField path="device_id" type="String" required>
-  Device ID or 1-based position number or name substring
+  1-based position: 1 = the first device in the chain, 2 = the second. NOT the `device_id` list_devices reports — that field is 0-based, so add 1 to it. A name substring also works (case-insensitive, must match exactly one device).
 </ParamField>
 <ParamField path="enabled" type="Boolean" required>
   true = active, false = bypassed

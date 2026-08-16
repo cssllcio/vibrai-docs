@@ -74,7 +74,7 @@ vibrai arrangement set-props <track> <clip> --name <NAME> --color-index <INDEX>
 Delete a single arrangement clip at (track, start-beat)
 
 ```bash
-vibrai arrangement delete <track> <start>
+vibrai arrangement delete <track> <start> --project <PATH>
 ```
 
 <ParamField path="track" required>
@@ -82,6 +82,9 @@ vibrai arrangement delete <track> <start>
 </ParamField>
 <ParamField path="start" required>
   Arrangement start: bar.beat notation (e.g. 5.1 = bar 5, beat 1) or raw beats
+</ParamField>
+<ParamField path="--project">
+  Path to the .vibrai file whose declared meter positions bar.beat inputs (defaults to &lt;current-directory-name>.vibrai; falls back to Live's transport, then 4/4)
 </ParamField>
 
 ### `arrangement clear-scoped`
@@ -171,7 +174,8 @@ Delete a single arrangement-view clip on a track at the given start beat (surgic
   "tool": "delete_arrangement_clip",
   "arguments": {
     "track": "<String>",
-    "start_beat": "<String>"
+    "start_beat": "<String>",
+    "project_path": "<String>"
   }
 }
 ```
@@ -181,6 +185,9 @@ Delete a single arrangement-view clip on a track at the given start beat (surgic
 </ParamField>
 <ParamField path="start_beat" type="String" required>
   Arrangement start: bar.beat notation (e.g. '2.3' = bar 2, beat 3) or raw beats (e.g. '16' or '16.0')
+</ParamField>
+<ParamField path="project_path" type="String">
+  Path to the .vibrai file whose declared meter positions bar.beat inputs (defaults to &lt;current-directory-name>.vibrai in the working directory; falls back to Live's transport, then 4/4)
 </ParamField>
 
 ### `clear_arrangement_for_tracks`

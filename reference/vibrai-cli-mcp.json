@@ -1,6 +1,6 @@
 {
-  "engine_version": "1.6.0.0",
-  "generated_at": "2026-08-09T01:48:42Z",
+  "engine_version": "1.6.1.0",
+  "generated_at": "2026-08-16T18:36:01Z",
   "features": [
     {
       "id": "transport",
@@ -49,7 +49,14 @@
                 "description": "Transport position: bar.beat notation (e.g. 2.1 = bar 2, beat 1) or raw beats (e.g. 16.0)"
               }
             ],
-            "options": []
+            "options": [
+              {
+                "name": "--project",
+                "value_name": "PATH",
+                "default": null,
+                "description": "Path to the .vibrai file whose declared meter positions bar.beat inputs (defaults to \u003Ccurrent-directory-name\u003E.vibrai; falls back to Live\u0027s transport, then 4/4)"
+              }
+            ]
           }
         ]
       },
@@ -91,6 +98,12 @@
                 "type": "String",
                 "required": true,
                 "description": "Transport position: bar.beat notation (e.g. \u00222.1\u0022 = bar 2, beat 1) or raw beats (e.g. \u002216\u0022 or \u002216.0\u0022)"
+              },
+              {
+                "name": "project_path",
+                "type": "String",
+                "required": false,
+                "description": "Path to the .vibrai file whose declared meter positions bar.beat inputs (defaults to \u003Ccurrent-directory-name\u003E.vibrai in the working directory; falls back to Live\u0027s transport, then 4/4)"
               }
             ]
           }
@@ -589,7 +602,7 @@
     {
       "id": "mix",
       "title": "Mixing",
-      "description": "Set-wide mixing: return tracks and bulk mix application.",
+      "description": "Set-wide mixing: return tracks, bulk mix application, profile-driven placement advice, and the mixing-knowledge reference.",
       "cli": {
         "branch": "mix",
         "commands": [
@@ -615,6 +628,135 @@
                 "value_name": "PATH",
                 "default": null,
                 "description": "Path to the .vibrai file (default: \u003Ccurrent-directory-name\u003E.vibrai in the working directory). Without one, binding falls back to track-name hints."
+              }
+            ]
+          },
+          {
+            "name": "mix profiles",
+            "description": "List the available mix profiles",
+            "arguments": [],
+            "options": []
+          },
+          {
+            "name": "mix suggest",
+            "description": "Suggest level, pan, depth and corrective moves per part type",
+            "arguments": [],
+            "options": [
+              {
+                "name": "--chains",
+                "value_name": null,
+                "default": null,
+                "description": "Also print the corrective EQ and compressor moves for each part."
+              },
+              {
+                "name": "--techniques",
+                "value_name": null,
+                "default": null,
+                "description": "Also print the profile\u0027s technique blocks (compressor setup, serial vs parallel compression, harshness check, drum impact)."
+              },
+              {
+                "name": "--profile",
+                "value_name": "NAME",
+                "default": null,
+                "description": "Mix profile to use (default: default). See \u0060vibrai mix profiles\u0060."
+              },
+              {
+                "name": "--part",
+                "value_name": "PART_TYPE",
+                "default": null,
+                "description": "Part type to include, e.g. bass. Repeatable. Omit to use the loaded project\u0027s parts, or the whole profile when there is none."
+              },
+              {
+                "name": "--project",
+                "value_name": "PATH",
+                "default": null,
+                "description": "Path to the .vibrai file (default: \u003Ccurrent-directory-name\u003E.vibrai in the working directory)."
+              }
+            ]
+          },
+          {
+            "name": "mix apply-profile",
+            "description": "Apply a mix profile\u0027s level, pan and depth to the open set",
+            "arguments": [],
+            "options": [
+              {
+                "name": "--reverb-return",
+                "value_name": "NAME",
+                "default": null,
+                "description": "Return-track name carrying the depth reverb, e.g. A-Reverb (see \u0060vibrai mix returns\u0060). Without it, level and pan are applied and depth is reported as a warning rather than written."
+              },
+              {
+                "name": "--dry-run",
+                "value_name": null,
+                "default": null,
+                "description": "Report what would be written without writing it."
+              },
+              {
+                "name": "--profile",
+                "value_name": "NAME",
+                "default": null,
+                "description": "Mix profile to use (default: default). See \u0060vibrai mix profiles\u0060."
+              },
+              {
+                "name": "--part",
+                "value_name": "PART_TYPE",
+                "default": null,
+                "description": "Part type to include, e.g. bass. Repeatable. Omit to use the loaded project\u0027s parts, or the whole profile when there is none."
+              },
+              {
+                "name": "--project",
+                "value_name": "PATH",
+                "default": null,
+                "description": "Path to the .vibrai file (default: \u003Ccurrent-directory-name\u003E.vibrai in the working directory)."
+              }
+            ]
+          },
+          {
+            "name": "mix advice",
+            "description": "Look up mixing guidance: compression, reverb, low-end, tool choice",
+            "arguments": [
+              {
+                "name": "topic",
+                "required": false,
+                "description": "compression, reverb, low-end or tool-choice. Omit to list the topics."
+              }
+            ],
+            "options": [
+              {
+                "name": "--for",
+                "value_name": "SUBJECT",
+                "default": null,
+                "description": "Narrow the topic: a compression source (kick) or part type (bd), or a reference entry (pre-delay, phase-cancellation)."
+              }
+            ]
+          },
+          {
+            "name": "mix compress",
+            "description": "Write a source\u0027s compression starting points onto a compressor",
+            "arguments": [
+              {
+                "name": "track",
+                "required": true,
+                "description": "Track handle (trk_42) OR 1-based number (1, 2, \u2026) OR ordinal (first, second, \u2026)."
+              },
+              {
+                "name": "device",
+                "required": true,
+                "description": "Device ID, 1-based chain position, or a name substring \u2014 the compressor to write to."
+              }
+            ],
+            "options": [
+              {
+                "name": "--for",
+                "value_name": "SOURCE",
+                "default": null,
+                "description": "Compression source: kick, snare, bass, vocal, guitar, piano \u2014 or a part type such as bd."
+              },
+              {
+                "name": "--dry-run",
+                "value_name": null,
+                "default": null,
+                "description": "Report the writes without making them. The device is still read, so the skips are real."
               }
             ]
           }
@@ -710,6 +852,119 @@
             "name": "list_returns",
             "description": "List the set\u0027s return tracks with their index and name. These names are what set_track_mixer and apply_mix accept in their sends arguments.",
             "parameters": []
+          },
+          {
+            "name": "list_mix_profiles",
+            "description": "List the available mix profiles. A profile carries starting-point placement (level, pan, depth) per part type plus corrective EQ and dynamics advice. Drop a file at ~/.vibrai/mix-profiles/\u003Cname\u003E.yaml to add or shadow one.",
+            "parameters": []
+          },
+          {
+            "name": "suggest_mix",
+            "description": "Suggest a mix without changing anything. Returns, per part type: a starting level in dB, a pan position, a depth tier and the reverb send that expresses it, plus the corrective EQ moves and compressor settings that belong on that part \u2014 each with the reason attached. Also returns the profile\u0027s global rules (headroom, the 2-5 kHz harsh band, return-track guidance) and its technique blocks (serial vs parallel compression, compressor setup, harshness check). Part types come from \u0060parts\u0060 if given, else from the loaded project, else the whole profile. The EQ/compressor numbers are DISPLAY units and are advice, not a write: apply them with set_device_param and check the display_value it reports back. Use apply_mix_profile to apply the level/pan/send half for real.",
+            "parameters": [
+              {
+                "name": "profile",
+                "type": "String",
+                "required": false,
+                "description": "Profile name (default: \u0022default\u0022). See list_mix_profiles."
+              },
+              {
+                "name": "parts",
+                "type": "String[]",
+                "required": false,
+                "description": "Part types to advise on, e.g. [\u0022bass\u0022, \u0022lead\u0022, \u0022hi_hat\u0022]. Omit to use the loaded project\u0027s parts, or the whole profile when there is none."
+              },
+              {
+                "name": "project_path",
+                "type": "String",
+                "required": false,
+                "description": "Path to the .vibrai project whose part types to advise on (defaults to \u003Ccurrent-directory-name\u003E.vibrai in the working directory)."
+              }
+            ]
+          },
+          {
+            "name": "apply_mix_profile",
+            "description": "Apply a mix profile\u0027s PLACEMENT to the open set: level and pan per part type, plus a reverb send when reverb_return names a return track. Part types resolve to tracks exactly as apply_mix does \u2014 through the loaded project when there is one, by track-name hint when there isn\u0027t \u2014 and the result says which path ran. The profile\u0027s EQ and compressor advice is NOT applied; suggest_mix reports it so you can apply it with set_device_param, where Live reports back the display_value that landed. Pass dry_run to see what would be written.",
+            "parameters": [
+              {
+                "name": "profile",
+                "type": "String",
+                "required": false,
+                "description": "Profile name (default: \u0022default\u0022). See list_mix_profiles."
+              },
+              {
+                "name": "parts",
+                "type": "String[]",
+                "required": false,
+                "description": "Part types to apply, e.g. [\u0022bass\u0022, \u0022lead\u0022]. Omit to use the loaded project\u0027s parts, or the whole profile when there is none."
+              },
+              {
+                "name": "reverb_return",
+                "type": "String",
+                "required": false,
+                "description": "Return-track name that carries the depth reverb, e.g. \u0022A-Reverb\u0022 (see list_returns). Without it, level and pan are applied and depth is reported as a warning rather than written."
+              },
+              {
+                "name": "project_path",
+                "type": "String",
+                "required": false,
+                "description": "Path to the .vibrai project to bind part types against (defaults to \u003Ccurrent-directory-name\u003E.vibrai in the working directory)."
+              },
+              {
+                "name": "dry_run",
+                "type": "Boolean",
+                "required": false,
+                "description": "Report what would be written without writing it."
+              }
+            ]
+          },
+          {
+            "name": "get_mix_advice",
+            "description": "Look up Vibrai\u0027s mixing knowledge. Topics: \u0022compression\u0022 (compressor starting points per source, plus the fast/slow attack continuum), \u0022reverb\u0022 (what each parameter does to the tail), \u0022low_end\u0022 (the five ways kick and bass fight, and the fix for each), \u0022tool_choice\u0022 (whether a problem wants EQ, compression, dynamic EQ or automation). Call with no topic for the index. Narrow with subject \u2014 a compression source (\u0022kick\u0022) or part type (\u0022bd\u0022), or a reference entry (\u0022pre_delay\u0022, \u0022phase_cancellation\u0022). This is guidance with defaults, not measurement: ~/.vibrai/mix-advice/\u003Ctopic\u003E.yaml overrides any of it.",
+            "parameters": [
+              {
+                "name": "topic",
+                "type": "String",
+                "required": false,
+                "description": "One of compression, reverb, low_end, tool_choice. Omit for the topic index."
+              },
+              {
+                "name": "subject",
+                "type": "String",
+                "required": false,
+                "description": "Narrows the topic: a compression source (\u0022kick\u0022) or part type (\u0022bd\u0022), or a reference entry id (\u0022pre_delay\u0022)."
+              }
+            ]
+          },
+          {
+            "name": "apply_compression_preset",
+            "description": "Write a source\u0027s compression starting points \u2014 Attack, Release and Ratio \u2014 onto a compressor already loaded on a track. Source is a name (\u0022kick\u0022, \u0022vocal\u0022, \u0022bass\u0022, \u0022snare\u0022, \u0022guitar\u0022, \u0022piano\u0022) or a part type that maps to one (\u0022bd\u0022, \u0022snare\u0022, \u0022bass\u0022). Threshold is deliberately NOT written: it depends on the incoming level, which no table can know. A parameter the device does not expose, or whose units clearly differ (a Release choice list in seconds against a millisecond table), is skipped with a warning rather than clamped \u2014 the call fails only if nothing at all is writable. Pass dry_run to see the writes without making them. Use get_mix_advice for the ranges these starting points sit in.",
+            "parameters": [
+              {
+                "name": "liveset_id",
+                "type": "String",
+                "required": true,
+                "description": "Track handle from list_tracks, e.g. \u0022trk_42\u0022. Copy verbatim; not a position number."
+              },
+              {
+                "name": "device_id",
+                "type": "String",
+                "required": true,
+                "description": "Device ID, 1-based chain position, or a name substring \u2014 the compressor to write to."
+              },
+              {
+                "name": "source",
+                "type": "String",
+                "required": true,
+                "description": "Compression source: kick, snare, bass, vocal, guitar, piano \u2014 or a part type such as \u0022bd\u0022."
+              },
+              {
+                "name": "dry_run",
+                "type": "Boolean",
+                "required": false,
+                "description": "Report the writes without making them. The device is still read, so the reported skips are real."
+              }
+            ]
           }
         ]
       }
@@ -1100,7 +1355,7 @@
                 "name": "device_id",
                 "type": "String",
                 "required": true,
-                "description": "Device ID or 1-based position number or name substring"
+                "description": "1-based position: 1 = the first device in the chain, 2 = the second. NOT the \u0060device_id\u0060 list_devices reports \u2014 that field is 0-based, so add 1 to it. A name substring also works (case-insensitive, must match exactly one device)."
               },
               {
                 "name": "param",
@@ -1142,7 +1397,7 @@
                 "name": "device_id",
                 "type": "String",
                 "required": true,
-                "description": "Device ID or 1-based position number or name substring"
+                "description": "1-based position: 1 = the first device in the chain, 2 = the second. NOT the \u0060device_id\u0060 list_devices reports \u2014 that field is 0-based, so add 1 to it. A name substring also works (case-insensitive, must match exactly one device)."
               },
               {
                 "name": "parameters",
@@ -1166,7 +1421,7 @@
                 "name": "device_id",
                 "type": "String",
                 "required": true,
-                "description": "Device ID or 1-based position number or name substring"
+                "description": "1-based position: 1 = the first device in the chain, 2 = the second. NOT the \u0060device_id\u0060 list_devices reports \u2014 that field is 0-based, so add 1 to it. A name substring also works (case-insensitive, must match exactly one device)."
               },
               {
                 "name": "enabled",
@@ -2331,7 +2586,7 @@
                 "name": "device_id",
                 "type": "String",
                 "required": false,
-                "description": "Device ID or 1-based position number or name substring. Provide together with paramId, or omit both for a bulk read of every envelope on the clip."
+                "description": "1-based position: 1 = the first device in the chain, 2 = the second. NOT the \u0060device_id\u0060 list_devices reports \u2014 that field is 0-based, so add 1 to it. A name substring also works (case-insensitive, must match exactly one device).. Provide together with paramId, or omit both for a bulk read of every envelope on the clip."
               },
               {
                 "name": "param_id",
@@ -2361,7 +2616,7 @@
                 "name": "device_id",
                 "type": "String",
                 "required": true,
-                "description": "Device ID or 1-based position number or name substring"
+                "description": "1-based position: 1 = the first device in the chain, 2 = the second. NOT the \u0060device_id\u0060 list_devices reports \u2014 that field is 0-based, so add 1 to it. A name substring also works (case-insensitive, must match exactly one device)."
               },
               {
                 "name": "param_id",
@@ -2403,7 +2658,7 @@
                 "name": "device_id",
                 "type": "String",
                 "required": false,
-                "description": "Device ID or 1-based position number or name substring. Provide together with paramId, or omit both to clear every envelope on the clip."
+                "description": "1-based position: 1 = the first device in the chain, 2 = the second. NOT the \u0060device_id\u0060 list_devices reports \u2014 that field is 0-based, so add 1 to it. A name substring also works (case-insensitive, must match exactly one device).. Provide together with paramId, or omit both to clear every envelope on the clip."
               },
               {
                 "name": "param_id",
@@ -2760,6 +3015,12 @@
             ],
             "options": [
               {
+                "name": "--project",
+                "value_name": "PATH",
+                "default": null,
+                "description": "Path to the .vibrai file whose declared meter positions bar.beat inputs (defaults to \u003Ccurrent-directory-name\u003E.vibrai; falls back to Live\u0027s transport, then 4/4)"
+              },
+              {
                 "name": "--from",
                 "value_name": "BAR.BEAT|BEATS",
                 "default": null,
@@ -2806,6 +3067,12 @@
               }
             ],
             "options": [
+              {
+                "name": "--project",
+                "value_name": "PATH",
+                "default": null,
+                "description": "Path to the .vibrai file whose declared meter positions bar.beat inputs (defaults to \u003Ccurrent-directory-name\u003E.vibrai; falls back to Live\u0027s transport, then 4/4)"
+              },
               {
                 "name": "--device",
                 "value_name": "ID",
@@ -2915,6 +3182,12 @@
               }
             ],
             "options": [
+              {
+                "name": "--project",
+                "value_name": "PATH",
+                "default": null,
+                "description": "Path to the .vibrai file whose declared meter positions bar.beat inputs (defaults to \u003Ccurrent-directory-name\u003E.vibrai; falls back to Live\u0027s transport, then 4/4)"
+              },
               {
                 "name": "--device",
                 "value_name": "ID",
@@ -3069,7 +3342,7 @@
                 "name": "device_id",
                 "type": "String",
                 "required": true,
-                "description": "Device ID or 1-based position number or name substring"
+                "description": "1-based position: 1 = the first device in the chain, 2 = the second. NOT the \u0060device_id\u0060 list_devices reports \u2014 that field is 0-based, so add 1 to it. A name substring also works (case-insensitive, must match exactly one device)."
               }
             ]
           },
@@ -3118,6 +3391,12 @@
                 "type": "Boolean",
                 "required": false,
                 "description": "Overrides the mid-clip refusal (the whole clip is rewritten; unledgered automation on it is replaced)"
+              },
+              {
+                "name": "project_path",
+                "type": "String",
+                "required": false,
+                "description": "Path to the .vibrai file whose declared meter positions bar.beat inputs (defaults to \u003Ccurrent-directory-name\u003E.vibrai in the working directory; falls back to Live\u0027s transport, then 4/4)"
               }
             ]
           },
@@ -3154,6 +3433,12 @@
                 "type": "String",
                 "required": false,
                 "description": "Optional parameter filter: parameter id as authored (index or display name \u2014 match what you wrote; list_automation_params shows both)"
+              },
+              {
+                "name": "project_path",
+                "type": "String",
+                "required": false,
+                "description": "Path to the .vibrai file whose declared meter positions bar.beat inputs (defaults to \u003Ccurrent-directory-name\u003E.vibrai in the working directory; falls back to Live\u0027s transport, then 4/4)"
               }
             ]
           },
@@ -3190,6 +3475,12 @@
                 "type": "String",
                 "required": false,
                 "description": "Optional window length in beats"
+              },
+              {
+                "name": "project_path",
+                "type": "String",
+                "required": false,
+                "description": "Path to the .vibrai file whose declared meter positions bar.beat inputs (defaults to \u003Ccurrent-directory-name\u003E.vibrai in the working directory; falls back to Live\u0027s transport, then 4/4)"
               }
             ]
           },
@@ -4021,7 +4312,14 @@
                 "description": "Arrangement start: bar.beat notation (e.g. 5.1 = bar 5, beat 1) or raw beats"
               }
             ],
-            "options": []
+            "options": [
+              {
+                "name": "--project",
+                "value_name": "PATH",
+                "default": null,
+                "description": "Path to the .vibrai file whose declared meter positions bar.beat inputs (defaults to \u003Ccurrent-directory-name\u003E.vibrai; falls back to Live\u0027s transport, then 4/4)"
+              }
+            ]
           },
           {
             "name": "arrangement clear-scoped",
@@ -4114,6 +4412,12 @@
                 "type": "String",
                 "required": true,
                 "description": "Arrangement start: bar.beat notation (e.g. \u00272.3\u0027 = bar 2, beat 3) or raw beats (e.g. \u002716\u0027 or \u002716.0\u0027)"
+              },
+              {
+                "name": "project_path",
+                "type": "String",
+                "required": false,
+                "description": "Path to the .vibrai file whose declared meter positions bar.beat inputs (defaults to \u003Ccurrent-directory-name\u003E.vibrai in the working directory; falls back to Live\u0027s transport, then 4/4)"
               }
             ]
           },

@@ -1,11 +1,11 @@
 ---
 title: "Mixing"
-description: "Set-wide mixing: return tracks and bulk mix application."
+description: "Set-wide mixing: return tracks, bulk mix application, profile-driven placement advice, and the mixing-knowledge reference."
 ---
 
 {/* GENERATED — do not edit by hand. Regenerate with `npm run generate:reference`. */}
 
-Set-wide mixing: return tracks and bulk mix application.
+Set-wide mixing: return tracks, bulk mix application, profile-driven placement advice, and the mixing-knowledge reference.
 
 ## Command line
 
@@ -32,6 +32,100 @@ vibrai mix apply --part <SPEC> --project <PATH>
 </ParamField>
 <ParamField path="--project">
   Path to the .vibrai file (default: &lt;current-directory-name>.vibrai in the working directory). Without one, binding falls back to track-name hints.
+</ParamField>
+
+### `mix profiles`
+
+List the available mix profiles
+
+```bash
+vibrai mix profiles
+```
+
+
+
+### `mix suggest`
+
+Suggest level, pan, depth and corrective moves per part type
+
+```bash
+vibrai mix suggest --chains --techniques --profile <NAME> --part <PART_TYPE> --project <PATH>
+```
+
+<ParamField path="--chains">
+  Also print the corrective EQ and compressor moves for each part.
+</ParamField>
+<ParamField path="--techniques">
+  Also print the profile's technique blocks (compressor setup, serial vs parallel compression, harshness check, drum impact).
+</ParamField>
+<ParamField path="--profile">
+  Mix profile to use (default: default). See `vibrai mix profiles`.
+</ParamField>
+<ParamField path="--part">
+  Part type to include, e.g. bass. Repeatable. Omit to use the loaded project's parts, or the whole profile when there is none.
+</ParamField>
+<ParamField path="--project">
+  Path to the .vibrai file (default: &lt;current-directory-name>.vibrai in the working directory).
+</ParamField>
+
+### `mix apply-profile`
+
+Apply a mix profile's level, pan and depth to the open set
+
+```bash
+vibrai mix apply-profile --reverb-return <NAME> --dry-run --profile <NAME> --part <PART_TYPE> --project <PATH>
+```
+
+<ParamField path="--reverb-return">
+  Return-track name carrying the depth reverb, e.g. A-Reverb (see `vibrai mix returns`). Without it, level and pan are applied and depth is reported as a warning rather than written.
+</ParamField>
+<ParamField path="--dry-run">
+  Report what would be written without writing it.
+</ParamField>
+<ParamField path="--profile">
+  Mix profile to use (default: default). See `vibrai mix profiles`.
+</ParamField>
+<ParamField path="--part">
+  Part type to include, e.g. bass. Repeatable. Omit to use the loaded project's parts, or the whole profile when there is none.
+</ParamField>
+<ParamField path="--project">
+  Path to the .vibrai file (default: &lt;current-directory-name>.vibrai in the working directory).
+</ParamField>
+
+### `mix advice`
+
+Look up mixing guidance: compression, reverb, low-end, tool choice
+
+```bash
+vibrai mix advice [topic] --for <SUBJECT>
+```
+
+<ParamField path="topic">
+  compression, reverb, low-end or tool-choice. Omit to list the topics.
+</ParamField>
+<ParamField path="--for">
+  Narrow the topic: a compression source (kick) or part type (bd), or a reference entry (pre-delay, phase-cancellation).
+</ParamField>
+
+### `mix compress`
+
+Write a source's compression starting points onto a compressor
+
+```bash
+vibrai mix compress <track> <device> --for <SOURCE> --dry-run
+```
+
+<ParamField path="track" required>
+  Track handle (trk_42) OR 1-based number (1, 2, …) OR ordinal (first, second, …).
+</ParamField>
+<ParamField path="device" required>
+  Device ID, 1-based chain position, or a name substring — the compressor to write to.
+</ParamField>
+<ParamField path="--for">
+  Compression source: kick, snare, bass, vocal, guitar, piano — or a part type such as bd.
+</ParamField>
+<ParamField path="--dry-run">
+  Report the writes without making them. The device is still read, so the skips are real.
 </ParamField>
 
 ## MCP tools
@@ -131,3 +225,124 @@ List the set's return tracks with their index and name. These names are what set
 ```
 
 
+
+### `list_mix_profiles`
+
+List the available mix profiles. A profile carries starting-point placement (level, pan, depth) per part type plus corrective EQ and dynamics advice. Drop a file at ~/.vibrai/mix-profiles/&lt;name>.yaml to add or shadow one.
+
+```json
+{
+  "tool": "list_mix_profiles",
+  "arguments": {}
+}
+```
+
+
+
+### `suggest_mix`
+
+Suggest a mix without changing anything. Returns, per part type: a starting level in dB, a pan position, a depth tier and the reverb send that expresses it, plus the corrective EQ moves and compressor settings that belong on that part — each with the reason attached. Also returns the profile's global rules (headroom, the 2-5 kHz harsh band, return-track guidance) and its technique blocks (serial vs parallel compression, compressor setup, harshness check). Part types come from `parts` if given, else from the loaded project, else the whole profile. The EQ/compressor numbers are DISPLAY units and are advice, not a write: apply them with set_device_param and check the display_value it reports back. Use apply_mix_profile to apply the level/pan/send half for real.
+
+```json
+{
+  "tool": "suggest_mix",
+  "arguments": {
+    "profile": "<String>",
+    "parts": "<String[]>",
+    "project_path": "<String>"
+  }
+}
+```
+
+<ParamField path="profile" type="String">
+  Profile name (default: "default"). See list_mix_profiles.
+</ParamField>
+<ParamField path="parts" type="String[]">
+  Part types to advise on, e.g. ["bass", "lead", "hi_hat"]. Omit to use the loaded project's parts, or the whole profile when there is none.
+</ParamField>
+<ParamField path="project_path" type="String">
+  Path to the .vibrai project whose part types to advise on (defaults to &lt;current-directory-name>.vibrai in the working directory).
+</ParamField>
+
+### `apply_mix_profile`
+
+Apply a mix profile's PLACEMENT to the open set: level and pan per part type, plus a reverb send when reverb_return names a return track. Part types resolve to tracks exactly as apply_mix does — through the loaded project when there is one, by track-name hint when there isn't — and the result says which path ran. The profile's EQ and compressor advice is NOT applied; suggest_mix reports it so you can apply it with set_device_param, where Live reports back the display_value that landed. Pass dry_run to see what would be written.
+
+```json
+{
+  "tool": "apply_mix_profile",
+  "arguments": {
+    "profile": "<String>",
+    "parts": "<String[]>",
+    "reverb_return": "<String>",
+    "project_path": "<String>",
+    "dry_run": "<Boolean>"
+  }
+}
+```
+
+<ParamField path="profile" type="String">
+  Profile name (default: "default"). See list_mix_profiles.
+</ParamField>
+<ParamField path="parts" type="String[]">
+  Part types to apply, e.g. ["bass", "lead"]. Omit to use the loaded project's parts, or the whole profile when there is none.
+</ParamField>
+<ParamField path="reverb_return" type="String">
+  Return-track name that carries the depth reverb, e.g. "A-Reverb" (see list_returns). Without it, level and pan are applied and depth is reported as a warning rather than written.
+</ParamField>
+<ParamField path="project_path" type="String">
+  Path to the .vibrai project to bind part types against (defaults to &lt;current-directory-name>.vibrai in the working directory).
+</ParamField>
+<ParamField path="dry_run" type="Boolean">
+  Report what would be written without writing it.
+</ParamField>
+
+### `get_mix_advice`
+
+Look up Vibrai's mixing knowledge. Topics: "compression" (compressor starting points per source, plus the fast/slow attack continuum), "reverb" (what each parameter does to the tail), "low_end" (the five ways kick and bass fight, and the fix for each), "tool_choice" (whether a problem wants EQ, compression, dynamic EQ or automation). Call with no topic for the index. Narrow with subject — a compression source ("kick") or part type ("bd"), or a reference entry ("pre_delay", "phase_cancellation"). This is guidance with defaults, not measurement: ~/.vibrai/mix-advice/&lt;topic>.yaml overrides any of it.
+
+```json
+{
+  "tool": "get_mix_advice",
+  "arguments": {
+    "topic": "<String>",
+    "subject": "<String>"
+  }
+}
+```
+
+<ParamField path="topic" type="String">
+  One of compression, reverb, low_end, tool_choice. Omit for the topic index.
+</ParamField>
+<ParamField path="subject" type="String">
+  Narrows the topic: a compression source ("kick") or part type ("bd"), or a reference entry id ("pre_delay").
+</ParamField>
+
+### `apply_compression_preset`
+
+Write a source's compression starting points — Attack, Release and Ratio — onto a compressor already loaded on a track. Source is a name ("kick", "vocal", "bass", "snare", "guitar", "piano") or a part type that maps to one ("bd", "snare", "bass"). Threshold is deliberately NOT written: it depends on the incoming level, which no table can know. A parameter the device does not expose, or whose units clearly differ (a Release choice list in seconds against a millisecond table), is skipped with a warning rather than clamped — the call fails only if nothing at all is writable. Pass dry_run to see the writes without making them. Use get_mix_advice for the ranges these starting points sit in.
+
+```json
+{
+  "tool": "apply_compression_preset",
+  "arguments": {
+    "liveset_id": "<String>",
+    "device_id": "<String>",
+    "source": "<String>",
+    "dry_run": "<Boolean>"
+  }
+}
+```
+
+<ParamField path="liveset_id" type="String" required>
+  Track handle from list_tracks, e.g. "trk_42". Copy verbatim; not a position number.
+</ParamField>
+<ParamField path="device_id" type="String" required>
+  Device ID, 1-based chain position, or a name substring — the compressor to write to.
+</ParamField>
+<ParamField path="source" type="String" required>
+  Compression source: kick, snare, bass, vocal, guitar, piano — or a part type such as "bd".
+</ParamField>
+<ParamField path="dry_run" type="Boolean">
+  Report the writes without making them. The device is still read, so the reported skips are real.
+</ParamField>

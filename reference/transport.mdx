@@ -56,11 +56,14 @@ vibrai transport stop
 Seek transport to a beat position
 
 ```bash
-vibrai transport seek <position>
+vibrai transport seek <position> --project <PATH>
 ```
 
 <ParamField path="position" required>
   Transport position: bar.beat notation (e.g. 2.1 = bar 2, beat 1) or raw beats (e.g. 16.0)
+</ParamField>
+<ParamField path="--project">
+  Path to the .vibrai file whose declared meter positions bar.beat inputs (defaults to &lt;current-directory-name>.vibrai; falls back to Live's transport, then 4/4)
 </ParamField>
 
 ## MCP tools
@@ -129,11 +132,15 @@ Move the transport playhead to the given position (0 = song start). Accepts bar.
 {
   "tool": "seek",
   "arguments": {
-    "beats": "<String>"
+    "beats": "<String>",
+    "project_path": "<String>"
   }
 }
 ```
 
 <ParamField path="beats" type="String" required>
   Transport position: bar.beat notation (e.g. "2.1" = bar 2, beat 1) or raw beats (e.g. "16" or "16.0")
+</ParamField>
+<ParamField path="project_path" type="String">
+  Path to the .vibrai file whose declared meter positions bar.beat inputs (defaults to &lt;current-directory-name>.vibrai in the working directory; falls back to Live's transport, then 4/4)
 </ParamField>
