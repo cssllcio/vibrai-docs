@@ -407,7 +407,7 @@ Read automation envelope(s) on a session-view clip. Omit both deviceId and param
   Scene handle from list_scenes, e.g. "scn_7". Copy verbatim.
 </ParamField>
 <ParamField path="device_id" type="String">
-  Device ID or 1-based position number or name substring. Provide together with paramId, or omit both for a bulk read of every envelope on the clip.
+  1-based position: 1 = the first device in the chain, 2 = the second. NOT the `device_id` list_devices reports — that field is 0-based, so add 1 to it. A name substring also works (case-insensitive, must match exactly one device).. Provide together with paramId, or omit both for a bulk read of every envelope on the clip.
 </ParamField>
 <ParamField path="param_id" type="String">
   Parameter index (from list_automation_params .param_id column) OR the parameter's display name. Provide together with deviceId, or omit both for a bulk read.
@@ -438,7 +438,7 @@ Write an automation envelope onto a session-view clip (replaces existing points)
   Scene handle from list_scenes, e.g. "scn_7". Copy verbatim.
 </ParamField>
 <ParamField path="device_id" type="String" required>
-  Device ID or 1-based position number or name substring
+  1-based position: 1 = the first device in the chain, 2 = the second. NOT the `device_id` list_devices reports — that field is 0-based, so add 1 to it. A name substring also works (case-insensitive, must match exactly one device).
 </ParamField>
 <ParamField path="param_id" type="String" required>
   Parameter index (from list_automation_params .param_id column) OR the parameter's display name (.param_name column)
@@ -473,7 +473,7 @@ Clear automation envelope(s) on a session-view clip. Supply BOTH deviceId and pa
   Scene handle from list_scenes, e.g. "scn_7". Copy verbatim.
 </ParamField>
 <ParamField path="device_id" type="String">
-  Device ID or 1-based position number or name substring. Provide together with paramId, or omit both to clear every envelope on the clip.
+  1-based position: 1 = the first device in the chain, 2 = the second. NOT the `device_id` list_devices reports — that field is 0-based, so add 1 to it. A name substring also works (case-insensitive, must match exactly one device).. Provide together with paramId, or omit both to clear every envelope on the clip.
 </ParamField>
 <ParamField path="param_id" type="String">
   Parameter index or display name. Provide together with deviceId, or omit both to clear every envelope on the clip.
