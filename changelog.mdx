@@ -4,6 +4,42 @@ description: "New features, improvements, and fixes in Vibrai."
 rss: true
 ---
 
+<Update label="1.6.3" description="August 19, 2026">
+  A fix release with audible consequences: five drum parts stop copying the kick, break placement respects your meter, and the installer no longer refuses while Live is open.
+
+  ## Five drum parts stop copying the kick
+
+  `HiHatPlus`, `Percussion`, `Crash`, `Fill` and `Roll` had no Euclidean cell of their own and all fell back to the same generic 4-pulse pattern — a crash hit, a drum fill and a shaker produced the identical rhythm, differing only by seed and pad. Each now has its own cell, authored per part and verified by ear.
+
+  **This changes generated output.** Presets using those five part types generate different notes than in 1.6.2. Other part types are unaffected.
+
+  ## Break and fill steps follow the declared meter
+
+  `BreakOverlay` derived step offsets from a hardcoded 4/4 sixteenth while already carrying the real meter, so at any non-4/4 meter step N landed on the wrong beat. It now uses `meter.BeatsPerBar / 16.0`, the same grid the rest of generation uses — which also realigns break notes with the shadow kick grid.
+
+  ## The installer no longer refuses while Live is running
+
+  It warns and proceeds instead of failing, and tells you to restart Live. Live loads the Vibrai device and remote script at startup, so an install over an open Live has no effect until you restart it.
+
+  Nothing inside a macOS `.pkg` can print to your terminal, so `vibrai version` reports it instead — it names any bridge serving a different build than the CLI, comparing build SHAs when the version strings match.
+
+  ```bash
+  vibrai version
+  ```
+
+  ## Breaking: three `--json` fields reported the wrong value
+
+  - `notes set` / `notes add` ↔ `write_notes` / `add_notes` / `modify_notes` reported a raw 0-based `scene_index` beside an already-converted 1-based `track_id`. The write was always correct; only the report was off by one. Remove any compensation you added.
+  - `automation render` ↔ `render_automation` now agree on `track_id`.
+  - `generate` emits `warnings: []` rather than `null` when empty, matching `plan`.
+
+  ## Also
+
+  - 12 shipped genre files carried `automation:` blocks targeting nothing, silently skipped every render. Removed.
+  - `vibrai update` reinstalls the Ableton side before swapping binaries, so a mid-update failure can no longer leave new binaries beside an untouched device.
+  - The MCP user guide now documents all eight generate-time style knobs.
+</Update>
+
 <Update label="1.6.2" description="August 16, 2026">
   A knowledge layer for mixing, bar lines that land on your set's real meter, and a `generate` that asks before it duplicates your tracks.
 
