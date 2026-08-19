@@ -21,7 +21,7 @@ description: "Install the Vibrai CLI and connect the MCP server."
     Vibrai installs from a single signed **package installer** (`.pkg`) — no Homebrew. One installer sets up everything: the `vibrai` CLI, the MCP server and its Claude Desktop bundle, the Max for Live device, and the Python remote script.
 
     1. **Quit Ableton Live** if it's open — the installer refuses to run while Live is running.
-    2. Download the **Vibrai package installer** (`.pkg`) from [vibrai.com](https://vibrai.com).
+    2. Download the **Vibrai package installer** (`.pkg`) from [vibrai.com/download](https://vibrai.com/download).
     3. Double-click the `.pkg` and follow the prompts.
 
     The installer:
@@ -32,6 +32,10 @@ description: "Install the Vibrai CLI and connect the MCP server."
     - installs the Python remote script.
 
     Next: [connect Claude Desktop](#connect-the-mcp-server) and [load the device into your Live set](#load-the-device-into-your-live-set).
+
+    <Note>
+      Upgrading from a build older than 1.6.3? It checks an old location and always says "up to date". Reinstall once from [vibrai.com/download](https://vibrai.com/download); `vibrai update` works normally after that.
+    </Note>
   </Tab>
   <Tab title="Windows">
     **Windows is not supported in the 1.0 release — macOS only.** Vibrai 1.0 ships a macOS `.pkg` and a macOS-only Claude Desktop `.mcpb`; there is no Windows installer or Windows MCP binary in this release. Windows support is planned for a future 1.x release — follow [vibrai.com](https://vibrai.com) for updates.
