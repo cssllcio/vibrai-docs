@@ -1,6 +1,6 @@
 {
-  "engine_version": "1.6.1.0",
-  "generated_at": "2026-08-16T18:36:01Z",
+  "engine_version": "1.6.2.0",
+  "generated_at": "2026-08-19T08:53:38Z",
   "features": [
     {
       "id": "transport",
@@ -3314,13 +3314,13 @@
                 "name": "--project",
                 "value_name": "PATH",
                 "default": null,
-                "description": "Path to .vibrai file (default: Untitled.vibrai in CWD)"
+                "description": "Path to the .vibrai file (default: \u003Ccurrent-directory-name\u003E.vibrai in the working directory)"
               },
               {
                 "name": "--seed",
                 "value_name": "VALUE",
                 "default": null,
-                "description": "Override the project\u0027s T2mHash seed for this run. Pass the same value generate used, or the re-planned composition may not match what was rendered."
+                "description": "Override the project\u0027s T2mHash seed for this run. Pass the same value generate used, or the re-planned composition may not match what was rendered. Seed is the ONLY plan input this command threads: generate\u0027s --keep-empty-clips, style knobs and bass knobs are not re-applied, and the meter is re-resolved from the project or the live transport, so a transport meter changed since generate can shift the bounce window on a project that declares no meter."
               }
             ]
           }
@@ -3582,7 +3582,7 @@
                 "name": "seed",
                 "type": "Nullable\u00601",
                 "required": false,
-                "description": "Optional seed override. Pass the same value generate used, or the re-planned composition may not match what was rendered."
+                "description": "Optional seed override. Pass the same value generate used, or the re-planned composition may not match what was rendered. Seed is the ONLY plan input this tool threads: generate\u0027s keep_empty_clips, style knobs and bass knobs are not re-applied, and the meter is re-resolved from the project or the live transport, so a transport meter changed since generate can shift the bounce window on a project that declares no meter."
               }
             ]
           },
@@ -5268,31 +5268,31 @@
                 "name": "--swing",
                 "value_name": "PCT",
                 "default": null,
-                "description": "Swing amount 0-100 (0 straight, 100 hard triplet). Overrides genre/preset default."
+                "description": "Swing amount 0-100 (0 straight, 100 hard triplet). Melodic parts only \u2014 has no effect on drums, pads, or FX sweeps. Overrides genre/preset default."
               },
               {
                 "name": "--humanize",
                 "value_name": "PCT",
                 "default": null,
-                "description": "Velocity/timing jitter 0-100. Overrides genre/preset default."
+                "description": "Velocity/timing jitter 0-100. Melodic parts only \u2014 has no effect on drums, pads, or FX sweeps. Overrides genre/preset default."
               },
               {
                 "name": "--ornaments",
                 "value_name": "PCT",
                 "default": null,
-                "description": "Grace-note/roll density 0-100. Overrides genre/preset default."
+                "description": "Grace-note/roll density 0-100. Melodic parts only \u2014 has no effect on drums, pads, or FX sweeps. Overrides genre/preset default."
               },
               {
                 "name": "--dropout",
                 "value_name": "PCT",
                 "default": null,
-                "description": "Tension-section note thinning 0-100. Overrides genre/preset default."
+                "description": "Tension-section note thinning 0-100. Melodic parts only \u2014 has no effect on drums, pads, or FX sweeps. Overrides genre/preset default."
               },
               {
                 "name": "--gate",
                 "value_name": "PCT",
                 "default": null,
-                "description": "Note articulation length 0-100 (10 = extreme staccato, 100 = full value/legato). Overrides genre/preset default."
+                "description": "Note articulation length 0-100 (10 = extreme staccato, 100 = full value/legato). Melodic parts only \u2014 has no effect on drums, pads, or FX sweeps. Overrides genre/preset default."
               },
               {
                 "name": "--bass-motion",
@@ -5310,7 +5310,7 @@
                 "name": "--native-randomization",
                 "value_name": null,
                 "default": null,
-                "description": "Emit Live\u0027s per-note probability/velocity-deviation instead of baking randomization in. The loop then varies on every playback, but the audible result is no longer reproducible from the seed. Omit to inherit the genre\u0027s setting."
+                "description": "Emit Live\u0027s per-note probability/velocity-deviation instead of baking randomization in. Melodic parts only \u2014 has no effect on drums, pads, or FX sweeps. The loop then varies on every playback, but the audible result is no longer reproducible from the seed. Omit to inherit the genre\u0027s setting."
               },
               {
                 "name": "--scale-root",
@@ -5365,31 +5365,31 @@
                 "name": "--swing",
                 "value_name": "PCT",
                 "default": null,
-                "description": "Swing amount 0-100 (0 straight, 100 hard triplet). Overrides genre/preset default."
+                "description": "Swing amount 0-100 (0 straight, 100 hard triplet). Melodic parts only \u2014 has no effect on drums, pads, or FX sweeps. Overrides genre/preset default."
               },
               {
                 "name": "--humanize",
                 "value_name": "PCT",
                 "default": null,
-                "description": "Velocity/timing jitter 0-100. Overrides genre/preset default."
+                "description": "Velocity/timing jitter 0-100. Melodic parts only \u2014 has no effect on drums, pads, or FX sweeps. Overrides genre/preset default."
               },
               {
                 "name": "--ornaments",
                 "value_name": "PCT",
                 "default": null,
-                "description": "Grace-note/roll density 0-100. Overrides genre/preset default."
+                "description": "Grace-note/roll density 0-100. Melodic parts only \u2014 has no effect on drums, pads, or FX sweeps. Overrides genre/preset default."
               },
               {
                 "name": "--dropout",
                 "value_name": "PCT",
                 "default": null,
-                "description": "Tension-section note thinning 0-100. Overrides genre/preset default."
+                "description": "Tension-section note thinning 0-100. Melodic parts only \u2014 has no effect on drums, pads, or FX sweeps. Overrides genre/preset default."
               },
               {
                 "name": "--gate",
                 "value_name": "PCT",
                 "default": null,
-                "description": "Note articulation length 0-100 (10 = extreme staccato, 100 = full value/legato). Overrides genre/preset default."
+                "description": "Note articulation length 0-100 (10 = extreme staccato, 100 = full value/legato). Melodic parts only \u2014 has no effect on drums, pads, or FX sweeps. Overrides genre/preset default."
               },
               {
                 "name": "--bass-motion",
@@ -5407,7 +5407,7 @@
                 "name": "--native-randomization",
                 "value_name": null,
                 "default": null,
-                "description": "Emit Live\u0027s per-note probability/velocity-deviation instead of baking randomization in. The loop then varies on every playback, but the audible result is no longer reproducible from the seed. Omit to inherit the genre\u0027s setting."
+                "description": "Emit Live\u0027s per-note probability/velocity-deviation instead of baking randomization in. Melodic parts only \u2014 has no effect on drums, pads, or FX sweeps. The loop then varies on every playback, but the audible result is no longer reproducible from the seed. Omit to inherit the genre\u0027s setting."
               },
               {
                 "name": "--scale-root",
@@ -5453,37 +5453,37 @@
                 "name": "swing",
                 "type": "Nullable\u00601",
                 "required": false,
-                "description": "Swing 0-100 (0 straight, 100 hard triplet); overrides genre/preset default"
+                "description": "Swing 0-100 (0 straight, 100 hard triplet). Melodic parts only \u2014 has no effect on drums, pads, or FX sweeps; overrides genre/preset default"
               },
               {
                 "name": "humanize",
                 "type": "Nullable\u00601",
                 "required": false,
-                "description": "Velocity/timing jitter 0-100; overrides genre/preset default"
+                "description": "Velocity/timing jitter 0-100. Melodic parts only \u2014 has no effect on drums, pads, or FX sweeps; overrides genre/preset default"
               },
               {
                 "name": "ornament_density",
                 "type": "Nullable\u00601",
                 "required": false,
-                "description": "Grace-note/roll density 0-100; overrides genre/preset default"
+                "description": "Grace-note/roll density 0-100. Melodic parts only \u2014 has no effect on drums, pads, or FX sweeps; overrides genre/preset default"
               },
               {
                 "name": "dropout",
                 "type": "Nullable\u00601",
                 "required": false,
-                "description": "Tension-section note thinning 0-100; overrides genre/preset default"
+                "description": "Tension-section note thinning 0-100. Melodic parts only \u2014 has no effect on drums, pads, or FX sweeps; overrides genre/preset default"
               },
               {
                 "name": "gate",
                 "type": "Nullable\u00601",
                 "required": false,
-                "description": "Note articulation length 0-100 (10 extreme staccato, 100 full value/legato); overrides genre/preset default"
+                "description": "Note articulation length 0-100 (10 extreme staccato, 100 full value/legato). Melodic parts only \u2014 has no effect on drums, pads, or FX sweeps; overrides genre/preset default"
               },
               {
                 "name": "native_randomization",
                 "type": "Nullable\u00601",
                 "required": false,
-                "description": "Emit Live\u0027s per-note probability/velocity-deviation instead of baking randomization in. The loop then varies on every playback, but the audible result is no longer reproducible from the seed. Null inherits the genre setting."
+                "description": "Emit Live\u0027s per-note probability/velocity-deviation instead of baking randomization in. Melodic parts only \u2014 has no effect on drums, pads, or FX sweeps. The loop then varies on every playback, but the audible result is no longer reproducible from the seed. Null inherits the genre setting."
               },
               {
                 "name": "bass_motion",
@@ -5573,37 +5573,37 @@
                 "name": "swing",
                 "type": "Nullable\u00601",
                 "required": false,
-                "description": "Swing 0-100 (0 straight, 100 hard triplet); overrides genre/preset default"
+                "description": "Swing 0-100 (0 straight, 100 hard triplet). Melodic parts only \u2014 has no effect on drums, pads, or FX sweeps; overrides genre/preset default"
               },
               {
                 "name": "humanize",
                 "type": "Nullable\u00601",
                 "required": false,
-                "description": "Velocity/timing jitter 0-100; overrides genre/preset default"
+                "description": "Velocity/timing jitter 0-100. Melodic parts only \u2014 has no effect on drums, pads, or FX sweeps; overrides genre/preset default"
               },
               {
                 "name": "ornament_density",
                 "type": "Nullable\u00601",
                 "required": false,
-                "description": "Grace-note/roll density 0-100; overrides genre/preset default"
+                "description": "Grace-note/roll density 0-100. Melodic parts only \u2014 has no effect on drums, pads, or FX sweeps; overrides genre/preset default"
               },
               {
                 "name": "dropout",
                 "type": "Nullable\u00601",
                 "required": false,
-                "description": "Tension-section note thinning 0-100; overrides genre/preset default"
+                "description": "Tension-section note thinning 0-100. Melodic parts only \u2014 has no effect on drums, pads, or FX sweeps; overrides genre/preset default"
               },
               {
                 "name": "gate",
                 "type": "Nullable\u00601",
                 "required": false,
-                "description": "Note articulation length 0-100 (10 extreme staccato, 100 full value/legato); overrides genre/preset default"
+                "description": "Note articulation length 0-100 (10 extreme staccato, 100 full value/legato). Melodic parts only \u2014 has no effect on drums, pads, or FX sweeps; overrides genre/preset default"
               },
               {
                 "name": "native_randomization",
                 "type": "Nullable\u00601",
                 "required": false,
-                "description": "Emit Live\u0027s per-note probability/velocity-deviation instead of baking randomization in. The loop then varies on every playback, but the audible result is no longer reproducible from the seed. Null inherits the genre setting."
+                "description": "Emit Live\u0027s per-note probability/velocity-deviation instead of baking randomization in. Melodic parts only \u2014 has no effect on drums, pads, or FX sweeps. The loop then varies on every playback, but the audible result is no longer reproducible from the seed. Null inherits the genre setting."
               },
               {
                 "name": "bass_motion",

@@ -219,10 +219,10 @@ vibrai automation render --project <PATH> --seed <VALUE>
 ```
 
 <ParamField path="--project">
-  Path to .vibrai file (default: Untitled.vibrai in CWD)
+  Path to the .vibrai file (default: &lt;current-directory-name>.vibrai in the working directory)
 </ParamField>
 <ParamField path="--seed">
-  Override the project's T2mHash seed for this run. Pass the same value generate used, or the re-planned composition may not match what was rendered.
+  Override the project's T2mHash seed for this run. Pass the same value generate used, or the re-planned composition may not match what was rendered. Seed is the ONLY plan input this command threads: generate's --keep-empty-clips, style knobs and bass knobs are not re-applied, and the meter is re-resolved from the project or the live transport, so a transport meter changed since generate can shift the bounce window on a project that declares no meter.
 </ParamField>
 
 ## MCP tools
@@ -450,7 +450,7 @@ Apply the project composition's arrangement automation to the already-rendered L
   Absolute filesystem path to the .vibrai file.
 </ParamField>
 <ParamField path="seed" type="Nullable`1">
-  Optional seed override. Pass the same value generate used, or the re-planned composition may not match what was rendered.
+  Optional seed override. Pass the same value generate used, or the re-planned composition may not match what was rendered. Seed is the ONLY plan input this tool threads: generate's keep_empty_clips, style knobs and bass knobs are not re-applied, and the meter is re-resolved from the project or the live transport, so a transport meter changed since generate can shift the bounce window on a project that declares no meter.
 </ParamField>
 
 ### `list_automation_slots`
