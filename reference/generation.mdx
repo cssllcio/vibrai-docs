@@ -57,19 +57,19 @@ vibrai generate --project <PATH> --force --clear-first --dry-run --seed <VALUE> 
   When a part is bound to a track_id (project init / capture) that no longer exists in the Live set, create it (name from the part, MIDI type) instead of failing. Default: off — such a project fails validation up front, naming the missing track_id(s), before anything is written.
 </ParamField>
 <ParamField path="--swing">
-  Swing amount 0-100 (0 straight, 100 hard triplet). Overrides genre/preset default.
+  Swing amount 0-100 (0 straight, 100 hard triplet). Melodic parts only — has no effect on drums, pads, or FX sweeps. Overrides genre/preset default.
 </ParamField>
 <ParamField path="--humanize">
-  Velocity/timing jitter 0-100. Overrides genre/preset default.
+  Velocity/timing jitter 0-100. Melodic parts only — has no effect on drums, pads, or FX sweeps. Overrides genre/preset default.
 </ParamField>
 <ParamField path="--ornaments">
-  Grace-note/roll density 0-100. Overrides genre/preset default.
+  Grace-note/roll density 0-100. Melodic parts only — has no effect on drums, pads, or FX sweeps. Overrides genre/preset default.
 </ParamField>
 <ParamField path="--dropout">
-  Tension-section note thinning 0-100. Overrides genre/preset default.
+  Tension-section note thinning 0-100. Melodic parts only — has no effect on drums, pads, or FX sweeps. Overrides genre/preset default.
 </ParamField>
 <ParamField path="--gate">
-  Note articulation length 0-100 (10 = extreme staccato, 100 = full value/legato). Overrides genre/preset default.
+  Note articulation length 0-100 (10 = extreme staccato, 100 = full value/legato). Melodic parts only — has no effect on drums, pads, or FX sweeps. Overrides genre/preset default.
 </ParamField>
 <ParamField path="--bass-motion">
   Bass motion profile: root, root_fifth, octave_pump, arpeggiated, walking, pedal. Overrides genre default.
@@ -78,7 +78,7 @@ vibrai generate --project <PATH> --force --clear-first --dry-run --seed <VALUE> 
   How the bass sits against the kick: lock (snap onto it), dodge (push off it), free (ignore it). Overrides genre default.
 </ParamField>
 <ParamField path="--native-randomization">
-  Emit Live's per-note probability/velocity-deviation instead of baking randomization in. The loop then varies on every playback, but the audible result is no longer reproducible from the seed. Omit to inherit the genre's setting.
+  Emit Live's per-note probability/velocity-deviation instead of baking randomization in. Melodic parts only — has no effect on drums, pads, or FX sweeps. The loop then varies on every playback, but the audible result is no longer reproducible from the seed. Omit to inherit the genre's setting.
 </ParamField>
 <ParamField path="--scale-root">
   Target scale root: note name (C, C#, Db, …, B) or pitch class 0–11. Omit to use the project's own default scale (tiebroken by the open Live set only when the project is still at its untouched preset default).
@@ -111,19 +111,19 @@ vibrai plan --project <PATH> --seed <VALUE> --keep-empty-clips --swing <PCT> --h
   Keep generator-produced clips that resolve to zero notes. By default these are skipped, leaving a gap in both session and arrangement views. Authored literal empty clips are always kept.
 </ParamField>
 <ParamField path="--swing">
-  Swing amount 0-100 (0 straight, 100 hard triplet). Overrides genre/preset default.
+  Swing amount 0-100 (0 straight, 100 hard triplet). Melodic parts only — has no effect on drums, pads, or FX sweeps. Overrides genre/preset default.
 </ParamField>
 <ParamField path="--humanize">
-  Velocity/timing jitter 0-100. Overrides genre/preset default.
+  Velocity/timing jitter 0-100. Melodic parts only — has no effect on drums, pads, or FX sweeps. Overrides genre/preset default.
 </ParamField>
 <ParamField path="--ornaments">
-  Grace-note/roll density 0-100. Overrides genre/preset default.
+  Grace-note/roll density 0-100. Melodic parts only — has no effect on drums, pads, or FX sweeps. Overrides genre/preset default.
 </ParamField>
 <ParamField path="--dropout">
-  Tension-section note thinning 0-100. Overrides genre/preset default.
+  Tension-section note thinning 0-100. Melodic parts only — has no effect on drums, pads, or FX sweeps. Overrides genre/preset default.
 </ParamField>
 <ParamField path="--gate">
-  Note articulation length 0-100 (10 = extreme staccato, 100 = full value/legato). Overrides genre/preset default.
+  Note articulation length 0-100 (10 = extreme staccato, 100 = full value/legato). Melodic parts only — has no effect on drums, pads, or FX sweeps. Overrides genre/preset default.
 </ParamField>
 <ParamField path="--bass-motion">
   Bass motion profile: root, root_fifth, octave_pump, arpeggiated, walking, pedal. Overrides genre default.
@@ -132,7 +132,7 @@ vibrai plan --project <PATH> --seed <VALUE> --keep-empty-clips --swing <PCT> --h
   How the bass sits against the kick: lock (snap onto it), dodge (push off it), free (ignore it). Overrides genre default.
 </ParamField>
 <ParamField path="--native-randomization">
-  Emit Live's per-note probability/velocity-deviation instead of baking randomization in. The loop then varies on every playback, but the audible result is no longer reproducible from the seed. Omit to inherit the genre's setting.
+  Emit Live's per-note probability/velocity-deviation instead of baking randomization in. Melodic parts only — has no effect on drums, pads, or FX sweeps. The loop then varies on every playback, but the audible result is no longer reproducible from the seed. Omit to inherit the genre's setting.
 </ParamField>
 <ParamField path="--scale-root">
   Target scale root: note name (C, C#, Db, …, B) or pitch class 0–11. Omit to use the project's own default scale (tiebroken by the open Live set only when the project is still at its untouched preset default).
@@ -178,22 +178,22 @@ Preview a composition with variation knobs (seed/density/etc.) WITHOUT writing t
   Keep generator-produced clips that resolve to zero notes. Default false: such clips (and their arrangement placements) are skipped, leaving a gap. Authored literal empty clips are always kept.
 </ParamField>
 <ParamField path="swing" type="Nullable`1">
-  Swing 0-100 (0 straight, 100 hard triplet); overrides genre/preset default
+  Swing 0-100 (0 straight, 100 hard triplet). Melodic parts only — has no effect on drums, pads, or FX sweeps; overrides genre/preset default
 </ParamField>
 <ParamField path="humanize" type="Nullable`1">
-  Velocity/timing jitter 0-100; overrides genre/preset default
+  Velocity/timing jitter 0-100. Melodic parts only — has no effect on drums, pads, or FX sweeps; overrides genre/preset default
 </ParamField>
 <ParamField path="ornament_density" type="Nullable`1">
-  Grace-note/roll density 0-100; overrides genre/preset default
+  Grace-note/roll density 0-100. Melodic parts only — has no effect on drums, pads, or FX sweeps; overrides genre/preset default
 </ParamField>
 <ParamField path="dropout" type="Nullable`1">
-  Tension-section note thinning 0-100; overrides genre/preset default
+  Tension-section note thinning 0-100. Melodic parts only — has no effect on drums, pads, or FX sweeps; overrides genre/preset default
 </ParamField>
 <ParamField path="gate" type="Nullable`1">
-  Note articulation length 0-100 (10 extreme staccato, 100 full value/legato); overrides genre/preset default
+  Note articulation length 0-100 (10 extreme staccato, 100 full value/legato). Melodic parts only — has no effect on drums, pads, or FX sweeps; overrides genre/preset default
 </ParamField>
 <ParamField path="native_randomization" type="Nullable`1">
-  Emit Live's per-note probability/velocity-deviation instead of baking randomization in. The loop then varies on every playback, but the audible result is no longer reproducible from the seed. Null inherits the genre setting.
+  Emit Live's per-note probability/velocity-deviation instead of baking randomization in. Melodic parts only — has no effect on drums, pads, or FX sweeps. The loop then varies on every playback, but the audible result is no longer reproducible from the seed. Null inherits the genre setting.
 </ParamField>
 <ParamField path="bass_motion" type="String">
   Bass motion profile: root, root_fifth, octave_pump, arpeggiated, walking, pedal; overrides the genre default
@@ -271,22 +271,22 @@ Plan + render a composition into Live's session view and arrangement view. To pr
   Keep generator-produced clips that resolve to zero notes. Default false: such clips (and their arrangement placements) are skipped, leaving a gap. Authored literal empty clips are always kept.
 </ParamField>
 <ParamField path="swing" type="Nullable`1">
-  Swing 0-100 (0 straight, 100 hard triplet); overrides genre/preset default
+  Swing 0-100 (0 straight, 100 hard triplet). Melodic parts only — has no effect on drums, pads, or FX sweeps; overrides genre/preset default
 </ParamField>
 <ParamField path="humanize" type="Nullable`1">
-  Velocity/timing jitter 0-100; overrides genre/preset default
+  Velocity/timing jitter 0-100. Melodic parts only — has no effect on drums, pads, or FX sweeps; overrides genre/preset default
 </ParamField>
 <ParamField path="ornament_density" type="Nullable`1">
-  Grace-note/roll density 0-100; overrides genre/preset default
+  Grace-note/roll density 0-100. Melodic parts only — has no effect on drums, pads, or FX sweeps; overrides genre/preset default
 </ParamField>
 <ParamField path="dropout" type="Nullable`1">
-  Tension-section note thinning 0-100; overrides genre/preset default
+  Tension-section note thinning 0-100. Melodic parts only — has no effect on drums, pads, or FX sweeps; overrides genre/preset default
 </ParamField>
 <ParamField path="gate" type="Nullable`1">
-  Note articulation length 0-100 (10 extreme staccato, 100 full value/legato); overrides genre/preset default
+  Note articulation length 0-100 (10 extreme staccato, 100 full value/legato). Melodic parts only — has no effect on drums, pads, or FX sweeps; overrides genre/preset default
 </ParamField>
 <ParamField path="native_randomization" type="Nullable`1">
-  Emit Live's per-note probability/velocity-deviation instead of baking randomization in. The loop then varies on every playback, but the audible result is no longer reproducible from the seed. Null inherits the genre setting.
+  Emit Live's per-note probability/velocity-deviation instead of baking randomization in. Melodic parts only — has no effect on drums, pads, or FX sweeps. The loop then varies on every playback, but the audible result is no longer reproducible from the seed. Null inherits the genre setting.
 </ParamField>
 <ParamField path="bass_motion" type="String">
   Bass motion profile: root, root_fifth, octave_pump, arpeggiated, walking, pedal; overrides the genre default
