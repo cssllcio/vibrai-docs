@@ -3,9 +3,9 @@
   "theme": "mint",
   "name": "Vibrai",
   "colors": {
-    "primary": "#5f86ff",
-    "light": "#9bb4ff",
-    "dark": "#3a52b0"
+    "primary": "#6C5CD4",
+    "light": "#8477E6",
+    "dark": "#3F349B"
   },
   "favicon": "/favicon.svg",
   "navigation": {
