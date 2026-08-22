@@ -4,6 +4,36 @@ description: "New features, improvements, and fixes in Vibrai."
 rss: true
 ---
 
+<Update label="1.6.4" description="August 21, 2026">
+  One Cmd-Z for a whole sequence of changes, a new home for downloads, and a version warning that finally points the right direction.
+
+  ## Group changes into a single undo step
+
+  `vibrai undo begin` / `vibrai undo end` (MCP: `begin_undo_step` / `end_undo_step`) open and close a native Live undo bracket around any number of changes, across any surface — one Cmd-Z reverts all of it. `generate`, `apply_automation_template`, and `render_automation` (also reached via `vibrai automation render` and `generate --with_automation`) now bracket themselves automatically; their results carry a new `undo_bracket` field reporting whether the grouping actually took.
+
+  ```bash
+  vibrai undo begin --label "big edit"
+  # ...any number of changes, on any surface...
+  vibrai undo end --token <token>
+  ```
+
+  **Known limitation:** under fast, back-to-back automated calls, closing a bracket right after a Max-for-Live write can unreliably fail — the field correctly reports `"unavailable"` when this happens, and the change itself still goes through either way. The root cause is still open.
+
+  **Breaking:** `vibrai undo begin` / `vibrai undo end` now return exit code `4` on a bridge/Live-side failure, matching every other bridge-touching command, instead of the generic `1` they returned before.
+
+  ## Downloads moved to downloads.vibrai.com
+
+  Installs and `vibrai update` now come from Cloudflare, not GitHub Releases. If you're on 1.6.2 or earlier, the old updater checks a feed that no longer receives new releases and will report "up to date" forever — grab one fresh copy from [vibrai.com/download](https://vibrai.com/download) and every update after that works normally again.
+
+  ## The version warning now says which side is behind
+
+  `vibrai version` and `get_version` used to warn "an older Vibrai than the CLI" for *any* mismatch — including when the bridge running inside Live was actually the newer one, which restarting Live can't fix. It now tells you correctly: restart Live for an older bridge, update the CLI for a newer one.
+
+  ## Also
+
+  - The Windows installer icon now matches the current mark at every size.
+</Update>
+
 <Update label="1.6.3" description="August 19, 2026">
   A fix release with audible consequences: five drum parts stop copying the kick, break placement respects your meter, and the installer no longer refuses while Live is open.
 
