@@ -4,6 +4,40 @@ description: "New features, improvements, and fixes in Vibrai."
 rss: true
 ---
 
+<Update label="1.6.5" description="August 22, 2026">
+  A fix release ahead of launch: undo brackets stop over-reporting, rapid back-to-back calls no longer trip the bridge, new projects are reproducible, and genre lookups by name go from seconds to milliseconds.
+
+  ## Undo brackets tell the truth
+
+  A bracket's `undo_bracket` field reports `"native"` only when the close really closed *this* bracket — a lost inner close no longer lets the outer one claim success. Session export (`vibrai session export` / `export_session`) also stops replaying a stale undo token from a CLI-recorded `vibrai undo begin` / `vibrai undo end`, and renders `set_track_auto_numbering` as a valid `vibrai track auto-number on|off` line.
+
+  ## Rapid calls no longer trip the Python bridge
+
+  The bridge inside Live now keeps a connection alive between requests (HTTP/1.1), so a second or third quick call on the same connection no longer fails with a reset or a spurious `400`. This was the root cause of 1.6.4's "unreliable close after a Max-for-Live write" limitation. After you reload the Vibrai control surface in Live's preferences, a stale connection gets a clear `503` instead of an answer from the old instance.
+
+  ## A device delete can no longer remove the wrong device
+
+  If Live's reply to a `delete_device` / `vibrai device delete` was lost and Vibrai retried, the retry used to check the device's *position* — which shifts after a non-last delete — so the wrong device could go. It now reads the chain before deleting and treats any shrink as proof the delete landed.
+
+  ## New projects are reproducible
+
+  `apply_genre` / `vibrai genre apply` and `init_project` / `vibrai project init` mint the same `t2m_hash` for the same project name every time. Note: a name now produces a different — but stable — hash than earlier runs did; projects you already have keep theirs.
+
+  ## Genre lookups by name: ~6 s → milliseconds
+
+  `apply_genre "Deep House"`, `start_genre_song`, and even an unknown-genre error message used to re-parse the whole genre catalog. They read a summary index now. (`vibrai genre list` / `list_genres` still take the long path — tracked separately.)
+
+  ## Compressor writes say when they settled for the nearest position
+
+  `apply_compression_preset` / `vibrai mix compress` now mark each parameter `exact: true|false`, warn when a target had no exact position on the device (the Glue Compressor's stepped Attack/Release ladders), and show `~ nearest to <target>` in the CLI table.
+
+  ## Also
+
+  - `vibrai version`'s "another vibrai earlier on PATH" warning no longer claims a Homebrew install that isn't there or tells a dev build to uninstall; its advice now matches what the two copies actually are.
+  - The macOS installer can no longer leave `~/Library/Application Support/Vibrai` owned by root, even if the install step fails partway.
+  - `vibrai update` rejects a malformed downloads-index version before using it in a URL.
+</Update>
+
 <Update label="1.6.4" description="August 21, 2026">
   One Cmd-Z for a whole sequence of changes, a new home for downloads, and a version warning that finally points the right direction.
 
