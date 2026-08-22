@@ -1,0 +1,77 @@
+---
+title: "Undo"
+description: "Group multiple mutations into ONE native Live undo step. begin_undo_step (MCP) / vibrai undo begin (CLI) returns a token; pass that same token back to end_undo_step / vibrai undo end --token to close the bracket — every Vibrai mutation on any surface in between lands in a single Edit → Undo entry. Auto-closes after ttl_seconds (default 300) — after expiry a late end gets NO_OPEN_UNDO_STEP (or STALE_UNDO_TOKEN if a newer bracket is already open); the mutations up to expiry are still grouped. Nested begins fold into the open bracket (same token, one real step). generate, apply_automation_template, and render_automation (also reached via vibrai automation render and generate's with_automation flag) all bracket themselves automatically (undo_bracket: \"native\" in their results; \"unavailable\" means the Python remote script wasn't reachable and the op ran unbracketed, OR the bracket opened successfully but its closing call failed — a known limitation under fast/programmatic usage (cssllcio/Vibrai#847) — so read \"unavailable\" as \"don't trust this was cleanly grouped,\" not narrowly as \"bridge was down\"; null means the operation had nothing to write and never reached Live). Bracket composed multi-step sequences; single calls don't need it."
+---
+
+{/* GENERATED — do not edit by hand. Regenerate with `npm run generate:reference`. */}
+
+Group multiple mutations into ONE native Live undo step. begin_undo_step (MCP) / vibrai undo begin (CLI) returns a token; pass that same token back to end_undo_step / vibrai undo end --token to close the bracket — every Vibrai mutation on any surface in between lands in a single Edit → Undo entry. Auto-closes after ttl_seconds (default 300) — after expiry a late end gets NO_OPEN_UNDO_STEP (or STALE_UNDO_TOKEN if a newer bracket is already open); the mutations up to expiry are still grouped. Nested begins fold into the open bracket (same token, one real step). generate, apply_automation_template, and render_automation (also reached via vibrai automation render and generate's with_automation flag) all bracket themselves automatically (undo_bracket: "native" in their results; "unavailable" means the Python remote script wasn't reachable and the op ran unbracketed, OR the bracket opened successfully but its closing call failed — a known limitation under fast/programmatic usage (cssllcio/Vibrai#847) — so read "unavailable" as "don't trust this was cleanly grouped," not narrowly as "bridge was down"; null means the operation had nothing to write and never reached Live). Bracket composed multi-step sequences; single calls don't need it.
+
+## Command line
+
+### `undo begin`
+
+Open a native undo bracket; prints the token to close it with
+
+```bash
+vibrai undo begin --label <LABEL> --ttl-seconds <SECONDS>
+```
+
+<ParamField path="--label">
+  Optional label recorded in bridge logs
+</ParamField>
+<ParamField path="--ttl-seconds">
+  Auto-close TTL in seconds (default 300)
+</ParamField>
+
+### `undo end`
+
+Close the bracket opened by 'undo begin' — everything in between becomes one Edit → Undo step
+
+```bash
+vibrai undo end --token <TOKEN>
+```
+
+<ParamField path="--token">
+  Token printed by 'vibrai undo begin'
+</ParamField>
+
+## MCP tools
+
+### `begin_undo_step`
+
+Open a native Live undo bracket: every Vibrai mutation until end_undo_step collapses into ONE Edit->Undo step. Returns a token you MUST pass to end_undo_step. Auto-closes after ttl_seconds (default 300) so an abandoned bracket cannot swallow the user's own edits. Nested begins fold into the open bracket and return the same token. Single tool calls don't need this; use it around multi-step sequences you compose yourself.
+
+```json
+{
+  "tool": "begin_undo_step",
+  "arguments": {
+    "label": "<String>",
+    "ttl_seconds": "<Nullable`1>"
+  }
+}
+```
+
+<ParamField path="label" type="String">
+  Optional label recorded in bridge logs
+</ParamField>
+<ParamField path="ttl_seconds" type="Nullable`1">
+  Auto-close TTL in seconds (default 300)
+</ParamField>
+
+### `end_undo_step`
+
+Close the undo bracket opened by begin_undo_step. Errors: NO_OPEN_UNDO_STEP (nothing open — e.g. the TTL already auto-closed yours), STALE_UNDO_TOKEN (a newer bracket is open; yours was auto-closed earlier). Either way the mutations up to the close are still grouped.
+
+```json
+{
+  "tool": "end_undo_step",
+  "arguments": {
+    "token": "<String>"
+  }
+}
+```
+
+<ParamField path="token" type="String" required>
+  Token returned by begin_undo_step
+</ParamField>
