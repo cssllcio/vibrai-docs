@@ -1,0 +1,55 @@
+---
+title: "Telemetry"
+description: "Manage anonymized, opt-in crash/usage telemetry (spec #224). Enable/disable are CLI-only by design — consenting to data collection is a decision only a human should be able to make, so no MCP tool can flip it. The MCP surface (TelemetryTools) exposes the non-destructive half: read-only status, which distinguishes raw consent from whether the two-key gate (consent AND a configured delivery destination) is actually sending anything."
+---
+
+{/* GENERATED — do not edit by hand. Regenerate with `npm run generate:reference`. */}
+
+Manage anonymized, opt-in crash/usage telemetry (spec #224). Enable/disable are CLI-only by design — consenting to data collection is a decision only a human should be able to make, so no MCP tool can flip it. The MCP surface (TelemetryTools) exposes the non-destructive half: read-only status, which distinguishes raw consent from whether the two-key gate (consent AND a configured delivery destination) is actually sending anything.
+
+## Command line
+
+### `telemetry enable`
+
+Opt in to anonymized telemetry
+
+```bash
+vibrai telemetry enable
+```
+
+
+
+### `telemetry disable`
+
+Opt out of telemetry
+
+```bash
+vibrai telemetry disable
+```
+
+
+
+### `telemetry status`
+
+Show telemetry consent and whether data is actually being sent
+
+```bash
+vibrai telemetry status
+```
+
+
+
+## MCP tools
+
+### `telemetry_status`
+
+Get the current Vibrai telemetry status: whether consent is recorded, whether a delivery destination is configured, and whether telemetry is EFFECTIVELY active (both must be true -- the two-key gate). Also returns the telemetry privacy policy URL. Read-only -- there is no MCP tool to enable or disable telemetry; use the `vibrai telemetry enable|disable` CLI commands.
+
+```json
+{
+  "tool": "telemetry_status",
+  "arguments": {}
+}
+```
+
+

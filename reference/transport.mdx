@@ -66,6 +66,21 @@ vibrai transport seek <position> --project <PATH>
   Path to the .vibrai file whose declared meter positions bar.beat inputs (defaults to &lt;current-directory-name>.vibrai; falls back to Live's transport, then 4/4)
 </ParamField>
 
+### `transport playback-mode`
+
+Switch between Session and Arrangement playback
+
+```bash
+vibrai transport playback-mode <mode> --scene <SCENE>
+```
+
+<ParamField path="mode" required>
+  arrangement returns tracks to the Arrangement (Live's "Back to Arrangement"); session fires a scene so Live plays Session clips
+</ParamField>
+<ParamField path="--scene">
+  Scene to fire: handle (scn_7), 1-based number (3) or ordinal (third). Session only; omit to fire the scene selected in Live
+</ParamField>
+
 ## MCP tools
 
 ### `get_transport`
@@ -123,6 +138,27 @@ Stop transport playback.
 ```
 
 
+
+### `set_playback_mode`
+
+Switch Live between Session and Arrangement playback. "arrangement" returns tracks to the Arrangement (Live's "Back to Arrangement"), which is how you undo a fired scene suppressing arrangement playback. "session" fires a scene — pass liveset_id, or omit it to fire the scene selected in Live. Read the current mode from get_transport's playback_mode.
+
+```json
+{
+  "tool": "set_playback_mode",
+  "arguments": {
+    "mode": "<String>",
+    "liveset_id": "<String>"
+  }
+}
+```
+
+<ParamField path="mode" type="String" required>
+  "arrangement" or "session"
+</ParamField>
+<ParamField path="liveset_id" type="String">
+  Scene handle from list_scenes, e.g. "scn_7". Session only; omit to fire the scene selected in Live. Rejected with "arrangement", which fires nothing.
+</ParamField>
 
 ### `seek`
 

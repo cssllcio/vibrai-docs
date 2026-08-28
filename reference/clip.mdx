@@ -135,6 +135,24 @@ vibrai clip set-color <track> <scene> <color-index>
   Live colour palette index, 0-69.
 </ParamField>
 
+### `clip clear-all`
+
+Clear every session and arrangement clip in the set, keeping tracks, instruments, effects and mixer settings
+
+```bash
+vibrai clip clear-all --yes --include-audio --tracks <IDS>
+```
+
+<ParamField path="--yes">
+  Confirm the destructive clear. Without this flag, print what would be cleared and exit non-zero without changing anything.
+</ParamField>
+<ParamField path="--include-audio">
+  Also clear audio tracks. Default off — audio clips reference recorded or imported material a generation run will never recreate.
+</ParamField>
+<ParamField path="--tracks">
+  Track handle (trk_42) OR 1-based position OR ordinal word (as printed by `vibrai track list`) to clear. Repeatable: --tracks trk_5 --tracks 3. Omit to clear every eligible track.
+</ParamField>
+
 ### `clip envelope get`
 
 Read automation envelope(s) on a session-view clip
@@ -477,4 +495,29 @@ Clear automation envelope(s) on a session-view clip. Supply BOTH deviceId and pa
 </ParamField>
 <ParamField path="param_id" type="String">
   Parameter index or display name. Provide together with deviceId, or omit both to clear every envelope on the clip.
+</ParamField>
+
+### `clear_clips`
+
+Remove EVERY session clip and arrangement clip from the Live set, and neutralise Vibrai-authored automation, while KEEPING tracks, instruments/plug-ins, audio effects, mixer settings, track names/colours and scenes — so the set's rig can be reused for another generation run. The non-destructive sibling of clear_project, which deletes whole tracks instead. Destructive: requires confirm=true (parity with the CLI's `vibrai clip clear-all --yes`); without it, reports what would be cleared and changes nothing. Clears all non-group MIDI tracks by default (audio is opt-in, since audio clips reference recorded material a generation run cannot recreate). NOTE: automation drawn by hand in Live cannot be removed by any LOM mechanism and may remain audible — the result says so in `warnings`.
+
+```json
+{
+  "tool": "clear_clips",
+  "arguments": {
+    "confirm": "<Boolean>",
+    "include_audio": "<Boolean>",
+    "tracks": "<String[]>"
+  }
+}
+```
+
+<ParamField path="confirm" type="Boolean">
+  Confirm the destructive clear (CLI --yes equivalent). Must be true to proceed; confirm with the user first.
+</ParamField>
+<ParamField path="include_audio" type="Boolean">
+  Also clear audio tracks. Default false — audio clips reference recorded or imported material a generation run will never recreate.
+</ParamField>
+<ParamField path="tracks" type="String[]">
+  Track handles from list_tracks, e.g. "trk_42". Copy verbatim. Omit to clear every eligible track.
 </ParamField>

@@ -28,7 +28,8 @@
           "design-principles",
           "plugins",
           "drum-maps",
-          "sessions"
+          "sessions",
+          "privacy/telemetry"
         ]
       },
       {
@@ -58,6 +59,8 @@
           "reference/generation",
           "reference/capture",
           "reference/license",
+          "reference/telemetry",
+          "reference/feedback",
           "reference/version",
           "reference/update",
           "reference/uninstall",

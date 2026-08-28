@@ -14,7 +14,7 @@ Generate or plan a composition from a .vibrai project file.
 Plan + render a composition into Live's session and arrangement views. Same preview engine as 'plan'; use generate to write and plan to iterate on variations before writing.
 
 ```bash
-vibrai generate --project <PATH> --force --clear-first --dry-run --seed <VALUE> --allow-skip --with-instruments --with-automation --stock-only --on-existing-tracks <MODE> --keep-empty-clips --session-only --create-missing-tracks --swing <PCT> --humanize <PCT> --ornaments <PCT> --dropout <PCT> --gate <PCT> --bass-motion <PROFILE> --kick-relation <MODE> --native-randomization --scale-root <NOTE> --scale-name <MODE> --number-tracks --no-number-tracks
+vibrai generate --project <PATH> --force --clear-first --clear-clips-first --dry-run --seed <VALUE> --allow-skip --with-instruments --with-automation --stock-only --on-existing-tracks <MODE> --keep-empty-clips --session-only --create-missing-tracks --swing <PCT> --humanize <PCT> --ornaments <PCT> --dropout <PCT> --gate <PCT> --bass-motion <PROFILE> --kick-relation <MODE> --native-randomization --scale-root <NOTE> --scale-name <MODE> --number-tracks --no-number-tracks
 ```
 
 <ParamField path="--project">
@@ -25,6 +25,9 @@ vibrai generate --project <PATH> --force --clear-first --dry-run --seed <VALUE> 
 </ParamField>
 <ParamField path="--clear-first">
   Delete all Vibrai-generated tracks (same rule/order as 'vibrai project clear --yes') before planning and rendering — a clean slate so this run's composition doesn't stack on top of a previous, different project's tracks. Never touches Audio/Return/Master tracks or MIDI tracks whose Part Type is Other (user/template tracks). Skipped entirely under --dry-run (which never calls the bridge).
+</ParamField>
+<ParamField path="--clear-clips-first">
+  Empty every clip in the set before rendering, KEEPING tracks, instruments, effects, mixer settings and scenes (same routine as 'vibrai clip clear-all --yes') — reuse the set's rig instead of rebuilding it. Mutually exclusive with --clear-first, which deletes tracks instead. Skipped entirely under --dry-run. NOTE: this does not by itself make generate re-render in place. Only captured or 'project init'-bound projects reuse existing tracks; a genre-minted project still appends a duplicate track set (issue #558).
 </ParamField>
 <ParamField path="--dry-run">
   Identical preview to 'plan' but with generate's exact settings; use it to sanity-check the write you are about to make.
@@ -236,6 +239,7 @@ Plan + render a composition into Live's session view and arrangement view. To pr
     "number_tracks": "<Nullable`1>",
     "session_only": "<Boolean>",
     "clear_first": "<Boolean>",
+    "clear_clips_first": "<Boolean>",
     "create_missing_tracks": "<Boolean>",
     "scale_root_note": "<String>",
     "scale_name": "<String>"
@@ -302,6 +306,9 @@ Plan + render a composition into Live's session view and arrangement view. To pr
 </ParamField>
 <ParamField path="clear_first" type="Boolean">
   Delete all Vibrai-generated tracks (same rule/order as clear_project with confirm=true, or 'vibrai project clear --yes') before planning and rendering — a clean slate so this run's composition doesn't stack on top of a previous, different project's tracks. Never touches Audio/Return/Master tracks, group/folder tracks, or MIDI tracks whose part type is 'other' (user/template tracks).
+</ParamField>
+<ParamField path="clear_clips_first" type="Boolean">
+  Empty every clip in the set before rendering, KEEPING tracks, instruments, effects, mixer settings and scenes — reuse the set's rig instead of rebuilding it. Mutually exclusive with clear_first, which deletes tracks instead. NOTE: this does not by itself make generate re-render in place. Only captured or project-init-bound projects reuse existing tracks; a genre-minted project still appends a duplicate track set (issue #558).
 </ParamField>
 <ParamField path="create_missing_tracks" type="Boolean">
   When a part is bound to a track_id (project init / capture) that no longer exists in the Live set, create it (name from the part, MIDI type) instead of failing. Default false: such a project fails validation up front, naming the missing track_id(s), before anything is written.

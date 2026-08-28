@@ -14,7 +14,7 @@ Capture the current Live set as a .vibrai YAML file
 Capture the current Live set as a .vibrai YAML file
 
 ```bash
-vibrai capture --out <PATH> --force --dry-run --merge-with <PATH> --no-warn-lossy-automation
+vibrai capture --out <PATH> --force --dry-run --merge-with <PATH> --no-warn-lossy-automation --track-ids <ID>
 ```
 
 <ParamField path="--out">
@@ -32,6 +32,27 @@ vibrai capture --out <PATH> --force --dry-run --merge-with <PATH> --no-warn-loss
 <ParamField path="--no-warn-lossy-automation">
   Suppress the lossy_arrangement_automation warning that capture emits when no --merge-with is provided and the captured arrangement_automation array is empty (the LOM-blind-spot for bouncer-produced envelopes).
 </ParamField>
+<ParamField path="--track-ids">
+  Optional track handle (trk_42), to capture only this track; repeatable to select several. Session-level data (tempo, scale, scenes) is always captured in full.
+</ParamField>
+
+### `capture-merge`
+
+Combine partial .vibrai files (each produced by capture --track-ids) into one project
+
+```bash
+vibrai capture-merge --sources <PATH> --out <PATH> --force
+```
+
+<ParamField path="--sources">
+  Absolute path to a partial .vibrai file to combine; repeatable, in canonical order (the first entry wins any session-metadata drift warning).
+</ParamField>
+<ParamField path="--out">
+  Output file path for the merged project.
+</ParamField>
+<ParamField path="--force">
+  Overwrite the output file if it already exists.
+</ParamField>
 
 ## MCP tools
 
@@ -47,7 +68,8 @@ Capture the running Live set as a .vibrai YAML file. Set dry_run=true to return 
     "force": "<Boolean>",
     "dry_run": "<Boolean>",
     "merge_with": "<String>",
-    "warn_lossy_automation": "<Boolean>"
+    "warn_lossy_automation": "<Boolean>",
+    "track_ids": "<String[]>"
   }
 }
 ```
@@ -66,4 +88,32 @@ Capture the running Live set as a .vibrai YAML file. Set dry_run=true to return 
 </ParamField>
 <ParamField path="warn_lossy_automation" type="Boolean">
   When true (default) AND merge_with is null AND captured arrangement_automation is empty, emit a lossy_arrangement_automation warning string in the summary explaining the LOM gap. Set to false to suppress the warning.
+</ParamField>
+<ParamField path="track_ids" type="String[]">
+  Optional track handles from list_tracks, e.g. ["trk_42"], to capture only these tracks. Session-level data (tempo, scale, scenes) is always captured in full regardless. Combine multiple capture_project calls with different track_ids, then merge_captures, to keep any single call well under any client-side timeout on a large set.
+</ParamField>
+
+### `merge_captures`
+
+Combine N partial .vibrai files (each produced by capture_project with a track_ids filter) into one project. Track-id collisions across sources are an error naming the colliding ids. Session-level metadata (tempo/scale/scene names) drifting between sources is a warning, not an error — the FIRST path in sources is canonical for those fields.
+
+```json
+{
+  "tool": "merge_captures",
+  "arguments": {
+    "sources": "<String[]>",
+    "out": "<String>",
+    "force": "<Boolean>"
+  }
+}
+```
+
+<ParamField path="sources" type="String[]" required>
+  Absolute paths to the partial .vibrai files to combine, in canonical order (the first entry wins any session-metadata drift warning).
+</ParamField>
+<ParamField path="out" type="String" required>
+  Absolute file path to write the merged .vibrai YAML to.
+</ParamField>
+<ParamField path="force" type="Boolean">
+  Overwrite the file if it already exists.
 </ParamField>

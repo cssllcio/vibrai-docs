@@ -1,0 +1,170 @@
+---
+title: "Telemetry & feedback privacy policy"
+description: "Exactly what Vibrai's opt-in telemetry collects, what it never collects, and how to control it — the CLI and MCP surfaces are identical."
+keywords: ["telemetry", "privacy", "feedback", "sentry", "consent", "install_id", "opt-in"]
+---
+
+Vibrai's telemetry is **opt-in and off by default**. This page is the complete data
+inventory — everything the CLI (`vibrai`) and the MCP server (`Vibrai.Mcp`) can ever send, and
+everything they never send, regardless of settings. If something isn't listed here as
+collected, it isn't collected.
+
+<Note>
+This is a factual inventory, not marketing copy. Where we're not certain of an exact figure
+(retention days, for example) we say so rather than promise a number we can't guarantee.
+</Note>
+
+## The two-key gate
+
+Telemetry only sends data when **both** of the following are true at once:
+
+1. **You've recorded consent** — you ran `vibrai telemetry enable`.
+2. **A delivery destination is configured** — the `VIBRAI_SENTRY_DSN` environment variable
+   points at a Sentry.io project.
+
+A default install has no DSN baked in. That means running `vibrai telemetry enable` on a
+typical install **still sends zero bytes** — consent alone isn't enough. Both keys have to be
+present before anything leaves your machine. `vibrai telemetry status` always tells you which
+of the two keys is (or isn't) set, and whether telemetry is *effectively* active as a result.
+
+<Warning>
+If a future Vibrai build ships with a maintainer-configured DSN baked in ahead of time, that
+changes which installs have key #2 satisfied by default — and this page will say so plainly,
+naming it as a Sentry.io project DSN. As of this writing, no build ships with one.
+</Warning>
+
+## What's collected (only when consent is ON)
+
+| Field | Why it's collected | Sensitivity |
+|---|---|---|
+| Exception type, message, and a **scrubbed** stack trace | The core reliability signal — what crashed and why | Message is scrubbed for paths/content, see below |
+| Breadcrumbs: command/tool name, operation name (e.g. `create_clip`), coarse outcome | Reconstructs the sequence of events leading to a crash | Operation names only — never their arguments |
+| Vibrai version, build SHA, host (`cli`/`mcp`/`m4l`), OS name + version, .NET/Node runtime version, CPU architecture | Reproduces environment-specific bugs | Non-identifying |
+| `install_id` — a random UUID, generated once and stored in `~/.vibrai/telemetry.json` | Correlates multiple events from one install and de-duplicates crash volume | Pseudonymous — identifies an **install**, never a person. Delete the file to reset it (see below) |
+| Span timing and status for `bridge.<op>` round-trips (the calls between the CLI/MCP and the Ableton bridge) | Maps latency and failures across Vibrai's three hosts | Operation name and duration only |
+| Bridge health / port availability, engine phase names | Diagnoses bridge connectivity issues | No user content |
+
+<Note>
+**Live-set names and instrument tag strings are NOT collected**, even though an earlier design
+draft considered it. A set name can encode a client name or an unreleased track title, so the
+debugging value didn't clear the privacy bar. This is a deliberate default, not an oversight.
+</Note>
+
+## What's never collected
+
+The following are never collected, under any settings, on any passively-collected telemetry
+event, breadcrumb, or span. A scrubber runs last on every event, in every host, and **fails
+closed**: if it can't fully process an event, that event is dropped rather than sent raw.
+
+- **Filesystem paths** — absolute or relative, home directories, project locations. Any
+  path-shaped token is redacted or removed entirely.
+- **`.vibrai` / `.vibraigenre` file contents**, and any captured project YAML. Never read into
+  an event. (The one exception, described below, is a SHA-256 hash — never the contents — sent
+  only via `vibrai feedback`.)
+- **MIDI note data, clip contents, arrangement data** — your music, never.
+- **Prompt text or other natural-language input** you type to an agent or the CLI.
+- **License keys, DSNs, tokens, secrets, or environment variable values.** Environment variables
+  are never enumerated into an event.
+- **Any personally identifying information** — no name, email, IP address (Sentry's IP capture
+  is disabled at the SDK level), MAC address, hostname, username, or OS account. This ban is
+  absolute for every passively-collected event. The one carve-out is described next.
+- **Session replay or screen recordings.** Sentry offers this as a product feature; Vibrai
+  disables it at the SDK-configuration level, not just by leaving it unused.
+- **Set names and instrument tag strings** — see the note above.
+- **Anything in a command argument or tool-call payload**, other than the bare operation name
+  itself.
+
+## `vibrai feedback` / `submit_feedback`: the one place you type something in
+
+`vibrai feedback` (CLI) and `submit_feedback` (MCP) are a deliberate exception to "passively
+collected," because you're explicitly typing something *in order to send it*. Scrubbing your
+own message before sending it would make the feature a silent no-op, so:
+
+| Field | Handling |
+|---|---|
+| Your message | Sent **verbatim, unscrubbed** — you typed it to send it |
+| Last 50 log lines | From the current run, scrubbed the same as passive telemetry |
+| Recent breadcrumbs | Same scrubbing as passive telemetry |
+| Environment context | Same fields as the collected-data table above |
+| `install_id` | So a follow-up can be threaded back to related crash reports |
+| A hash of your active `.vibrai` file | **SHA-256 of the file's bytes only — never its contents** |
+| Email address | **Only if you pass `--email`/`email`.** Never inferred, never defaulted. Absent flag means no email in the bundle, ever |
+
+Everything in that bundle other than your message and (optional) email still goes through the
+same never-list scrubbing as passive telemetry — the exemption is narrowly scoped to the two
+fields you explicitly typed.
+
+**Consent doesn't gate feedback the way it gates passive telemetry.** If consent is off, or you
+pass `--no-send`, the bundle is written to `~/.vibrai/feedback-<timestamp>.json` instead of
+being sent, and Vibrai prints the file path plus a GitHub issue URL so you can attach it by
+hand. Feedback is never sent silently.
+
+```bash
+# CLI
+vibrai feedback "the sidechain pumps too hard on kick+bass" --email you@example.com
+vibrai feedback "crash after loading a project" --no-send
+```
+
+```json
+// MCP
+{
+  "tool": "submit_feedback",
+  "arguments": { "message": "crash after loading a project" }
+}
+```
+
+See the full parameter reference: [`feedback` (CLI) / `submit_feedback` (MCP)](/reference/feedback).
+
+## Retention
+
+Event and trace retention is governed by whichever Sentry.io plan tier Vibrai's backend
+project is on at any given time — there's no separate, custom retention configuration to
+audit. At the time this policy was written, the plan under consideration was Sentry's Team
+tier, whose documented retention is 90 days; we're recording that as the figure we were
+planning against, **not** as a contractual promise this page can guarantee going forward. If
+you need the authoritative current figure, ask us directly rather than relying on this
+paragraph to stay perfectly in sync with whatever plan is active.
+
+## `install_id`: what it is and how to reset it
+
+`install_id` is a randomly generated UUID, created the first time you run
+`vibrai telemetry enable` and stored in `~/.vibrai/telemetry.json`. It's the one stable token
+telemetry attaches to your data:
+
+- It identifies an **install of Vibrai**, not a person.
+- It's scoped to this machine's install — no cross-machine or cross-account linkage.
+- **You can reset it at any time** by deleting `~/.vibrai/telemetry.json`. The next
+  `vibrai telemetry enable` generates a fresh one, severing the link between past and future
+  telemetry.
+
+## Controlling telemetry
+
+Consent can only be granted or withdrawn from the CLI — enabling telemetry is a decision only
+a human should make, so no MCP tool can flip it. The MCP surface exposes a read-only status
+check instead.
+
+```bash
+# CLI — the only surface that can change consent
+vibrai telemetry enable    # opt in
+vibrai telemetry status    # check consent + whether data is actually being sent
+vibrai telemetry disable   # opt out (install_id is kept, in case you re-enable later)
+```
+
+```json
+// MCP — read-only; there is no enable/disable tool on this surface
+{
+  "tool": "telemetry_status",
+  "arguments": {}
+}
+```
+
+`status` (both surfaces) reports two distinct facts: whether consent is recorded, and whether
+telemetry is *effectively* sending anything (both gate keys satisfied). A user with consent on
+but no configured `VIBRAI_SENTRY_DSN` is still sending zero bytes — status says so explicitly
+rather than collapsing that into a bare "off."
+
+The very first time you run any `vibrai` CLI command, you'll see a one-line disclosure on
+stderr pointing back at this page — it's informational only and never enables anything by
+itself.
+
+See the full parameter reference: [`telemetry` (CLI) / `telemetry_status` (MCP)](/reference/telemetry).
