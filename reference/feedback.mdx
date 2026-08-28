@@ -1,0 +1,58 @@
+---
+title: "Feedback"
+description: "Send feedback or a bug report, working whether or not telemetry is enabled (spec #224). Captures the message plus a diagnostic bundle (last 50 scrubbed log lines, recent scrubbed breadcrumbs, and a SHA-256 hash — never the contents — of the active .vibrai). Sends via Sentry when telemetry consent is on; otherwise writes the bundle to a local file and returns its path plus a GitHub issue URL — never a silent send."
+---
+
+{/* GENERATED — do not edit by hand. Regenerate with `npm run generate:reference`. */}
+
+Send feedback or a bug report, working whether or not telemetry is enabled (spec #224). Captures the message plus a diagnostic bundle (last 50 scrubbed log lines, recent scrubbed breadcrumbs, and a SHA-256 hash — never the contents — of the active .vibrai). Sends via Sentry when telemetry consent is on; otherwise writes the bundle to a local file and returns its path plus a GitHub issue URL — never a silent send.
+
+## Command line
+
+### `feedback`
+
+Send feedback / a bug report. Captures your message plus recent scrubbed log lines, breadcrumbs, and a hash (never contents) of the active .vibrai. Sends if telemetry consent is on; otherwise writes a local file (--no-send forces the local file even with consent on).
+
+```bash
+vibrai feedback <message> --email <EMAIL> --no-send --project <PATH>
+```
+
+<ParamField path="message" required>
+  Your feedback message.
+</ParamField>
+<ParamField path="--email">
+  Optional email so the team can follow up. Never inferred.
+</ParamField>
+<ParamField path="--no-send">
+  Write the feedback bundle to a local file instead of sending it, even if telemetry consent is on.
+</ParamField>
+<ParamField path="--project">
+  Path to the .vibrai file (default: &lt;current-directory-name>.vibrai). Only a SHA-256 hash of its bytes is ever collected -- never its contents.
+</ParamField>
+
+## MCP tools
+
+### `submit_feedback`
+
+Submit user feedback or a bug report. Captures the message plus a diagnostic bundle: the last 50 scrubbed log lines, recent scrubbed breadcrumbs, and a SHA-256 hash (never the contents) of the active .vibrai project. Sends via Sentry when telemetry consent is on; otherwise writes the bundle to a local file and returns its path plus a GitHub issue URL so you can relay both to the user -- never a silent send.
+
+```json
+{
+  "tool": "submit_feedback",
+  "arguments": {
+    "message": "<String>",
+    "email": "<String>",
+    "project_path": "<String>"
+  }
+}
+```
+
+<ParamField path="message" type="String" required>
+  Your feedback message.
+</ParamField>
+<ParamField path="email" type="String">
+  Optional email so the team can follow up. Never inferred.
+</ParamField>
+<ParamField path="project_path" type="String">
+  Path to the .vibrai project (default: &lt;cwd-name>.vibrai). Only its SHA-256 hash is collected, never its contents.
+</ParamField>

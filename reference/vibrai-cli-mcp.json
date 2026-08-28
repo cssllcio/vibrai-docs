@@ -1,6 +1,6 @@
 {
-  "engine_version": "1.6.4.0",
-  "generated_at": "2026-08-22T00:43:44Z",
+  "engine_version": "1.6.5.0",
+  "generated_at": "2026-08-28T12:51:13Z",
   "features": [
     {
       "id": "transport",
@@ -57,6 +57,25 @@
                 "description": "Path to the .vibrai file whose declared meter positions bar.beat inputs (defaults to \u003Ccurrent-directory-name\u003E.vibrai; falls back to Live\u0027s transport, then 4/4)"
               }
             ]
+          },
+          {
+            "name": "transport playback-mode",
+            "description": "Switch between Session and Arrangement playback",
+            "arguments": [
+              {
+                "name": "mode",
+                "required": true,
+                "description": "arrangement returns tracks to the Arrangement (Live\u0027s \u0022Back to Arrangement\u0022); session fires a scene so Live plays Session clips"
+              }
+            ],
+            "options": [
+              {
+                "name": "--scene",
+                "value_name": "SCENE",
+                "default": null,
+                "description": "Scene to fire: handle (scn_7), 1-based number (3) or ordinal (third). Session only; omit to fire the scene selected in Live"
+              }
+            ]
           }
         ]
       },
@@ -88,6 +107,24 @@
             "name": "stop",
             "description": "Stop transport playback.",
             "parameters": []
+          },
+          {
+            "name": "set_playback_mode",
+            "description": "Switch Live between Session and Arrangement playback. \u0022arrangement\u0022 returns tracks to the Arrangement (Live\u0027s \u0022Back to Arrangement\u0022), which is how you undo a fired scene suppressing arrangement playback. \u0022session\u0022 fires a scene \u2014 pass liveset_id, or omit it to fire the scene selected in Live. Read the current mode from get_transport\u0027s playback_mode.",
+            "parameters": [
+              {
+                "name": "mode",
+                "type": "String",
+                "required": true,
+                "description": "\u0022arrangement\u0022 or \u0022session\u0022"
+              },
+              {
+                "name": "liveset_id",
+                "type": "String",
+                "required": false,
+                "description": "Scene handle from list_scenes, e.g. \u0022scn_7\u0022. Session only; omit to fire the scene selected in Live. Rejected with \u0022arrangement\u0022, which fires nothing."
+              }
+            ]
           },
           {
             "name": "seek",
@@ -2277,6 +2314,31 @@
             "options": []
           },
           {
+            "name": "clip clear-all",
+            "description": "Clear every session and arrangement clip in the set, keeping tracks, instruments, effects and mixer settings",
+            "arguments": [],
+            "options": [
+              {
+                "name": "--yes",
+                "value_name": null,
+                "default": null,
+                "description": "Confirm the destructive clear. Without this flag, print what would be cleared and exit non-zero without changing anything."
+              },
+              {
+                "name": "--include-audio",
+                "value_name": null,
+                "default": null,
+                "description": "Also clear audio tracks. Default off \u2014 audio clips reference recorded or imported material a generation run will never recreate."
+              },
+              {
+                "name": "--tracks",
+                "value_name": "IDS",
+                "default": null,
+                "description": "Track handle (trk_42) OR 1-based position OR ordinal word (as printed by \u0060vibrai track list\u0060) to clear. Repeatable: --tracks trk_5 --tracks 3. Omit to clear every eligible track."
+              }
+            ]
+          },
+          {
             "name": "clip envelope get",
             "description": "Read automation envelope(s) on a session-view clip",
             "arguments": [
@@ -2665,6 +2727,30 @@
                 "type": "String",
                 "required": false,
                 "description": "Parameter index or display name. Provide together with deviceId, or omit both to clear every envelope on the clip."
+              }
+            ]
+          },
+          {
+            "name": "clear_clips",
+            "description": "Remove EVERY session clip and arrangement clip from the Live set, and neutralise Vibrai-authored automation, while KEEPING tracks, instruments/plug-ins, audio effects, mixer settings, track names/colours and scenes \u2014 so the set\u0027s rig can be reused for another generation run. The non-destructive sibling of clear_project, which deletes whole tracks instead. Destructive: requires confirm=true (parity with the CLI\u0027s \u0060vibrai clip clear-all --yes\u0060); without it, reports what would be cleared and changes nothing. Clears all non-group MIDI tracks by default (audio is opt-in, since audio clips reference recorded material a generation run cannot recreate). NOTE: automation drawn by hand in Live cannot be removed by any LOM mechanism and may remain audible \u2014 the result says so in \u0060warnings\u0060.",
+            "parameters": [
+              {
+                "name": "confirm",
+                "type": "Boolean",
+                "required": false,
+                "description": "Confirm the destructive clear (CLI --yes equivalent). Must be true to proceed; confirm with the user first."
+              },
+              {
+                "name": "include_audio",
+                "type": "Boolean",
+                "required": false,
+                "description": "Also clear audio tracks. Default false \u2014 audio clips reference recorded or imported material a generation run will never recreate."
+              },
+              {
+                "name": "tracks",
+                "type": "String[]",
+                "required": false,
+                "description": "Track handles from list_tracks, e.g. \u0022trk_42\u0022. Copy verbatim. Omit to clear every eligible track."
               }
             ]
           }
@@ -5281,6 +5367,12 @@
                 "description": "Delete all Vibrai-generated tracks (same rule/order as \u0027vibrai project clear --yes\u0027) before planning and rendering \u2014 a clean slate so this run\u0027s composition doesn\u0027t stack on top of a previous, different project\u0027s tracks. Never touches Audio/Return/Master tracks or MIDI tracks whose Part Type is Other (user/template tracks). Skipped entirely under --dry-run (which never calls the bridge)."
               },
               {
+                "name": "--clear-clips-first",
+                "value_name": null,
+                "default": null,
+                "description": "Empty every clip in the set before rendering, KEEPING tracks, instruments, effects, mixer settings and scenes (same routine as \u0027vibrai clip clear-all --yes\u0027) \u2014 reuse the set\u0027s rig instead of rebuilding it. Mutually exclusive with --clear-first, which deletes tracks instead. Skipped entirely under --dry-run. NOTE: this does not by itself make generate re-render in place. Only captured or \u0027project init\u0027-bound projects reuse existing tracks; a genre-minted project still appends a duplicate track set (issue #558)."
+              },
+              {
                 "name": "--dry-run",
                 "value_name": null,
                 "default": null,
@@ -5712,6 +5804,12 @@
                 "description": "Delete all Vibrai-generated tracks (same rule/order as clear_project with confirm=true, or \u0027vibrai project clear --yes\u0027) before planning and rendering \u2014 a clean slate so this run\u0027s composition doesn\u0027t stack on top of a previous, different project\u0027s tracks. Never touches Audio/Return/Master tracks, group/folder tracks, or MIDI tracks whose part type is \u0027other\u0027 (user/template tracks)."
               },
               {
+                "name": "clear_clips_first",
+                "type": "Boolean",
+                "required": false,
+                "description": "Empty every clip in the set before rendering, KEEPING tracks, instruments, effects, mixer settings and scenes \u2014 reuse the set\u0027s rig instead of rebuilding it. Mutually exclusive with clear_first, which deletes tracks instead. NOTE: this does not by itself make generate re-render in place. Only captured or project-init-bound projects reuse existing tracks; a genre-minted project still appends a duplicate track set (issue #558)."
+              },
+              {
                 "name": "create_missing_tracks",
                 "type": "Boolean",
                 "required": false,
@@ -5775,6 +5873,37 @@
                 "value_name": null,
                 "default": null,
                 "description": "Suppress the lossy_arrangement_automation warning that capture emits when no --merge-with is provided and the captured arrangement_automation array is empty (the LOM-blind-spot for bouncer-produced envelopes)."
+              },
+              {
+                "name": "--track-ids",
+                "value_name": "ID",
+                "default": null,
+                "description": "Optional track handle (trk_42), to capture only this track; repeatable to select several. Session-level data (tempo, scale, scenes) is always captured in full."
+              }
+            ]
+          },
+          {
+            "name": "capture-merge",
+            "description": "Combine partial .vibrai files (each produced by capture --track-ids) into one project",
+            "arguments": [],
+            "options": [
+              {
+                "name": "--sources",
+                "value_name": "PATH",
+                "default": null,
+                "description": "Absolute path to a partial .vibrai file to combine; repeatable, in canonical order (the first entry wins any session-metadata drift warning)."
+              },
+              {
+                "name": "--out",
+                "value_name": "PATH",
+                "default": null,
+                "description": "Output file path for the merged project."
+              },
+              {
+                "name": "--force",
+                "value_name": null,
+                "default": null,
+                "description": "Overwrite the output file if it already exists."
               }
             ]
           }
@@ -5815,6 +5944,36 @@
                 "type": "Boolean",
                 "required": false,
                 "description": "When true (default) AND merge_with is null AND captured arrangement_automation is empty, emit a lossy_arrangement_automation warning string in the summary explaining the LOM gap. Set to false to suppress the warning."
+              },
+              {
+                "name": "track_ids",
+                "type": "String[]",
+                "required": false,
+                "description": "Optional track handles from list_tracks, e.g. [\u0022trk_42\u0022], to capture only these tracks. Session-level data (tempo, scale, scenes) is always captured in full regardless. Combine multiple capture_project calls with different track_ids, then merge_captures, to keep any single call well under any client-side timeout on a large set."
+              }
+            ]
+          },
+          {
+            "name": "merge_captures",
+            "description": "Combine N partial .vibrai files (each produced by capture_project with a track_ids filter) into one project. Track-id collisions across sources are an error naming the colliding ids. Session-level metadata (tempo/scale/scene names) drifting between sources is a warning, not an error \u2014 the FIRST path in sources is canonical for those fields.",
+            "parameters": [
+              {
+                "name": "sources",
+                "type": "String[]",
+                "required": true,
+                "description": "Absolute paths to the partial .vibrai files to combine, in canonical order (the first entry wins any session-metadata drift warning)."
+              },
+              {
+                "name": "out",
+                "type": "String",
+                "required": true,
+                "description": "Absolute file path to write the merged .vibrai YAML to."
+              },
+              {
+                "name": "force",
+                "type": "Boolean",
+                "required": false,
+                "description": "Overwrite the file if it already exists."
               }
             ]
           }
@@ -5877,6 +6036,112 @@
             "name": "recheck_license",
             "description": "Force an online re-validation of the activated license against Lemon Squeezy and return the refreshed status. Idempotent \u2014 does not consume or release a seat. Use this to clear an offline-grace banner once back online. To ACTIVATE or DEACTIVATE a license, use the \u0060vibrai license\u0060 CLI commands (CLI-only by design).",
             "parameters": []
+          }
+        ]
+      }
+    },
+    {
+      "id": "telemetry",
+      "title": "Telemetry",
+      "description": "Manage anonymized, opt-in crash/usage telemetry (spec #224). Enable/disable are CLI-only by design \u2014 consenting to data collection is a decision only a human should be able to make, so no MCP tool can flip it. The MCP surface (TelemetryTools) exposes the non-destructive half: read-only status, which distinguishes raw consent from whether the two-key gate (consent AND a configured delivery destination) is actually sending anything.",
+      "cli": {
+        "branch": "telemetry",
+        "commands": [
+          {
+            "name": "telemetry enable",
+            "description": "Opt in to anonymized telemetry",
+            "arguments": [],
+            "options": []
+          },
+          {
+            "name": "telemetry disable",
+            "description": "Opt out of telemetry",
+            "arguments": [],
+            "options": []
+          },
+          {
+            "name": "telemetry status",
+            "description": "Show telemetry consent and whether data is actually being sent",
+            "arguments": [],
+            "options": []
+          }
+        ]
+      },
+      "mcp": {
+        "tools": [
+          {
+            "name": "telemetry_status",
+            "description": "Get the current Vibrai telemetry status: whether consent is recorded, whether a delivery destination is configured, and whether telemetry is EFFECTIVELY active (both must be true -- the two-key gate). Also returns the telemetry privacy policy URL. Read-only -- there is no MCP tool to enable or disable telemetry; use the \u0060vibrai telemetry enable|disable\u0060 CLI commands.",
+            "parameters": []
+          }
+        ]
+      }
+    },
+    {
+      "id": "feedback",
+      "title": "Feedback",
+      "description": "Send feedback or a bug report, working whether or not telemetry is enabled (spec #224). Captures the message plus a diagnostic bundle (last 50 scrubbed log lines, recent scrubbed breadcrumbs, and a SHA-256 hash \u2014 never the contents \u2014 of the active .vibrai). Sends via Sentry when telemetry consent is on; otherwise writes the bundle to a local file and returns its path plus a GitHub issue URL \u2014 never a silent send.",
+      "cli": {
+        "branch": "feedback",
+        "commands": [
+          {
+            "name": "feedback",
+            "description": "Send feedback / a bug report. Captures your message plus recent scrubbed log lines, breadcrumbs, and a hash (never contents) of the active .vibrai. Sends if telemetry consent is on; otherwise writes a local file (--no-send forces the local file even with consent on).",
+            "arguments": [
+              {
+                "name": "message",
+                "required": true,
+                "description": "Your feedback message."
+              }
+            ],
+            "options": [
+              {
+                "name": "--email",
+                "value_name": "EMAIL",
+                "default": null,
+                "description": "Optional email so the team can follow up. Never inferred."
+              },
+              {
+                "name": "--no-send",
+                "value_name": null,
+                "default": null,
+                "description": "Write the feedback bundle to a local file instead of sending it, even if telemetry consent is on."
+              },
+              {
+                "name": "--project",
+                "value_name": "PATH",
+                "default": null,
+                "description": "Path to the .vibrai file (default: \u003Ccurrent-directory-name\u003E.vibrai). Only a SHA-256 hash of its bytes is ever collected -- never its contents."
+              }
+            ]
+          }
+        ]
+      },
+      "mcp": {
+        "tools": [
+          {
+            "name": "submit_feedback",
+            "description": "Submit user feedback or a bug report. Captures the message plus a diagnostic bundle: the last 50 scrubbed log lines, recent scrubbed breadcrumbs, and a SHA-256 hash (never the contents) of the active .vibrai project. Sends via Sentry when telemetry consent is on; otherwise writes the bundle to a local file and returns its path plus a GitHub issue URL so you can relay both to the user -- never a silent send.",
+            "parameters": [
+              {
+                "name": "message",
+                "type": "String",
+                "required": true,
+                "description": "Your feedback message."
+              },
+              {
+                "name": "email",
+                "type": "String",
+                "required": false,
+                "description": "Optional email so the team can follow up. Never inferred."
+              },
+              {
+                "name": "project_path",
+                "type": "String",
+                "required": false,
+                "description": "Path to the .vibrai project (default: \u003Ccwd-name\u003E.vibrai). Only its SHA-256 hash is collected, never its contents."
+              }
+            ]
           }
         ]
       }
