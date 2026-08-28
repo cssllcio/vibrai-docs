@@ -158,6 +158,18 @@ vibrai telemetry disable   # opt out (install_id is kept, in case you re-enable 
 }
 ```
 
+### When `disable` takes effect
+
+Immediately for everything that reads consent per use: every new `vibrai` CLI run, every call
+Vibrai makes to the Live bridge (consent is re-checked per request, and the Max-for-Live device
+is told to shut its own reporting down), and every `vibrai feedback` submission — which falls
+back to writing a local file instead of sending.
+
+The one exception is a **Vibrai MCP server that is already running** with telemetry active. It
+initialized its crash reporter at startup, and nothing watches the consent file to tear that
+down mid-process, so it keeps reporting until it restarts. Restart the MCP server (or the app
+hosting it) if you want the change to apply there too.
+
 `status` (both surfaces) reports two distinct facts: whether consent is recorded, and whether
 telemetry is *effectively* sending anything (both gate keys satisfied). A user with consent on
 but no configured `VIBRAI_SENTRY_DSN` is still sending zero bytes — status says so explicitly
