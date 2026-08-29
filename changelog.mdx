@@ -4,6 +4,34 @@ description: "New features, improvements, and fixes in Vibrai."
 rss: true
 ---
 
+<Update label="1.6.6" description="August 29, 2026">
+  Opt-in crash reporting and a bug-report command, three new ways to work with a Live set (switch playback modes, clear clips while keeping your rig, capture large sets in pieces), and a run of `vibrai update` reliability fixes.
+
+  ## Opt-in telemetry and `vibrai feedback`
+
+  `vibrai telemetry enable` / `disable` / `status` control whether anonymized crash reports and coarse operation traces are sent to help improve Vibrai's reliability. **Default is off, and even switching it on sends zero bytes** unless a delivery destination is separately configured — only the CLI can grant or revoke consent, never an agent on your behalf. See the [telemetry privacy policy](/privacy/telemetry) for exactly what is (and is never) collected. `vibrai feedback "<message>"` sends a scrubbed diagnostic bundle when you're consenting, or saves it to a local file otherwise, so a bug report always has something to attach.
+
+  ## Switch between Session and Arrangement playback
+
+  `vibrai transport playback-mode session|arrangement` fires a scene or returns your tracks to the Arrangement, from the CLI or MCP — no more reaching for the mouse mid-session.
+
+  ## Clear a set's clips, keep the rig
+
+  `vibrai clip clear-all` empties every session and arrangement clip while leaving tracks, instruments, effects, mixer settings, and scenes untouched — reuse a set you've already built for a fresh generation run instead of starting from a blank project.
+
+  ## Capture large sets in pieces
+
+  Capturing and generating now show live progress instead of sitting quietly. `vibrai capture --track-ids` captures only the tracks you name; `vibrai capture-merge` recombines two or more partial captures into one project, so a big set no longer has to fit inside a single request.
+
+  ## `vibrai update` reliability
+
+  An RC build now correctly recognizes the final release that follows it as newer, instead of reporting "up to date" forever. `vibrai version` no longer falsely warns about a stale bridge after a normal update. `vibrai update` refreshes its own bundled copy of the M4L device and Python bridge, not just what Live loads. And running `vibrai update` with `sudo` no longer leaves your Ableton Library files owned by root, which used to break the next reinstall.
+
+  ## Also
+
+  - `vibrai generate --json` and `vibrai capture --json` no longer mix progress-bar text into the JSON output — a script parsing the result now gets clean JSON every time.
+</Update>
+
 <Update label="1.6.5" description="August 22, 2026">
   A fix release ahead of launch: undo brackets stop over-reporting, rapid back-to-back calls no longer trip the bridge, new projects are reproducible, and genre lookups by name go from seconds to milliseconds.
 
