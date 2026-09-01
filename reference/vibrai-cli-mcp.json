@@ -1,6 +1,6 @@
 {
-  "engine_version": "1.6.5.0",
-  "generated_at": "2026-08-29T06:04:03Z",
+  "engine_version": "1.6.6.0",
+  "generated_at": "2026-09-01T09:37:30Z",
   "features": [
     {
       "id": "transport",
@@ -750,12 +750,12 @@
           },
           {
             "name": "mix advice",
-            "description": "Look up mixing guidance: compression, reverb, low-end, tool choice",
+            "description": "Look up mixing guidance: compression, reverb, low-end, tool choice, boxy",
             "arguments": [
               {
                 "name": "topic",
                 "required": false,
-                "description": "compression, reverb, low-end or tool-choice. Omit to list the topics."
+                "description": "compression, reverb, low-end, tool-choice or boxy. Omit to list the topics."
               }
             ],
             "options": [
@@ -794,6 +794,62 @@
                 "value_name": null,
                 "default": null,
                 "description": "Report the writes without making them. The device is still read, so the skips are real."
+              }
+            ]
+          },
+          {
+            "name": "mix fix",
+            "description": "Write a diagnostic\u0027s corrective moves onto the open set",
+            "arguments": [
+              {
+                "name": "topic",
+                "required": true,
+                "description": "The diagnostic to fix, e.g. boxy."
+              }
+            ],
+            "options": [
+              {
+                "name": "--dry-run",
+                "value_name": null,
+                "default": null,
+                "description": "Print the writes without making them. Needs no confirmation."
+              },
+              {
+                "name": "--yes",
+                "value_name": null,
+                "default": null,
+                "description": "Confirm the write (MCP confirm=true equivalent)."
+              }
+            ]
+          },
+          {
+            "name": "mix fault",
+            "description": "Deliberately make the mix worse by introducing a diagnostic\u0027s problem, so you can hear it before the fix",
+            "arguments": [
+              {
+                "name": "topic",
+                "required": true,
+                "description": "The diagnostic whose problem to introduce, e.g. boxy. Deliberately makes the mix worse."
+              }
+            ],
+            "options": [
+              {
+                "name": "--dry-run",
+                "value_name": null,
+                "default": null,
+                "description": "Print the writes without making them. Needs no confirmation."
+              },
+              {
+                "name": "--yes",
+                "value_name": null,
+                "default": null,
+                "description": "Confirm the write (MCP confirm=true equivalent)."
+              },
+              {
+                "name": "--clear",
+                "value_name": null,
+                "default": null,
+                "description": "Write the remedy\u0027s corrective values instead of the fault\u0027s. Reverses the fault; does not restore the pre-fault state \u2014 any inserted EQ Eight stays."
               }
             ]
           }
@@ -957,13 +1013,13 @@
           },
           {
             "name": "get_mix_advice",
-            "description": "Look up Vibrai\u0027s mixing knowledge. Topics: \u0022compression\u0022 (compressor starting points per source, plus the fast/slow attack continuum), \u0022reverb\u0022 (what each parameter does to the tail), \u0022low_end\u0022 (the five ways kick and bass fight, and the fix for each), \u0022tool_choice\u0022 (whether a problem wants EQ, compression, dynamic EQ or automation). Call with no topic for the index. Narrow with subject \u2014 a compression source (\u0022kick\u0022) or part type (\u0022bd\u0022), or a reference entry (\u0022pre_delay\u0022, \u0022phase_cancellation\u0022). This is guidance with defaults, not measurement: ~/.vibrai/mix-advice/\u003Ctopic\u003E.yaml overrides any of it.",
+            "description": "Look up Vibrai\u0027s mixing knowledge. Topics: \u0022compression\u0022 (compressor starting points per source, plus the fast/slow attack continuum), \u0022reverb\u0022 (what each parameter does to the tail), \u0022low_end\u0022 (the five ways kick and bass fight, and the fix for each), \u0022tool_choice\u0022 (whether a problem wants EQ, compression, dynamic EQ or automation), \u0022boxy\u0022 (low-mid buildup at 200-500 Hz \u2014 the one topic with an apply path, via apply_mix_fix / inject_mix_fault). Call with no topic for the index. Narrow with subject \u2014 a compression source (\u0022kick\u0022) or part type (\u0022bd\u0022), or a reference entry (\u0022pre_delay\u0022, \u0022phase_cancellation\u0022). This is guidance with defaults, not measurement: ~/.vibrai/mix-advice/\u003Ctopic\u003E.yaml overrides any of it.",
             "parameters": [
               {
                 "name": "topic",
                 "type": "String",
                 "required": false,
-                "description": "One of compression, reverb, low_end, tool_choice. Omit for the topic index."
+                "description": "One of compression, reverb, low_end, tool_choice, boxy. Omit for the topic index."
               },
               {
                 "name": "subject",
@@ -1000,6 +1056,60 @@
                 "type": "Boolean",
                 "required": false,
                 "description": "Report the writes without making them. The device is still read, so the reported skips are real."
+              }
+            ]
+          },
+          {
+            "name": "apply_mix_fix",
+            "description": "Write a diagnostic\u0027s corrective moves onto the open set. Vibrai does NOT detect the problem \u2014 it has no audio analysis and cannot hear anything. You name the symptom; this applies the prescribed fix. Topic is a diagnostic slug (\u0022boxy\u0022). Targets are chosen structurally from part type, never from sound. Destructive: writes device parameters \u2014 requires confirm=true (parity with the CLI\u0027s \u0060mix fix --yes\u0060); refuses without writing anything otherwise. Pass dry_run to see every write first, which needs no confirmation. Values are absolute, so applying twice equals applying once. It REUSES an EQ Eight already on the track and OVERWRITES the band it targets \u2014 a shelf the producer put on that band is replaced, and nothing restores it \u2014 and inserts an EQ Eight on tracks that have none. Both are named in the result\u0027s warnings, on the dry run as well as the write. The whole diagnostic is wrapped in one native Live undo step when the Python bridge is available; the result says so when it is not. Call \u0060get_skill\u0060 first to load the Vibrai operational playbook.",
+            "parameters": [
+              {
+                "name": "topic",
+                "type": "String",
+                "required": true,
+                "description": "The diagnostic slug, e.g. \u0022boxy\u0022. See get_mix_advice for the topic index."
+              },
+              {
+                "name": "confirm",
+                "type": "Boolean",
+                "required": false,
+                "description": "Confirm the write (CLI --yes equivalent). Must be true unless dry_run is true."
+              },
+              {
+                "name": "dry_run",
+                "type": "Boolean",
+                "required": false,
+                "description": "Report the writes without making them. Needs no confirmation."
+              }
+            ]
+          },
+          {
+            "name": "inject_mix_fault",
+            "description": "DELIBERATELY introduce a diagnostic\u0027s problem into the open set, so a producer can hear it before the fix. Vibrai does NOT detect the problem \u2014 it has no audio analysis and cannot hear anything; you name the symptom via topic (a diagnostic slug, e.g. \u0022boxy\u0022). This makes the mix WORSE on purpose \u2014 never call it unless the user explicitly asked to hear the problem. Destructive: writes device parameters \u2014 requires confirm=true (parity with the CLI\u0027s \u0060mix fault --yes\u0060). Pass clear=true to write the remedy\u0027s corrective values instead, which is how a fault is reversed; note that this is NOT a restore to the pre-fault state \u2014 any EQ Eight inserted stays inserted, and the remedy\u0027s values are corrective, not neutral. It also REUSES an EQ Eight already on the track and OVERWRITES the band it targets, which the result\u0027s warnings name. Values are absolute. The whole injection is wrapped in one native Live undo step when the Python bridge is available; the result says so when it is not. Call \u0060get_skill\u0060 first to load the Vibrai operational playbook.",
+            "parameters": [
+              {
+                "name": "topic",
+                "type": "String",
+                "required": true,
+                "description": "The diagnostic slug, e.g. \u0022boxy\u0022."
+              },
+              {
+                "name": "confirm",
+                "type": "Boolean",
+                "required": false,
+                "description": "Confirm the write (CLI --yes equivalent). Must be true unless dry_run is true."
+              },
+              {
+                "name": "clear",
+                "type": "Boolean",
+                "required": false,
+                "description": "Write the remedy\u0027s corrective values instead of the fault\u0027s. Reverses the fault; does not restore the pre-fault state \u2014 any inserted EQ Eight stays."
+              },
+              {
+                "name": "dry_run",
+                "type": "Boolean",
+                "required": false,
+                "description": "Report the writes without making them. Needs no confirmation."
               }
             ]
           }
@@ -3885,7 +3995,7 @@
                 "name": "--time-signature",
                 "value_name": "VALUE",
                 "default": null,
-                "description": "Project time signature, e.g. \u00227/8\u0022."
+                "description": "Project time signature, e.g. \u00227/8\u0022. Pass \u0022none\u0022 to clear it back to undeclared."
               }
             ]
           },
@@ -3992,7 +4102,7 @@
           },
           {
             "name": "configure_project",
-            "description": "Edit project-level preferences in an existing .vibrai file. Currently: number_tracks (persist Ableton \u0027#\u0027 track auto-numbering) and time_signature. Loads, updates project.defaults / project.meta, and saves. Pass at least one of number_tracks or time_signature. Errors if the file is missing.",
+            "description": "Edit project-level preferences in an existing .vibrai file. Currently: number_tracks (persist Ableton \u0027#\u0027 track auto-numbering) and time_signature. Loads, updates project.defaults / project.meta, and saves. Pass at least one of number_tracks or time_signature. Pass time_signature=\u0022none\u0022 to clear it back to undeclared (#549) rather than omitting the argument, which leaves it unchanged. Errors if the file is missing.",
             "parameters": [
               {
                 "name": "path",
@@ -4010,7 +4120,7 @@
                 "name": "time_signature",
                 "type": "String",
                 "required": false,
-                "description": "Project time signature, e.g. \u00227/8\u0022. Omit to leave unchanged."
+                "description": "Project time signature, e.g. \u00227/8\u0022. Omit to leave unchanged. Pass \u0022none\u0022 to clear it back to undeclared."
               }
             ]
           },
@@ -5983,7 +6093,7 @@
     {
       "id": "license",
       "title": "License",
-      "description": "Activate, deactivate, and check the Vibrai license / trial status. Activation and deactivation are CLI-only by design \u2014 both mutate the customer\u0027s machine-seat count and bind a key to a machine, so they are human-initiated, not agent-driven. The MCP surface (LicenseTools) exposes the non-destructive half: read status and idempotent recheck.",
+      "description": "Activate, deactivate, and check the Vibrai license / trial status. Activation and deactivation are CLI-only by design \u2014 both mutate the customer\u0027s machine-seat count and bind a key to a machine, so they are human-initiated, not agent-driven. The MCP surface (LicenseTools) exposes the non-destructive half: read status, idempotent recheck, and the structured privacy disclosure (get_license_privacy, #375) \u2014 full parity with \u0060license privacy\u0060.",
       "cli": {
         "branch": "license",
         "commands": [
@@ -6035,6 +6145,11 @@
           {
             "name": "recheck_license",
             "description": "Force an online re-validation of the activated license against Lemon Squeezy and return the refreshed status. Idempotent \u2014 does not consume or release a seat. Use this to clear an offline-grace banner once back online. To ACTIVATE or DEACTIVATE a license, use the \u0060vibrai license\u0060 CLI commands (CLI-only by design).",
+            "parameters": []
+          },
+          {
+            "name": "get_license_privacy",
+            "description": "Get the structured disclosure of exactly what data Vibrai transmits when you activate a license: what is sent (license key, anonymized instance name in the form {os}-{hash8}), what is never sent (hostname, hardware identifiers, platform IDs), and the standing privacy note. Read-only, no side effects. Same content as \u0060vibrai license privacy\u0060.",
             "parameters": []
           }
         ]
@@ -6165,7 +6280,7 @@
         "tools": [
           {
             "name": "get_version",
-            "description": "Get the running Vibrai.Mcp server version (assembly) and the M4L bridge version (package.json), plus a best-effort license block (status, features_enabled, days_remaining). Bridge probes are best-effort and always classified: bridge_status and python_bridge_status read \u0022ok\u0022 (with probe timings) on success or a failure kind (unreachable/timed_out/error, unavailable) without ever hanging. When both bridges are healthy, note explains that a tool call hanging alongside a successful probe indicates an MCP client-transport fault, not a bridge problem.",
+            "description": "Get the running Vibrai.Mcp server version (assembly) and the M4L bridge version (package.json), plus a best-effort license block (status, features_enabled, days_remaining). Bridge probes are best-effort and always classified: bridge_status and python_bridge_status read \u0022ok\u0022 (with probe timings) on success or a failure kind (unreachable/timed_out/error, unavailable) without ever hanging. When both bridges are healthy, note explains that a tool call hanging alongside a successful probe indicates an MCP client-transport fault, not a bridge problem. Also reports every other shipped component so nothing goes unmentioned: mcp_server_version/mcpb_bundle_version (read from the installed Vibrai.mcpb manifest \u2014 the only signal available for \u0022what will Claude Desktop run\u0022), mcp_binary_version/mcp_binary_status (read directly off this process\u0027s own Vibrai.Mcp binary via FileVersionInfo \u2014 a distinct, bundle-independent signal; a packaging self-check against mcp_version), amxd_device_status (a content-hash compare of the installed vibrai.amxd against this server\u0027s shipped copy: matches_shipped/stale/not_installed/shipped_source_missing), templates_status (same hash compare; templates_versioned is always false \u2014 Ableton .als files carry no internal version stamp), and remote_script_status (same hash compare against the installed Python remote-script package \u2014 distinguishes \u0022never installed\u0022 from \u0022installed but Live is shut\u0022, which python_bridge_status alone cannot). mcpb_bundle_drift is a warning string (or null) when the staged .mcpb reports a different Vibrai than this server, with its own remedy \u2014 re-drag it into Claude Desktop and restart that app, not Ableton Live.",
             "parameters": []
           }
         ]

@@ -94,14 +94,14 @@ vibrai mix apply-profile --reverb-return <NAME> --dry-run --profile <NAME> --par
 
 ### `mix advice`
 
-Look up mixing guidance: compression, reverb, low-end, tool choice
+Look up mixing guidance: compression, reverb, low-end, tool choice, boxy
 
 ```bash
 vibrai mix advice [topic] --for <SUBJECT>
 ```
 
 <ParamField path="topic">
-  compression, reverb, low-end or tool-choice. Omit to list the topics.
+  compression, reverb, low-end, tool-choice or boxy. Omit to list the topics.
 </ParamField>
 <ParamField path="--for">
   Narrow the topic: a compression source (kick) or part type (bd), or a reference entry (pre-delay, phase-cancellation).
@@ -126,6 +126,45 @@ vibrai mix compress <track> <device> --for <SOURCE> --dry-run
 </ParamField>
 <ParamField path="--dry-run">
   Report the writes without making them. The device is still read, so the skips are real.
+</ParamField>
+
+### `mix fix`
+
+Write a diagnostic's corrective moves onto the open set
+
+```bash
+vibrai mix fix <topic> --dry-run --yes
+```
+
+<ParamField path="topic" required>
+  The diagnostic to fix, e.g. boxy.
+</ParamField>
+<ParamField path="--dry-run">
+  Print the writes without making them. Needs no confirmation.
+</ParamField>
+<ParamField path="--yes">
+  Confirm the write (MCP confirm=true equivalent).
+</ParamField>
+
+### `mix fault`
+
+Deliberately make the mix worse by introducing a diagnostic's problem, so you can hear it before the fix
+
+```bash
+vibrai mix fault <topic> --dry-run --yes --clear
+```
+
+<ParamField path="topic" required>
+  The diagnostic whose problem to introduce, e.g. boxy. Deliberately makes the mix worse.
+</ParamField>
+<ParamField path="--dry-run">
+  Print the writes without making them. Needs no confirmation.
+</ParamField>
+<ParamField path="--yes">
+  Confirm the write (MCP confirm=true equivalent).
+</ParamField>
+<ParamField path="--clear">
+  Write the remedy's corrective values instead of the fault's. Reverses the fault; does not restore the pre-fault state — any inserted EQ Eight stays.
 </ParamField>
 
 ## MCP tools
@@ -299,7 +338,7 @@ Apply a mix profile's PLACEMENT to the open set: level and pan per part type, pl
 
 ### `get_mix_advice`
 
-Look up Vibrai's mixing knowledge. Topics: "compression" (compressor starting points per source, plus the fast/slow attack continuum), "reverb" (what each parameter does to the tail), "low_end" (the five ways kick and bass fight, and the fix for each), "tool_choice" (whether a problem wants EQ, compression, dynamic EQ or automation). Call with no topic for the index. Narrow with subject — a compression source ("kick") or part type ("bd"), or a reference entry ("pre_delay", "phase_cancellation"). This is guidance with defaults, not measurement: ~/.vibrai/mix-advice/&lt;topic>.yaml overrides any of it.
+Look up Vibrai's mixing knowledge. Topics: "compression" (compressor starting points per source, plus the fast/slow attack continuum), "reverb" (what each parameter does to the tail), "low_end" (the five ways kick and bass fight, and the fix for each), "tool_choice" (whether a problem wants EQ, compression, dynamic EQ or automation), "boxy" (low-mid buildup at 200-500 Hz — the one topic with an apply path, via apply_mix_fix / inject_mix_fault). Call with no topic for the index. Narrow with subject — a compression source ("kick") or part type ("bd"), or a reference entry ("pre_delay", "phase_cancellation"). This is guidance with defaults, not measurement: ~/.vibrai/mix-advice/&lt;topic>.yaml overrides any of it.
 
 ```json
 {
@@ -312,7 +351,7 @@ Look up Vibrai's mixing knowledge. Topics: "compression" (compressor starting po
 ```
 
 <ParamField path="topic" type="String">
-  One of compression, reverb, low_end, tool_choice. Omit for the topic index.
+  One of compression, reverb, low_end, tool_choice, boxy. Omit for the topic index.
 </ParamField>
 <ParamField path="subject" type="String">
   Narrows the topic: a compression source ("kick") or part type ("bd"), or a reference entry id ("pre_delay").
@@ -345,4 +384,58 @@ Write a source's compression starting points — Attack, Release and Ratio — o
 </ParamField>
 <ParamField path="dry_run" type="Boolean">
   Report the writes without making them. The device is still read, so the reported skips are real.
+</ParamField>
+
+### `apply_mix_fix`
+
+Write a diagnostic's corrective moves onto the open set. Vibrai does NOT detect the problem — it has no audio analysis and cannot hear anything. You name the symptom; this applies the prescribed fix. Topic is a diagnostic slug ("boxy"). Targets are chosen structurally from part type, never from sound. Destructive: writes device parameters — requires confirm=true (parity with the CLI's `mix fix --yes`); refuses without writing anything otherwise. Pass dry_run to see every write first, which needs no confirmation. Values are absolute, so applying twice equals applying once. It REUSES an EQ Eight already on the track and OVERWRITES the band it targets — a shelf the producer put on that band is replaced, and nothing restores it — and inserts an EQ Eight on tracks that have none. Both are named in the result's warnings, on the dry run as well as the write. The whole diagnostic is wrapped in one native Live undo step when the Python bridge is available; the result says so when it is not. Call `get_skill` first to load the Vibrai operational playbook.
+
+```json
+{
+  "tool": "apply_mix_fix",
+  "arguments": {
+    "topic": "<String>",
+    "confirm": "<Boolean>",
+    "dry_run": "<Boolean>"
+  }
+}
+```
+
+<ParamField path="topic" type="String" required>
+  The diagnostic slug, e.g. "boxy". See get_mix_advice for the topic index.
+</ParamField>
+<ParamField path="confirm" type="Boolean">
+  Confirm the write (CLI --yes equivalent). Must be true unless dry_run is true.
+</ParamField>
+<ParamField path="dry_run" type="Boolean">
+  Report the writes without making them. Needs no confirmation.
+</ParamField>
+
+### `inject_mix_fault`
+
+DELIBERATELY introduce a diagnostic's problem into the open set, so a producer can hear it before the fix. Vibrai does NOT detect the problem — it has no audio analysis and cannot hear anything; you name the symptom via topic (a diagnostic slug, e.g. "boxy"). This makes the mix WORSE on purpose — never call it unless the user explicitly asked to hear the problem. Destructive: writes device parameters — requires confirm=true (parity with the CLI's `mix fault --yes`). Pass clear=true to write the remedy's corrective values instead, which is how a fault is reversed; note that this is NOT a restore to the pre-fault state — any EQ Eight inserted stays inserted, and the remedy's values are corrective, not neutral. It also REUSES an EQ Eight already on the track and OVERWRITES the band it targets, which the result's warnings name. Values are absolute. The whole injection is wrapped in one native Live undo step when the Python bridge is available; the result says so when it is not. Call `get_skill` first to load the Vibrai operational playbook.
+
+```json
+{
+  "tool": "inject_mix_fault",
+  "arguments": {
+    "topic": "<String>",
+    "confirm": "<Boolean>",
+    "clear": "<Boolean>",
+    "dry_run": "<Boolean>"
+  }
+}
+```
+
+<ParamField path="topic" type="String" required>
+  The diagnostic slug, e.g. "boxy".
+</ParamField>
+<ParamField path="confirm" type="Boolean">
+  Confirm the write (CLI --yes equivalent). Must be true unless dry_run is true.
+</ParamField>
+<ParamField path="clear" type="Boolean">
+  Write the remedy's corrective values instead of the fault's. Reverses the fault; does not restore the pre-fault state — any inserted EQ Eight stays.
+</ParamField>
+<ParamField path="dry_run" type="Boolean">
+  Report the writes without making them. Needs no confirmation.
 </ParamField>

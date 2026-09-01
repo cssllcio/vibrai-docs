@@ -93,7 +93,7 @@ vibrai project config --project <PATH> --number-tracks <BOOL> --time-signature <
   Persist Ableton '#' track auto-numbering: true or false.
 </ParamField>
 <ParamField path="--time-signature">
-  Project time signature, e.g. "7/8".
+  Project time signature, e.g. "7/8". Pass "none" to clear it back to undeclared.
 </ParamField>
 
 ### `project clear`
@@ -204,7 +204,7 @@ Return a summary of the project (counts of sections, parts, templates, and a `sc
 
 ### `configure_project`
 
-Edit project-level preferences in an existing .vibrai file. Currently: number_tracks (persist Ableton '#' track auto-numbering) and time_signature. Loads, updates project.defaults / project.meta, and saves. Pass at least one of number_tracks or time_signature. Errors if the file is missing.
+Edit project-level preferences in an existing .vibrai file. Currently: number_tracks (persist Ableton '#' track auto-numbering) and time_signature. Loads, updates project.defaults / project.meta, and saves. Pass at least one of number_tracks or time_signature. Pass time_signature="none" to clear it back to undeclared (#549) rather than omitting the argument, which leaves it unchanged. Errors if the file is missing.
 
 ```json
 {
@@ -224,7 +224,7 @@ Edit project-level preferences in an existing .vibrai file. Currently: number_tr
   Persist Ableton '#' track auto-numbering (true) or disable it (false). Omit to leave unchanged.
 </ParamField>
 <ParamField path="time_signature" type="String">
-  Project time signature, e.g. "7/8". Omit to leave unchanged.
+  Project time signature, e.g. "7/8". Omit to leave unchanged. Pass "none" to clear it back to undeclared.
 </ParamField>
 
 ### `clear_project`

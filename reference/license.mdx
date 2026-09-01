@@ -1,11 +1,11 @@
 ---
 title: "License"
-description: "Activate, deactivate, and check the Vibrai license / trial status. Activation and deactivation are CLI-only by design — both mutate the customer's machine-seat count and bind a key to a machine, so they are human-initiated, not agent-driven. The MCP surface (LicenseTools) exposes the non-destructive half: read status and idempotent recheck."
+description: "Activate, deactivate, and check the Vibrai license / trial status. Activation and deactivation are CLI-only by design — both mutate the customer's machine-seat count and bind a key to a machine, so they are human-initiated, not agent-driven. The MCP surface (LicenseTools) exposes the non-destructive half: read status, idempotent recheck, and the structured privacy disclosure (get_license_privacy, #375) — full parity with `license privacy`."
 ---
 
 {/* GENERATED — do not edit by hand. Regenerate with `npm run generate:reference`. */}
 
-Activate, deactivate, and check the Vibrai license / trial status. Activation and deactivation are CLI-only by design — both mutate the customer's machine-seat count and bind a key to a machine, so they are human-initiated, not agent-driven. The MCP surface (LicenseTools) exposes the non-destructive half: read status and idempotent recheck.
+Activate, deactivate, and check the Vibrai license / trial status. Activation and deactivation are CLI-only by design — both mutate the customer's machine-seat count and bind a key to a machine, so they are human-initiated, not agent-driven. The MCP surface (LicenseTools) exposes the non-destructive half: read status, idempotent recheck, and the structured privacy disclosure (get_license_privacy, #375) — full parity with `license privacy`.
 
 ## Command line
 
@@ -83,6 +83,19 @@ Force an online re-validation of the activated license against Lemon Squeezy and
 ```json
 {
   "tool": "recheck_license",
+  "arguments": {}
+}
+```
+
+
+
+### `get_license_privacy`
+
+Get the structured disclosure of exactly what data Vibrai transmits when you activate a license: what is sent (license key, anonymized instance name in the form &#123;os}-&#123;hash8}), what is never sent (hostname, hardware identifiers, platform IDs), and the standing privacy note. Read-only, no side effects. Same content as `vibrai license privacy`.
+
+```json
+{
+  "tool": "get_license_privacy",
   "arguments": {}
 }
 ```
