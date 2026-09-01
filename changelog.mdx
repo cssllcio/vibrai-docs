@@ -4,6 +4,31 @@ description: "New features, improvements, and fixes in Vibrai."
 rss: true
 ---
 
+<Update label="1.7.0" description="September 1, 2026">
+  Tell Vibrai what's wrong with your mix and it fixes it — or injects the problem first so you can hear it. Plus fuller version reporting, and a chord fix that makes generated music correct in modes without a perfect fifth.
+
+  ## "My mix sounds boxy"
+
+  Say what's wrong and Vibrai does something about it. `vibrai mix fix boxy` looks up what boxiness means, writes the corrective EQ moves into your open set, and checks each one landed. `vibrai mix fault boxy` does the opposite — it deliberately *makes* your mix boxy, so you can hear the problem before you hear it go away. On MCP: `apply_mix_fix` and `inject_mix_fault`.
+
+  **Vibrai isn't listening to your audio.** It can't — Live's API exposes no spectrum analysis, so nothing here detects anything. You name the symptom; Vibrai supplies the prescription and makes the change. Writes need `--yes` (or `confirm=true`), a dry run is always free and shows exactly what would change, and applying the same fix twice is the same as applying it once.
+
+  ## Chords are correct in every mode
+
+  Chords used to add a perfect fifth regardless of the mode, even in modes that don't have one — most audibly in Locrian, where the fifth is diminished. The fifth now comes from the mode. Generated chords in affected modes will sound different, and correct.
+
+  ## See what's actually installed
+
+  `vibrai version` now reports every shipped component instead of just the two bridges, so a half-updated install is visible immediately rather than turning up later as a confusing failure. The version string also marks a build made from an uncommitted tree, so a local build can never be mistaken for a released one.
+
+  ## Smaller things
+
+  - `configure_project` accepts `"none"` to clear a time signature, so "unset" is expressible.
+  - `get_license_privacy` brings MCP level with the CLI's privacy reporting.
+  - `--json` output corrected across roughly two dozen mutating commands.
+  - Turning telemetry off now takes effect immediately on MCP and clears anything already written to disk.
+</Update>
+
 <Update label="1.6.6" description="August 29, 2026">
   Opt-in crash reporting and a bug-report command, three new ways to work with a Live set (switch playback modes, clear clips while keeping your rig, capture large sets in pieces), and a run of `vibrai update` reliability fixes.
 
