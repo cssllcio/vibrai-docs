@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1400" width="1000" height="1400" role="img" aria-label="Why your mix sounds boxy">
+<rect width="1000" height="1400" fill="#0f1115"/>
+<g font-family="Inter, Helvetica, Arial, sans-serif">
+<text x="60" y="110" fill="#f2f4f8" font-size="52" font-weight="700">Why your mix sounds boxy</text>
+<text x="60" y="170" fill="#9aa4b2" font-size="24">Excess energy between 200 and 500 Hz reads as cardboard - small,</text>
+<text x="60" y="204" fill="#9aa4b2" font-size="24">closed-in and congested. Boxy is not too much bass; it is too much</text>
+<text x="60" y="238" fill="#9aa4b2" font-size="24">low-mid.</text>
+<text x="60" y="302" fill="#5ab0ff" font-size="34" font-weight="600">200 - 500 Hz</text>
+<text x="60" y="328" fill="#9aa4b2" font-size="20">the band this diagnostic is about</text>
+<text x="60" y="390" fill="#f2f4f8" font-size="28" font-weight="600">Low-mid buildup</text>
+<text x="60" y="420" fill="#9aa4b2" font-size="21">Too many elements carry energy between 200 and 500 Hz at once.</text>
+<text x="60" y="450" fill="#9aa4b2" font-size="21">Cardboard, hollow and congested; detail is hard to hear.</text>
+<text x="76" y="480" fill="#f2f4f8" font-size="21">- High-pass what does not need lows.</text>
+<text x="76" y="510" fill="#f2f4f8" font-size="21">- Cut 200-500 Hz with a narrow bell where needed.</text>
+<text x="76" y="540" fill="#f2f4f8" font-size="21">- Fix one thing at a time.</text>
+<text x="60" y="602" fill="#f2f4f8" font-size="28" font-weight="600">Masking and congestion</text>
+<text x="60" y="632" fill="#9aa4b2" font-size="21">Several parts compete for the same low-mid space.</text>
+<text x="60" y="662" fill="#9aa4b2" font-size="21">Vocals sound distant; the mix stops breathing.</text>
+<text x="76" y="692" fill="#f2f4f8" font-size="21">- Carve one element, not all of them.</text>
+<text x="76" y="722" fill="#f2f4f8" font-size="21">- Compare in context, never in solo.</text>
+<text x="60" y="792" fill="#f2f4f8" font-size="28" font-weight="600">What the fix writes</text>
+<text x="76" y="828" fill="#9aa4b2" font-size="22">3 Frequency A</text>
+<text x="620" y="828" fill="#5ab0ff" font-size="22">320 Hz</text>
+<text x="76" y="864" fill="#9aa4b2" font-size="22">3 Gain A</text>
+<text x="620" y="864" fill="#5ab0ff" font-size="22">-3 dB</text>
+<text x="76" y="900" fill="#9aa4b2" font-size="22">3 Q A</text>
+<text x="620" y="900" fill="#5ab0ff" font-size="22">1.4</text>
+<text x="60" y="1340" fill="#9aa4b2" font-size="18">Adapted from the &quot;Why Your Mix Sounds Boxy&quot; reference at pauseplayrepeat.com.</text>
+<text x="60" y="1368" fill="#9aa4b2" font-size="18">You name the symptom. Vibrai cannot hear.</text>
+</g></svg>
