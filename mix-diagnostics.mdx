@@ -1,0 +1,100 @@
+---
+title: "Mix diagnostics"
+description: "Name a symptom, hear it, and fix it — Vibrai writes the corrective EQ moves into your open Live set."
+---
+
+You can hear that something is wrong. Vibrai cannot — there is no spectrum analysis in the
+product, and the Live Object Model does not expose one. So you name the symptom, and Vibrai
+prescribes and applies the fix.
+
+<Note>
+  Vibrai never decides your mix is boxy. You do. What it knows is what "boxy" means, which
+  parts usually carry it, and the moves that resolve it — and it can write those moves onto
+  the right tracks and verify each one landed.
+</Note>
+
+## The one diagnostic today: `boxy`
+
+Excess energy between **200 and 500 Hz** reads as cardboard — small, closed-in and congested.
+Boxy is not too much bass; it is too much low-mid.
+
+<Frame caption="Generated from boxy.yaml — the same file Vibrai reads when it applies the fix.">
+  <img src="/images/mix-diagnostics/boxy.svg" alt="Boxy: excess energy between 200 and 500 Hz, and the band-3 EQ moves that resolve it." />
+</Frame>
+
+<Steps>
+  <Step title="Read what it means">
+    ```bash
+    vibrai mix advice boxy
+    ```
+    The symptom, the band, and what to do about it.
+  </Step>
+  <Step title="Hear the problem (optional)">
+    ```bash
+    vibrai mix fault boxy --yes
+    ```
+    Deliberately introduces the problem so you can hear what you are fixing. This makes your
+    mix worse on purpose — see the warning below.
+  </Step>
+  <Step title="See the plan">
+    ```bash
+    vibrai mix fix boxy --dry-run
+    ```
+    Which tracks, which parameters, which values, and any device it would insert. Writes
+    nothing and needs no confirmation.
+  </Step>
+  <Step title="Apply it">
+    ```bash
+    vibrai mix fix boxy --yes
+    ```
+  </Step>
+</Steps>
+
+## What it writes
+
+Vibrai targets the parts that usually carry low-mid buildup — chords, pads, leads and riffs —
+and leaves everything else alone. On each, it finds or inserts an EQ Eight and writes band 3:
+
+| Parameter | Remedy | Fault |
+|---|---|---|
+| `3 Frequency A` | 320 Hz | 320 Hz |
+| `3 Gain A` | −3 dB | +6 dB |
+| `3 Q A` | 1.4 | 1.4 |
+
+The fault is the same move inverted and exaggerated, so the problem is unmistakable in a short
+A/B rather than subtle.
+
+<Warning>
+  `vibrai mix fault` **makes your mix worse on purpose.** It exists so you can hear the problem
+  before the fix. It requires `--yes` like any other destructive write, and
+  `vibrai mix fault boxy --clear --yes` reverses it by writing the remedy's values — it does
+  **not** restore your pre-fault set, because any EQ Eight it inserted stays.
+</Warning>
+
+## Reading the result
+
+Every move reports whether it `Verified` — Vibrai reads the parameter back from Live after
+writing, because Live silently drops writes to disabled parameters and overrides automated
+ones. **If any move fails to verify, the run exits non-zero**, even when the others landed;
+a partial application is a failure, not a pass. A dry run always exits zero.
+
+Warnings name anything you should know about: a device that was inserted, and any existing
+parameter that was overwritten and cannot be restored.
+
+## From an agent
+
+The same capability over MCP, with the confirmation spelled `confirm=true`:
+
+```
+get_mix_advice(topic="boxy")
+apply_mix_fix(topic="boxy", dry_run=true)
+apply_mix_fix(topic="boxy", confirm=true)
+inject_mix_fault(topic="boxy", confirm=true)
+```
+
+Vibrai's agent skill carries the mapping from what you actually say — "cardboard", "muddy
+mids", "closed-in" — to the `boxy` topic, so you do not have to know the slug.
+
+## Attribution
+
+Adapted from the "Why Your Mix Sounds Boxy" reference at pauseplayrepeat.com.
