@@ -4,6 +4,25 @@ description: "New features, improvements, and fixes in Vibrai."
 rss: true
 ---
 
+<Update label="1.7.1" description="September 2, 2026">
+  A patch release: the mix diagnostics now report track numbers that match the rest of Vibrai, and a failed mix command tells you what went wrong.
+
+  ## Track numbers line up
+
+  `vibrai mix fix` and `mix fault` were printing an internal track number, so the second track in your set showed as "Track 1" while `vibrai track list` called it 2. The changes always went to the right track — the names beside them were correct — but if you followed the printed number to look at that track, you landed on a different one and saw none of the changes.
+
+  Both the command line and MCP now use the same track numbering as everything else.
+
+
+  ## Your tag file is safer
+
+  If a newer version of Vibrai wrote your instrument tags, this build no longer overwrites them — it leaves the fields it doesn't understand intact for the version that wrote them. Genre files already worked this way; tag files now match.
+
+  ## A failed mix command explains itself
+
+  When the bridge was unreachable, wedged, or timed out, `mix fix` and `mix fault` exited with a generic failure and lost the recovery instructions. They now report the same specific outcomes as every other command that talks to Live — including pointing you at the device reload when that is what is needed.
+</Update>
+
 <Update label="1.7.0" description="September 1, 2026">
   Tell Vibrai what's wrong with your mix and it fixes it — or injects the problem first so you can hear it. Plus fuller version reporting, and a chord fix that makes generated music correct in modes without a perfect fifth.
 
