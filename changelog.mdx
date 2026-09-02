@@ -4,6 +4,20 @@ description: "New features, improvements, and fixes in Vibrai."
 rss: true
 ---
 
+<Update label="1.7.2" description="September 2, 2026">
+  A small patch: the downloadable macOS tarball is executable again, and the Max for Live bridge holds onto its credentials under load.
+
+  ## The download works
+
+  If you downloaded the `.tar.gz` directly and ran `./vibrai`, you got `permission denied` — the archive was shipping the binaries without their executable bit. Homebrew and `vibrai update` were never affected, since both set it themselves, which is why this went unnoticed.
+
+  Fixed, and the release now runs the published binary after packaging instead of only checking the file is present — so an artifact nobody can execute cannot pass again.
+
+  ## The bridge keeps its credentials under load
+
+  Several requests arriving at once could each fail to read the Max for Live bridge's shared secret, because a file-lock conflict looked identical to a corrupt file. That could leave the bridge unable to authenticate.
+</Update>
+
 <Update label="1.7.1" description="September 2, 2026">
   A patch release: the mix diagnostics now report track numbers that match the rest of Vibrai, and a failed mix command tells you what went wrong.
 
