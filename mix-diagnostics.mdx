@@ -71,7 +71,8 @@ A/B rather than subtle.
 
 Every move reports whether it `Verified` — Vibrai reads the parameter back from Live after
 writing, because Live silently drops writes to disabled parameters and overrides automated
-ones. A run where nothing landed exits non-zero.
+ones. **If any move fails to verify, the run exits non-zero**, even when the others landed;
+a partial application is a failure, not a pass. A dry run always exits zero.
 
 Warnings name anything you should know about: a device that was inserted, and any existing
 parameter that was overwritten and cannot be restored.
