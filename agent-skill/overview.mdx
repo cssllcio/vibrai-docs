@@ -79,20 +79,25 @@ vibrai skill package --to ~/Desktop/vibrai-skill.zip
 |------|--------|---------|---------|
 | `--to <path>` | any file path | `./vibrai-skill.zip` | Output zip path |
 
-The zip contains the same two files a directory install writes — `SKILL.md` and `references/command-reference.md` — just archived instead of written to disk, so the unzipped contents are identical either way. Upload the resulting file in Claude Desktop under **Settings → Capabilities → Skills → Upload skill**.
+The zip contains the same three files a directory install writes — `SKILL.md`, `references/command-reference.md` and `references/onboarding.md` — just archived instead of written to disk, so the unzipped contents are identical either way. Upload the resulting file in Claude Desktop under **Settings → Capabilities → Skills → Upload skill**.
 
 ## What gets written
 
-Each install writes a `vibrai/` skill folder containing the skill body plus a freshly-rendered command reference:
+Each install writes a `vibrai/` skill folder containing the skill body, a freshly-rendered command reference, and an onboarding reference:
 
 ```text
 <skills-dir>/vibrai/
 ├── SKILL.md                      # onboarding, core workflows, and gotchas
 └── references/
-    └── command-reference.md      # every CLI command + MCP tool, paired
+    ├── command-reference.md      # every CLI command + MCP tool, paired
+    └── onboarding.md             # first-run setup and troubleshooting, in depth
 ```
 
 `command-reference.md` is not shipped as a snapshot — it's rendered from your installed binary's command surface at install time (the same source of truth as `vibrai docs export --format md`), so it always matches your version.
+
+`onboarding.md` is the hand-authored depth companion to `SKILL.md` for the first-run cliff — getting a working Live set, activating the remote script, diagnosing a stuck bridge, and reading the errors a first session hits most often. `SKILL.md` says what to do next; `onboarding.md` is what to read once something is already broken.
+
+Unlike the command reference it is embedded in the binary rather than rendered from it. Both files travel with the version you installed and neither is ever fetched, but only the command reference is generated at install time.
 
 The skills directory depends on the agent and the scope:
 
@@ -131,7 +136,7 @@ The same `SKILL.md` is exposed to any connected MCP client as a read-only resour
 
 Reading that resource is the MCP-side counterpart of `vibrai skill print`. Installing to disk stays CLI-only by design: writing a file into an agent's local config directory has no sensible MCP shape, and a connected MCP client already has the tools plus the [`vibrai://reference`](/mcp/overview) resource.
 
-`skill package` has an MCP counterpart, though: the `package_claude_desktop_skill` tool writes the same zip (`SKILL.md` + `references/command-reference.md`) to a path you choose, since producing a standalone file for manual upload — unlike writing into an agent's own config directory — has a sensible MCP shape.
+`skill package` has an MCP counterpart, though: the `package_claude_desktop_skill` tool writes the same zip (`SKILL.md` + `references/command-reference.md` + `references/onboarding.md`) to a path you choose, since producing a standalone file for manual upload — unlike writing into an agent's own config directory — has a sensible MCP shape.
 
 ## What the skill teaches the agent
 
