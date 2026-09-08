@@ -4,6 +4,22 @@ description: "New features, improvements, and fixes in Vibrai."
 rss: true
 ---
 
+<Update label="1.7.4" description="September 7, 2026">
+  Two fixes: a mix profile now names the tracks it left alone, and `vibrai arrangement set-props` reports a lost connection the way every other command does.
+
+  ## A mix profile names the tracks it skipped
+
+  A mix profile places one track per part. Several genre presets build sets with a part repeated — two hi-hat tracks, two riffs — and only the first of each was getting placed. The rest came back at full volume, dead centre, with no reverb send, and nothing said a word about it.
+
+  The silence was the real defect. The placed tracks looked right, so the untouched ones read as something you had done. Vibrai now names every track that matched no part, by number and name, in the preview *and* in the write. The preview previously made no call to Live at all, so it could not have told you — it now reads your set to find them.
+
+  Which track gets placed has not changed: still the first of each part.
+
+  ## If you script Vibrai: one exit code changed
+
+  `vibrai arrangement set-props` exited `1` when it could not reach Live's remote script, where every other arrangement command exits `2` or `4`. Exit `1` also means "you passed a bad argument", so a script had no way to tell a stopped Live from its own mistake. It now returns the standard bridge codes. `arrangement place` and `arrangement delete` had the same flaw and are fixed with it.
+</Update>
+
 <Update label="1.7.3" description="September 6, 2026">
   A fix-only release. Auto-recovery survives more than one bridge death, the walking bass plays the right seventh, and a failed clear no longer reports success.
 
