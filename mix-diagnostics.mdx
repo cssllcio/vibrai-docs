@@ -18,8 +18,20 @@ prescribes and applies the fix.
 Excess energy between **200 and 500 Hz** reads as cardboard — small, closed-in and congested.
 Boxy is not too much bass; it is too much low-mid.
 
-<Frame caption="Generated from boxy.yaml — the same file Vibrai reads when it applies the fix.">
-  <img src="/images/mix-diagnostics/boxy.svg" alt="Boxy: excess energy between 200 and 500 Hz, and the band-3 EQ moves that resolve it." />
+{/* Two files rather than one: an SVG loaded through <img> is a separate
+    document and cannot see the page's theme, so the CSS-variable trick does not
+    reach it. This is Mintlify's documented light/dark image pattern. */}
+<Frame caption="Plotted from boxy.yaml — the same file Vibrai reads when it applies the fix. The dashed curve is the fault, shown for comparison; it is not the recommended move.">
+  <img
+    className="block dark:hidden"
+    src="/images/mix-diagnostics/boxy-light.svg"
+    alt="Frequency response from 20 Hz to 20 kHz. The 200 to 500 Hz band is shaded. A solid curve dips to minus 3 dB at 320 Hz with a Q of 1.4 — the corrective cut Vibrai writes. A dashed curve peaks at plus 6 dB at the same frequency: the deliberate fault, shown for comparison."
+  />
+  <img
+    className="hidden dark:block"
+    src="/images/mix-diagnostics/boxy-dark.svg"
+    alt="Frequency response from 20 Hz to 20 kHz. The 200 to 500 Hz band is shaded. A solid curve dips to minus 3 dB at 320 Hz with a Q of 1.4 — the corrective cut Vibrai writes. A dashed curve peaks at plus 6 dB at the same frequency: the deliberate fault, shown for comparison."
+  />
 </Frame>
 
 <Steps>
