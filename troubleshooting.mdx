@@ -154,7 +154,12 @@ description: "Common issues and fixes."
   </Accordion>
 
   <Accordion title="uninstall refuses to run because your license expired">
-    Both `vibrai uninstall` (CLI) and the `uninstall` MCP tool are license-gated with no exemption — an expired or unverifiable license blocks them like any other command, so there is no automated path out. Remove Vibrai by hand instead, in this order.
+    Both `vibrai uninstall` (CLI) and the `uninstall` MCP tool are license-gated with no exemption — an expired or unverifiable license blocks them like any other command. When blocked, both surfaces now hand you a manual-removal script automatically, so you don't need to copy the steps below by hand:
+
+    - **CLI**: run `vibrai uninstall` as usual. Once blocked, it writes the script to a temp file (macOS only, matching the steps below), makes it executable, and prints the path — run it with `bash <path> --help` to see the available flags.
+    - **MCP**: the blocked `uninstall` tool result includes the full script text as a second content block, ready to save and run yourself.
+
+    The rest of this section is that same script, spelled out step by step — useful on Windows/Linux (where the automated script isn't offered yet), or if you'd rather build the removal by hand.
 
     **1. Program files** (requires sudo; macOS only):
 
