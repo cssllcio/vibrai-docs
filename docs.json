@@ -30,7 +30,8 @@
           "drum-maps",
           "mix-diagnostics",
           "sessions",
-          "privacy/telemetry"
+          "privacy/telemetry",
+          "privacy/analytics"
         ]
       },
       {
@@ -112,6 +113,16 @@
       "mcp",
       "cursor",
       "vscode"
+    ]
+  },
+  "footer": {
+    "links": [
+      {
+        "header": "Legal",
+        "items": [
+          { "label": "Cookie preferences", "href": "/privacy/analytics" }
+        ]
+      }
     ]
   }
 }
