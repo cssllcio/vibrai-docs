@@ -30,7 +30,8 @@
           "drum-maps",
           "mix-diagnostics",
           "sessions",
-          "privacy/telemetry"
+          "privacy/telemetry",
+          "privacy/analytics"
         ]
       },
       {
