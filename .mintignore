@@ -8,3 +8,6 @@ drafts/
 
 # Internal research notes (not published)
 research/
+
+# Internal implementation plans (not published)
+docs/superpowers/

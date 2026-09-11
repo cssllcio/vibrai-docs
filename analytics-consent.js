@@ -1,4 +1,7 @@
 (function () {
+  if (window.__vibraiConsentInit) return;
+  window.__vibraiConsentInit = true;
+
   var CONSENT_KEY = 'vibrai_analytics_consent';
   // Placeholder until the GA4 property's docs-site data stream exists (shared
   // spec in cssllcio/Vibrai, docs/superpowers/specs/2026-09-11-google-analytics-integration-design.md,
