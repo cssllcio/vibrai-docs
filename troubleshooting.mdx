@@ -153,6 +153,66 @@ description: "Common issues and fixes."
     From MCP you can read status with `get_license_status` and clear an offline-grace banner with `recheck_license` — both are read-only. Activation and deactivation stay on the CLI by design.
   </Accordion>
 
+  <Accordion title="uninstall refuses to run because your license expired">
+    Both `vibrai uninstall` (CLI) and the `uninstall` MCP tool are license-gated with no exemption — an expired or unverifiable license blocks them like any other command. When blocked, both surfaces now hand you a manual-removal script automatically, so you don't need to copy the steps below by hand:
+
+    - **CLI**: run `vibrai uninstall` as usual. Once blocked, it writes the script to a temp file (macOS only, matching the steps below), makes it executable, and prints the path — run it with `bash <path> --help` to see the available flags.
+    - **MCP**: the blocked `uninstall` tool result includes the full script text as a second content block, ready to save and run yourself.
+
+    The rest of this section is that same script, spelled out step by step — useful on Windows/Linux (where the automated script isn't offered yet), or if you'd rather build the removal by hand.
+
+    **1. Program files** (requires sudo; macOS only):
+
+    ```bash
+    sudo rm -f /usr/local/bin/vibrai
+    sudo rm -rf /usr/local/lib/vibrai
+    sudo pkgutil --forget io.cssllc.vibrai.component
+    ```
+
+    **2. App data, cache, sessions, and your license file** — one directory holds all of it:
+
+    ```bash
+    rm -rf ~/"Library/Application Support/Vibrai"
+    ```
+
+    **3. Ableton / Max for Live integration.** Confirm your Ableton User Library path in Live's **Preferences → Library** first — Vibrai discovers it from there rather than assuming the default (`~/Music/Ableton/User Library` on macOS):
+
+    ```bash
+    rm -rf "<Ableton User Library>/Presets/Audio Effects/Max Audio Effect/vibrai"
+    rm -rf "<Ableton User Library>/Remote Scripts/Vibrai"
+    ```
+
+    **4. Claude Desktop extension bundle** — remove only the file. The parent folder can hold your own Live presets, so leave it unless it's now empty:
+
+    ```bash
+    rm -f "<Ableton User Library>/Vibrai/Vibrai.mcpb"
+    rmdir "<Ableton User Library>/Vibrai" 2>/dev/null   # only removes it if empty
+    ```
+
+    **5. Claude Desktop MCP registration** — open `~/Library/Application Support/Claude/claude_desktop_config.json` and delete the `"vibrai"` key under `"mcpServers"`. Don't delete the whole file if other servers are registered there.
+
+    **6. Agent Skills** (user scope only — leaves any project-level `.claude/skills/vibrai` alone):
+
+    ```bash
+    rm -rf ~/.claude/skills/vibrai ~/.codex/skills/vibrai ~/.gemini/skills/vibrai
+    ```
+
+    **7. Templates** — `vibrai uninstall` never removes these, even with a valid license, so clean them up if you don't want them lingering:
+
+    ```bash
+    rm -f "<Ableton User Library>/Templates/Vibrai Starter.als" "<Ableton User Library>/Templates/Vibrai Demo.als"
+    ```
+
+    | Item | Windows | Linux |
+    |------|---------|-------|
+    | App data / license | `%LOCALAPPDATA%\Vibrai` | `~/.local/share/Vibrai` (or `$XDG_DATA_HOME`) |
+    | License config dir | `%APPDATA%\Vibrai` | `~/.config/vibrai` (or `$XDG_CONFIG_HOME`) |
+    | Ableton User Library | `~/Documents/Ableton/User Library` | — |
+    | Claude Desktop config | `%APPDATA%\Claude\claude_desktop_config.json` | `~/.config/Claude/claude_desktop_config.json` |
+
+    Program-files removal (step 1) only ships via the macOS `.pkg` installer today; on Windows/Linux, remove the CLI/MCP binary wherever you installed it.
+  </Accordion>
+
   <Accordion title="An update failed, or you want to undo one">
     Roll back to the binary you had before the last update:
 
