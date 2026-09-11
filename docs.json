@@ -114,5 +114,15 @@
       "cursor",
       "vscode"
     ]
+  },
+  "footer": {
+    "links": [
+      {
+        "header": "Legal",
+        "items": [
+          { "label": "Cookie preferences", "href": "/privacy/analytics" }
+        ]
+      }
+    ]
   }
 }
