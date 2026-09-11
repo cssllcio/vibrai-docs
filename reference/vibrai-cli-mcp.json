@@ -1,6 +1,6 @@
 {
   "engine_version": "1.7.4.0",
-  "generated_at": "2026-09-08T06:49:47Z",
+  "generated_at": "2026-09-11T14:36:04Z",
   "features": [
     {
       "id": "transport",
@@ -6376,7 +6376,7 @@
     {
       "id": "uninstall",
       "title": "Uninstall",
-      "description": "Remove Vibrai\u0027s program files, and by default the Claude Desktop registration, installed Agent Skills, and the deployed Claude Desktop bundle (Vibrai.mcpb in your Ableton User Library) (retain any of them with --keep-claude-desktop-entry / --keep-agent-skills / --keep-claude-extension). App data and the Ableton integration are kept unless you pass --purge-data / --remove-ableton. Program-files removal is CLI-only \u2014 it requires root, which the MCP server has no way to obtain (no TTY, no sudo prompt); the MCP tool covers every other scope with full parity.",
+      "description": "Remove Vibrai\u0027s program files, and by default the Claude Desktop registration, installed Agent Skills, and the deployed Claude Desktop bundle (Vibrai.mcpb in your Ableton User Library) (retain any of them with --keep-claude-desktop-entry / --keep-agent-skills / --keep-claude-extension). App data and the Ableton integration are kept unless you pass --purge-data / --remove-ableton. Program-files removal is CLI-only \u2014 it requires root, which the MCP server has no way to obtain (no TTY, no sudo prompt); the MCP tool covers every other scope with full parity. Both surfaces are license-gated with no exemption, so an expired or unverifiable license blocks uninstall entirely \u2014 see [Troubleshooting](/troubleshooting#uninstall-refuses-to-run-because-your-license-expired) for manual removal steps.",
       "cli": {
         "branch": "uninstall",
         "commands": [
