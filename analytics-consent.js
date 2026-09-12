@@ -3,10 +3,12 @@
   window.__vibraiConsentInit = true;
 
   var CONSENT_KEY = 'vibrai_analytics_consent';
-  // Placeholder until the GA4 property's docs-site data stream exists (shared
-  // spec in cssllcio/Vibrai, docs/superpowers/specs/2026-09-11-google-analytics-integration-design.md,
-  // §1). Replace with the real Measurement ID before this ships.
-  var GA4_MEASUREMENT_ID = 'G-YYYYYYYYYY';
+  // Shared with vibrai.com (cssllcio/vibrai-com-web) rather than this site
+  // having its own stream — the property was only ever given one web data
+  // stream, and creating a second one was decided against. GA4 still records
+  // the originating hostname per event, so the two sites' traffic remains
+  // distinguishable in reports even though it isn't split by stream.
+  var GA4_MEASUREMENT_ID = 'G-1K3GT021E7';
 
   function readConsent() {
     try {
